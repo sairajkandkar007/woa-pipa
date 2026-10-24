@@ -118,8 +118,28 @@ jobs:
           export PATH="/usr/lib/llvm-38/bin:$PATH"
           chmod +x build_uefi.sh
           ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_SIZE" 2>&1 | tee ../pipa-uefi-build.log
-          test -s "Mu-pipa.img"
-          test -s "Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd"
+          UEFI_FD="Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd"
+          test -s "$UEFI_FD"
+          test -s "BootShim/BootShim.bin"
+          test -s "ImageResources/DTBs/pipa.dtb"
+
+          # Recreate the final boot image explicitly so packaging errors are visible
+          # in the Actions log instead of being swallowed by configs/pipa.sh.
+          cat BootShim/BootShim.bin "$UEFI_FD" > "$UEFI_FD-bootshim"
+          gzip -c < "$UEFI_FD-bootshim" > "$UEFI_FD-bootshim.gz"
+          cat "$UEFI_FD-bootshim.gz" ImageResources/DTBs/pipa.dtb > ImageResources/bootpayload.bin
+          python3 ImageResources/mkbootimg.py \
+            --kernel ImageResources/bootpayload.bin \
+            --ramdisk ImageResources/ramdisk \
+            --kernel_offset 0x00000000 \
+            --ramdisk_offset 0x00000000 \
+            --tags_offset 0x00000000 \
+            --os_version 13.0.0 \
+            --os_patch_level "$(date '+%Y-%m')" \
+            --header_version 1 \
+            -o Mu-pipa.img
+          test -s Mu-pipa.img
+
           mkdir -p ../build-output
           cp "Mu-pipa.img" ../build-output/
           cp "Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd" ../build-output/
