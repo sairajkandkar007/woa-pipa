@@ -1,0 +1,90 @@
+name: Assemble Pipa UEFI Workspace
+
+on:
+  workflow_dispatch:
+    inputs:
+      UPSTREAM_REF:
+        description: "Mu-Qcom ref to assemble"
+        required: true
+        default: "main"
+
+permissions:
+  contents: read
+
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout project tracker
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Fetch Mu-Qcom at selected ref
+        env:
+          UPSTREAM_REF: ${{ inputs.UPSTREAM_REF }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --no-checkout https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git -C mu-qcom fetch --depth=1 origin "$UPSTREAM_REF"
+          git -C mu-qcom checkout --detach FETCH_HEAD
+          echo "MU_QCOM_COMMIT=$(git -C mu-qcom rev-parse HEAD)" >> "$GITHUB_ENV"
+          git -C mu-qcom rev-parse HEAD > mu-qcom-commit.txt
+
+      - name: Resolve unavailable historical subhook URL using maintained mirror
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The original Zeex/subhook repository is unavailable. Use the Tianocore mirror
+          # only as a URL rewrite; the superproject's pinned gitlink SHA remains authoritative.
+          git config --global url.https://github.com/tianocore/edk2-subhook.git.insteadOf https://github.com/Zeex/subhook.git
+          git config --global url.https://github.com/tianocore/edk2-subhook.insteadOf https://github.com/Zeex/subhook
+          git -C mu-qcom submodule sync
+          git -C mu-qcom -c submodule.recurse=false submodule update --init --depth 1 Binaries Common/Mu Common/Mu_OEM_Sample Common/Mu_Tiano_Plus Features/DFCI Mu_Basecore Silicon/Arm/Mu_Tiano
+
+      - name: Initialize remaining nested submodules non-recursively where possible
+        shell: bash
+        run: |
+          set +e
+          git -C mu-qcom submodule update --init --depth 1 --recursive
+          code=$?
+          echo "recursive_submodule_exit_code=$code" > submodule-resolution-status.txt
+          git -C mu-qcom submodule status --recursive >> submodule-resolution-status.txt 2>&1
+          # Keep the artifact even if an optional/unrelated nested submodule remains unavailable.
+          exit 0
+
+      - name: Verify required pipa resources and record workspace status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root=Path('mu-qcom')
+          required=['configs/pipa.conf','configs/pipa.sh','Platforms/Xiaomi/pipaPkg/PlatformBuild.py','Platforms/Xiaomi/pipaPkg/pipa.dsc','Platforms/Xiaomi/pipaPkg/pipa.fdf','Platforms/Xiaomi/pipaPkg/Include/ACPI.inc','Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl','ImageResources/DTBs/pipa.dtb','ImageResources/DTBs/pipa.dts','ImageResources/ramdisk','ImageResources/mkbootimg.py','BootShim/Makefile','BootShim/BootShim.S']
+          lines=['# Pipa UEFI workspace assembly report','','- Upstream commit: `'+subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()+'`','','| Required input | Status | Size |','|---|---|---:|']
+          for rel in required:
+            p=root/rel
+            lines.append(f'| `{rel}` | '+(f'present | {p.stat().st_size} bytes |' if p.is_file() else 'missing | - |'))
+          lines += ['', '## Submodule status', '']
+          try: status=subprocess.check_output(['git','-C',str(root),'submodule','status','--recursive'],text=True,stderr=subprocess.STDOUT).splitlines()
+          except subprocess.CalledProcessError as e: status=e.output.splitlines()
+          lines += ['- `'+x+'`' for x in status] if status else ['- No submodule status lines available.']
+          Path('workspace-assembly-report.md').write_text('\n'.join(lines)+'\n')
+          PY
+          tar --exclude='.git' -czf pipa-uefi-workspace.tar.gz mu-qcom
+
+      - name: Upload assembled workspace and logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-uefi-assembled-workspace
+          path: |
+            pipa-uefi-workspace.tar.gz
+            workspace-assembly-report.md
+            submodule-resolution-status.txt
+            mu-qcom-commit.txt
+          if-no-files-found: error
+          retention-days: 14
