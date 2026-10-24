@@ -19,9 +19,9 @@ This roadmap tracks research and implementation milestones. A checkbox is marked
 - [ ] Audit toolchain and build dependencies against the actual build scripts.
 
 ## Phase 3 — Dependency integration
-- [ ] Integrate all required pinned dependencies into a reproducible build layout.
+- [ ] Integrate all required pinned dependencies into a reproducible build layout.\n- [x] Add a GitHub Actions workflow to assemble the upstream Mu-Qcom workspace and collect submodule/resource status (workflow committed; not yet run).
 - [ ] Verify required files and licenses without silently substituting another device's files.
-- [ ] Add a GitHub Actions workflow that builds from the local project source.
+- [x] Add a GitHub Actions workflow draft for workspace assembly from pinned upstream sources.\n- [ ] Add and validate a build workflow that compiles the prepared workspace.
 - [ ] Confirm the workflow fails clearly when required inputs are absent.
 
 ## Phase 4 — UEFI build and output validation
