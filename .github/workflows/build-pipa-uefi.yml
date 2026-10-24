@@ -1,0 +1,141 @@
+name: Build Xiaomi Pad 6 Pipa UEFI
+
+on:
+  workflow_dispatch:
+    inputs:
+      BUILD_MODE:
+        description: "UEFI build configuration"
+        type: choice
+        required: true
+        default: RELEASE
+        options:
+          - RELEASE
+          - DEBUG
+      RAM_SIZE:
+        description: "Physical RAM size in GiB"
+        type: choice
+        required: true
+        default: "8"
+        options:
+          - "6"
+          - "8"
+      UPSTREAM_REF:
+        description: "Mu-Qcom ref to build"
+        required: true
+        default: main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Install build dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential git curl ca-certificates \
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+            clang-14 llvm-14 lld nasm iasl uuid-dev \
+            python3 python3-dev python3-venv python3-pip python3-setuptools \
+            mono-devel nuget gettext locales zip unzip gzip
+          sudo ln -sfn /usr/lib/llvm-14 /usr/lib/llvm-38
+          clang --version
+          aarch64-linux-gnu-gcc --version
+          python3 --version
+
+      - name: Fetch Mu-Qcom source and submodules
+        env:
+          UPSTREAM_REF: ${{ inputs.UPSTREAM_REF }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --no-checkout https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git -C mu-qcom fetch --depth=1 origin "$UPSTREAM_REF"
+          git -C mu-qcom checkout --detach FETCH_HEAD
+          git config --global url.https://github.com/tianocore/edk2-subhook.git.insteadOf https://github.com/Zeex/subhook.git
+          git config --global url.https://github.com/tianocore/edk2-subhook.insteadOf https://github.com/Zeex/subhook
+          git -C mu-qcom submodule sync
+          git -C mu-qcom submodule update --init --depth 1 Binaries Common/Mu Common/Mu_OEM_Sample Common/Mu_Tiano_Plus Features/DFCI Mu_Basecore Silicon/Arm/Mu_Tiano
+          git -C mu-qcom submodule update --init --depth 1 --recursive
+          git -C mu-qcom submodule status --recursive | tee submodule-status.txt
+          git -C mu-qcom rev-parse HEAD | tee mu-qcom-commit.txt
+
+      - name: Apply pipa platform compatibility fix
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("mu-qcom/Platforms/Xiaomi/pipaPkg/PlatformBuild.py")
+          s = p.read_text()
+          old = 'return ("pipaPkg/pipaNoSb.dsc", {})'
+          new = 'return ("pipaPkg/pipa.dsc", {})'
+          if old in s:
+              p.write_text(s.replace(old, new, 1))
+              print("Patched missing pipaNoSb.dsc reference to the tracked pipa.dsc.")
+          elif new in s:
+              print("PlatformBuild.py already selects pipa.dsc; no patch needed.")
+          else:
+              raise SystemExit("Unexpected PlatformBuild.py DSC selection; refusing to patch blindly.")
+          PY
+          test -f mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.dsc
+          test -f mu-qcom/ImageResources/DTBs/pipa.dtb
+          test -f mu-qcom/ImageResources/ramdisk
+
+      - name: Install Python build requirements
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -r mu-qcom/pip-requirements.txt
+
+      - name: Build UEFI image
+        env:
+          BUILD_MODE: ${{ inputs.BUILD_MODE }}
+          RAM_SIZE: ${{ inputs.RAM_SIZE }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd mu-qcom
+          export CLANG38_BIN=/usr/lib/llvm-38/bin/
+          export CLANG38_AARCH64_PREFIX=aarch64-linux-gnu-
+          export PATH="/usr/lib/llvm-38/bin:$PATH"
+          chmod +x build_uefi.sh
+          ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_SIZE" 2>&1 | tee ../pipa-uefi-build.log
+          test -s "Mu-pipa.img"
+          test -s "Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd"
+          mkdir -p ../build-output
+          cp "Mu-pipa.img" ../build-output/
+          cp "Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd" ../build-output/
+          cp "BootShim/BootShim.bin" ../build-output/
+          cp "ImageResources/DTBs/pipa.dtb" ../build-output/
+          printf 'BUILD_MODE=%s\nRAM_SIZE_GIB=%s\n' "$BUILD_MODE" "$RAM_SIZE" > ../build-output/build-info.txt
+
+      - name: Upload build outputs and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-uefi-build-${{ inputs.BUILD_MODE }}-${{ inputs.RAM_SIZE }}GiB
+          path: |
+            build-output/**
+            pipa-uefi-build.log
+            submodule-status.txt
+            mu-qcom-commit.txt
+            mu-qcom/Build/BUILDLOG_pipaPkg.txt
+          if-no-files-found: warn
+          retention-days: 14
