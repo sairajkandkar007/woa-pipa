@@ -29,5 +29,5 @@ jobs:
       - name: Run parser regression tests
         run: python -m unittest discover -s tools/acpi/tests -p "test_*.py" -v
 
-      - name: Check script syntax
-        run: python -m py_compile tools/acpi/audit_live_ufs_dt.py
+      - name: Check all ACPI audit scripts
+        run: python -m py_compile tools/acpi/audit_live_ufs_dt.py tools/acpi/resolve_ufs_dt_providers.py
