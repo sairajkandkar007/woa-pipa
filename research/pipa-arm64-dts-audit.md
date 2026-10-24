@@ -43,3 +43,27 @@ Linux device trees and Linux driver source can help identify hardware topology a
 - [Vendor pipa_user_defconfig](https://github.com/sairajkandkar007/Xiaomi_Kernel_OpenSource/blob/pipa-t-oss/arch/arm64/configs/vendor/pipa_user_defconfig)
 - [AndroidKernel.mk](https://github.com/sairajkandkar007/Xiaomi_Kernel_OpenSource/blob/pipa-t-oss/AndroidKernel.mk)
 - [GitHub Git Trees API documentation](https://docs.github.com/en/rest/git/trees)
+
+
+## Follow-up: defconfig comparison and DTB packaging
+
+The two configuration files were fetched from the same `pipa-t-oss` branch and compared byte-for-byte:
+
+- `arch/arm64/configs/pipa_user_defconfig` — blob `d6a82b0f59de9cece8ba7d41a1823526c26b99b6`
+- `arch/arm64/configs/vendor/pipa_user_defconfig` — blob `f682ea85a4b51270d9ade0d7a53d48cb2a7020ab`
+- Both contain 21,020 characters and their fetched contents are identical. The blob SHAs differ despite identical text, so the files should not be assumed to be interchangeable paths in the build system without checking references.
+
+The inspected `AndroidKernel.mk` confirms:
+
+- `KERNEL_HEADER_DEFCONFIG` defaults to `KERNEL_DEFCONFIG` when not separately set (around lines 36–38).
+- The kernel make invocation uses `$(KERNEL_DEFCONFIG)` as the make target (around line 193).
+- When `TARGET_KERNEL_APPEND_DTB` is not `true`, it assembles `dtb.img` by concatenating `$(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/dts/vendor/qcom/*.dtb` (around lines 255–257).
+
+This identifies the expected *output* directory for the Android DTB packaging path. It does not identify which product file sets `KERNEL_DEFCONFIG`, nor does it prove which DTB files are generated for pipa. The product/device tree and the actual output directory still need inspection.
+
+## Updated next actions
+
+1. Trace the product/device configuration that assigns `KERNEL_DEFCONFIG` and any `TARGET_KERNEL_APPEND_DTB` setting.
+2. Inspect the source and build rules under `arch/arm64/boot/dts/vendor/qcom/`, especially the relevant Makefiles and included DTS files.
+3. Identify how the pipa device's Android build selects and packages DTB/DTBO artifacts.
+4. Keep the Linux configuration/DTS investigation separate from the Windows UEFI, ACPI, and Windows-driver work.
