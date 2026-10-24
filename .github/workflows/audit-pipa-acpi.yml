@@ -1,0 +1,102 @@
+name: Audit pipa ACPI
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "docs/ACPI_AUDIT.md"
+      - ".github/workflows/audit-pipa-acpi.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audit-acpi:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Install ACPI tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y acpica-tools git python3
+
+      - name: Fetch Mu-Qcom source
+        run: |
+          git clone --depth=1 --branch main https://github.com/sairajkandkar007/Mu-Qcom.git Mu-Qcom
+          test -s Mu-Qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl
+          test -s Mu-Qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
+
+      - name: Record IASL version and inspect ASL markers
+        run: |
+          mkdir -p audit-output/source
+          iasl -v 2>&1 | tee audit-output/iasl-version.txt
+          cp Mu-Qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl audit-output/source/DSDT.dsl
+          python3 - <<'PY' | tee audit-output/asl-marker-report.txt
+          from pathlib import Path
+          import re
+          p = Path("audit-output/source/DSDT.dsl")
+          s = p.read_text(errors="replace")
+          print(f"ASL bytes: {len(s.encode())}")
+          print(f"ASL lines: {len(s.splitlines())}")
+          print(f"Device declarations: {len(re.findall(r'\\bDevice\\s*\\(', s))}")
+          print(f"Method declarations: {len(re.findall(r'\\bMethod\\s*\\(', s))}")
+          print("Potential sentinel constants:")
+          for token in ("0xDEADBEEF", "0xBEEFDEAD", "0xAAAAAAAA", "0xBBBBBBBB",
+                        "0xCCCCCCCC", "0xDDDDDDDD", "0xEEEEEEEE", "0x77777777",
+                        "0xABCABCAB", "0xFFFFFFFF"):
+              n = len(re.findall(re.escape(token), s, re.IGNORECASE))
+              if n:
+                  print(f"  {token}: {n}")
+          PY
+
+      - name: Compile source ASL without treating warnings as fatal
+        continue-on-error: true
+        run: |
+          mkdir -p audit-output/compile-source
+          cp audit-output/source/DSDT.dsl audit-output/compile-source/DSDT.dsl
+          cd audit-output/compile-source
+          iasl -tc DSDT.dsl 2>&1 | tee ../source-compile.log
+          test -f DSDT.aml && cp DSDT.aml ../DSDT-from-source.aml || true
+
+      - name: Disassemble checked-in AML
+        continue-on-error: true
+        run: |
+          mkdir -p audit-output/disassemble
+          cp Mu-Qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml audit-output/disassemble/DSDT.aml
+          cd audit-output/disassemble
+          iasl -d DSDT.aml 2>&1 | tee ../aml-disassemble.log
+          test -f DSDT.dsl && cp DSDT.dsl ../DSDT-disassembled.dsl || true
+
+      - name: Compare source and disassembled AML at a structural level
+        if: always()
+        run: |
+          python3 - <<'PY' | tee audit-output/structural-comparison.txt
+          from pathlib import Path
+          import re
+          src = Path("audit-output/source/DSDT.dsl").read_text(errors="replace")
+          dis = Path("audit-output/DSDT-disassembled.dsl")
+          if not dis.exists():
+              print("AML disassembly did not produce DSDT.dsl; inspect aml-disassemble.log.")
+              raise SystemExit(0)
+          other = dis.read_text(errors="replace")
+          def names(s, kind):
+              return sorted(set(re.findall(r"\\b" + kind + r"\\s*\\(\\s*([A-Za-z0-9_]+)", s)))
+          for kind in ("Device", "Method", "Name", "Scope"):
+              a, b = names(src, kind), names(other, kind)
+              print(f"{kind}: source={len(a)} disassembled={len(b)}")
+              print(f"  only in source: {', '.join(sorted(set(a)-set(b))[:80]) or '(none)'}")
+              print(f"  only in AML:    {', '.join(sorted(set(b)-set(a))[:80]) or '(none)'}")
+          print("Note: this is a name-level triage report, not a semantic equivalence proof.")
+          PY
+
+      - name: Upload audit outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-acpi-source-audit
+          path: audit-output/
+          if-no-files-found: error
+          retention-days: 14
