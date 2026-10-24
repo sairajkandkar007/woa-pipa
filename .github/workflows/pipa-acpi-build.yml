@@ -40,11 +40,21 @@ jobs:
             echo "- Source: `acpi/pipa/DSDT.asl`"
             echo "- Result: IASL compile/decompile passed."
             echo "- Scope: UFS-only bring-up draft; not a bootable ACPI implementation."
-            echo "- UFS resources are provisional references and remain unverified for pipa."
+            echo "- UFS0 is intentionally hidden (_STA = Zero) and has no _CRS; no UFS resources are exposed."
             echo
             echo '## IASL version'
             iasl -v
           } > compile-report.md
+
+      - name: Verify disabled UFS safety gate
+        working-directory: acpi/pipa
+        run: |
+          set -euxo pipefail
+          grep -q 'Return (Zero)' DSDT.asl
+          if grep -Eq 'Name \\(_CRS|Method \\(_CRS' DSDT.asl; then
+            echo "Unexpected _CRS in disabled UFS scaffold; review before proceeding."
+            exit 1
+          fi
 
       - name: Upload compiled scaffold and report
         uses: actions/upload-artifact@v4
