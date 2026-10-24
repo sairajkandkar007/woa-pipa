@@ -10,7 +10,9 @@
 - The top-level kernel `Makefile` declares Linux version 4.19.157 (recorded in the earlier source audit).
 - `drivers/gpu/msm/Kconfig` contains a Qualcomm KGSL Linux graphics-driver option. This establishes that Linux-side KGSL source/configuration exists, not that it is enabled for pipa or provides Windows GPU support.
 - The file `arch/arm64/boot/dts/qcom/Makefile` was retrieved successfully. Its visible DTB list contains generic Qualcomm platform targets such as `msm8996-mtp.dtb` and `sdm845-mtp.dtb`; it does **not** list a pipa-named target.
+- The generic `arch/arm64/configs/defconfig` exists, but it is not evidence that this is Xiaomi Pad 6's build configuration.
 - Direct checks for `arch/arm64/configs/vendor/pipa_defconfig` and `arch/arm64/configs/pipa_defconfig` did not find those exact paths. These checks do not prove that no pipa config exists elsewhere.
+- GitHub code searches for build-variable names and `pipa` returned no matches, but the connector's code search covers the repository's default branch, not necessarily the requested `pipa-t-oss` branch. Treat these search results as inconclusive.
 
 ## What this means
 
@@ -20,11 +22,12 @@ GitHub code searches for `pipa` and `pipa_defconfig` in the fork returned no mat
 
 ## Next actions
 
-1. Inspect the actual listing of `arch/arm64/configs`, including subdirectories, and identify the configuration used by Xiaomi's build scripts.
-2. Inspect the full `arch/arm64/boot/dts/qcom` listing and trace any DTB/DTBO files or includes relevant to the device.
-3. Search the repository's build scripts for `KERNEL_DEFCONFIG`, `TARGET_KERNEL_CONFIG`, `DTS`, `DTB`, and `pipa`.
-4. If the published source lacks device-specific DTS/configuration, document that as a source-release limitation and compare against the device's actual boot image/vendor artifacts before planning changes.
-5. Keep source evidence separate from assumptions and from anything tested on hardware.
+1. Obtain the complete branch tree or directory listing for `pipa-t-oss`; the available connector can fetch known files but cannot list directories.
+2. Inspect `arch/arm64/configs`, including subdirectories, and identify the configuration used by Xiaomi's build scripts.
+3. Inspect the full `arch/arm64/boot/dts/qcom` listing and trace any DTB/DTBO files or includes relevant to the device.
+4. Search the repository's build scripts for `KERNEL_DEFCONFIG`, `TARGET_KERNEL_CONFIG`, `DTS`, `DTB`, and `pipa`.
+5. If the published source lacks device-specific DTS/configuration, document that as a source-release limitation and compare against the device's actual boot image/vendor artifacts before planning changes.
+6. Keep source evidence separate from assumptions and from anything tested on hardware.
 
 ## WoA relevance
 
