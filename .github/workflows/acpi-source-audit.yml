@@ -1,0 +1,58 @@
+name: ACPI Source Audit
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "docs/acpi/**"
+      - ".github/workflows/acpi-source-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  compile-existing-pipa-dsdt:
+    name: Compile existing Mu-Qcom pipa DSDT (audit only)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Install IASL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y acpica-tools git
+          iasl -v
+
+      - name: Fetch existing Mu-Qcom source
+        run: |
+          git clone --depth=1 --filter=blob:none --sparse https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git -C mu-qcom sparse-checkout set Platforms/Xiaomi/pipaPkg/AcpiTables
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl
+          mkdir -p audit-output
+          cp mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl audit-output/DSDT.dsl
+          git -C mu-qcom rev-parse HEAD | tee audit-output/mu-qcom-commit.txt
+
+      - name: Compile DSDT and retain diagnostics
+        shell: bash
+        run: |
+          set +e
+          cd audit-output
+          iasl -tc DSDT.dsl 2>&1 | tee iasl.log
+          rc=${PIPESTATUS[0]}
+          echo "$rc" > iasl-exit-code.txt
+          if [ "$rc" -eq 0 ]; then
+            echo "IASL_RESULT=PASS" | tee -a iasl.log
+          else
+            echo "IASL_RESULT=FAIL (exit $rc)" | tee -a iasl.log
+          fi
+          exit "$rc"
+
+      - name: Upload ACPI audit output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-acpi-source-audit
+          path: audit-output/
+          if-no-files-found: error
+          retention-days: 14
