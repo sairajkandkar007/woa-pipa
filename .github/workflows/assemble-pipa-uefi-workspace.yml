@@ -75,16 +75,18 @@ jobs:
           lines += ['- `'+x+'`' for x in status] if status else ['- No submodule status lines available.']
           Path('workspace-assembly-report.md').write_text('\n'.join(lines)+'\n')
           PY
-          tar --exclude='.git' -czf pipa-uefi-workspace.tar.gz mu-qcom
 
-      - name: Upload assembled workspace and logs
+      - name: Upload workspace files individually (preserve directory structure)
         uses: actions/upload-artifact@v4
         with:
-          name: pipa-uefi-assembled-workspace
+          name: pipa-uefi-workspace-files
           path: |
-            pipa-uefi-workspace.tar.gz
+            mu-qcom/**
+            !mu-qcom/**/.git/**
+            !mu-qcom/.git/**
             workspace-assembly-report.md
             submodule-resolution-status.txt
             mu-qcom-commit.txt
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 14
