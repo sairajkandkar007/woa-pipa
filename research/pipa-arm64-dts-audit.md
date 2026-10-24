@@ -121,3 +121,37 @@ The source audit now has a concrete gap to resolve: the Android packaging rule p
 2. Trace `KERNEL_DEFCONFIG`, `TARGET_KERNEL_APPEND_DTB`, `dtb.img`, and DTBO references in the pipa product configuration and BoardConfig.
 3. Compare that source evidence with the stock firmware's boot/vendor_boot/dtbo artifacts before deciding which device-tree path is relevant to UEFI/Windows.
 4. Keep this as static research only; no build or flashing has been done.
+
+
+## Follow-up: cross-check against a public pipa Android device tree
+
+**Reference tree inspected:** [Xiaomi-pad-6-development/android_device_xiaomi_pipa](https://github.com/Xiaomi-pad-6-development/android_device_xiaomi_pipa), branch `pos-ascp-16`. This is a community Android ROM device tree used as a reference; it is not automatically the same build configuration as the kernel fork in this project.
+
+Its `BoardConfig.mk` contains these relevant settings:
+
+- `TARGET_KERNEL_SOURCE := kernel/xiaomi/pipa`
+- `TARGET_KERNEL_CONFIG := pipa_defconfig`
+- `BOARD_INCLUDE_DTB_IN_BOOTIMG := true`
+- `BOARD_KERNEL_SEPARATED_DTBO := true`
+- `BOARD_BOOT_HEADER_VERSION := 3`
+- `BOARD_KERNEL_IMAGE_NAME := Image`
+
+It also includes the pipa firmware vendor BoardConfig. The common SM8250 BoardConfig uses a different kernel source/config arrangement in its own shared configuration, so product inheritance and branch context matter.
+
+**Important mismatch to investigate:** the Android device-tree reference selects `pipa_defconfig`, while the separate kernel branch audited earlier documents `pipa_user_defconfig`. These names may belong to different kernel trees/branches or ROM build setups. Do not change either configuration or assume they are interchangeable until the exact kernel source used by the selected device tree is established.
+
+The Android tree's settings indicate that, for this ROM build configuration, DTB is included in the boot image and DTBO is packaged separately. This is useful evidence about the Android boot-image path; it does not establish the correct Windows/UEFI device-tree or ACPI strategy.
+
+### References inspected
+
+- [pipa BoardConfig.mk](https://github.com/Xiaomi-pad-6-development/android_device_xiaomi_pipa/blob/pos-ascp-16/BoardConfig.mk)
+- [pipa product definition](https://github.com/Xiaomi-pad-6-development/android_device_xiaomi_pipa/blob/pos-ascp-16/custom_pipa.mk)
+- [pipa product list](https://github.com/Xiaomi-pad-6-development/android_device_xiaomi_pipa/blob/pos-ascp-16/AndroidProducts.mk)
+- [common SM8250 BoardConfig](https://github.com/SD870/android_device_xiaomi_sm8250-common/blob/WIP/BoardConfigCommon.mk)
+- [pipa vendor firmware BoardConfig](https://github.com/SD870/vendor_xiaomi_pipa/blob/16/BoardConfigVendor.mk)
+
+### Next actions
+
+1. Inspect the exact kernel tree/revision referenced by the selected Android device tree and determine whether it contains `pipa_defconfig`, the vendor Qualcomm DTS sources, and their Kbuild rules.
+2. Inspect the user's kernel fork for those exact paths and compare it with the Android tree's expected kernel source.
+3. Treat Android's boot image layout as a reference only. Windows-on-ARM still needs its own validated boot firmware, ACPI/hardware-description plan, and driver feasibility assessment.
