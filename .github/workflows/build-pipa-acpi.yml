@@ -1,0 +1,38 @@
+name: Build pipa ACPI from source
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "acpi/pipa/**"
+      - ".github/workflows/build-pipa-acpi.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  compile-acpi:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ACPI compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y acpica-tools
+          iasl -v
+      - name: Compile pipa DSDT
+        run: |
+          mkdir -p out
+          iasl -tc -p out/DSDT acpi/pipa/DSDT.asl
+          test -s out/DSDT.aml
+          iasl -d out/DSDT.aml
+      - name: Publish compiled table and source
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-acpi-initial
+          path: |
+            out/DSDT.aml
+            out/DSDT.dsl
+            acpi/pipa/DSDT.asl
+          if-no-files-found: error
+          retention-days: 14
