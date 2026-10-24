@@ -12,13 +12,12 @@ on:
           - RELEASE
           - DEBUG
       RAM_SIZE:
-        description: "Physical RAM size in GiB"
+        description: "Physical RAM size in GiB (Xiaomi Pad 6 configuration)"
         type: choice
         required: true
-        default: "8"
+        default: "6"
         options:
           - "6"
-          - "8"
       UPSTREAM_REF:
         description: "Mu-Qcom ref to build"
         required: true
