@@ -10,7 +10,7 @@
 - The branch tree was retrieved using GitHub's recursive Git Trees API. It contains **66,939 paths** and the response reports `truncated: false`, so the returned path list is complete for this commit.
 - The top-level kernel `Makefile` declares Linux version **4.19.157** (recorded in the earlier source audit).
 - The branch commit message explicitly says: **“The kernel config file used is pipa_user_defconfig.”**
-- Both `arch/arm64/configs/pipa_user_defconfig` and `arch/arm64/configs/vendor/pipa_user_defconfig` exist. They have different blob SHAs, so treat them as separate files until a full diff establishes whether they differ. The root-level config includes `CONFIG_ARCH_QCOM=y`, `CONFIG_ARCH_KONA=y`, and `# CONFIG_EFI is not set`. These are Linux kernel configuration settings, not proof of Windows compatibility.
+- Both `arch/arm64/configs/pipa_user_defconfig` and `arch/arm64/configs/vendor/pipa_user_defconfig` exist. A byte-for-byte comparison found identical contents (21,020 characters), although their Git blob SHAs differ. The root-level config includes `CONFIG_ARCH_QCOM=y`, `CONFIG_ARCH_KONA=y`, and `# CONFIG_EFI is not set`. These are Linux kernel configuration settings, not proof of Windows compatibility.
 - `AndroidKernel.mk` expects the Android build to provide `KERNEL_DEFCONFIG`; it uses that value to run the kernel `make` target. This file alone does not establish which config path the complete product build selects.
 - `arch/arm64/boot/dts/qcom/Makefile` was retrieved successfully. Its visible DTB list includes generic Qualcomm targets such as `msm8996-mtp.dtb` and `sdm845-mtp.dtb`; no pipa-named target appears in that Makefile.
 - A complete tree-path filter found no path containing `pipa` under the usual `arch/arm64/boot/dts/qcom` device-tree file paths; the only matching `pipa` paths were the two defconfigs and pipa-named power-supply driver files. This is a finding about filenames in this exact source commit, not proof that the device's DT information is absent from all vendor artifacts or other repositories.
@@ -18,7 +18,7 @@
 
 ## Interpretation and limitations
 
-The strongest configuration lead is `pipa_user_defconfig`, corroborated by the branch's own commit message. The tree contains both a root-level and a `vendor/` copy. Before using either in a build, compare them fully and trace the device's Android product/build files to see which one is selected.
+The strongest configuration lead is `pipa_user_defconfig`, corroborated by the branch's own commit message. The root-level and `vendor/` copies are text-identical in the comparison performed. The build still needs to be traced to determine which path it selects.
 
 The usual Qualcomm DTS directory does not show an explicitly pipa-named target in its Makefile or filenames. The device may rely on other source locations or vendor-supplied/prebuilt device-tree artifacts; that remains unverified. Do not substitute a generic DTS/DTB just because it is present.
 
@@ -97,3 +97,27 @@ Added an on-demand GitHub Actions workflow at `.github/workflows/pipa-kernel-sou
 **To run it:** open the workflow file in GitHub, choose **Actions → Pipa Kernel Source Inventory → Run workflow**, select the `main` branch, and start the run. After completion, open the run and download the `pipa-kernel-source-inventory` artifact. This workflow has been committed but has not been dispatched from this session because the available GitHub tools do not expose a workflow-dispatch action.
 
 The inventory is the next evidence-gathering step. It will list candidate paths; it will not alone prove which product configuration is active. The follow-up must inspect the relevant product makefiles and actual DTB/DTBO packaging references.
+
+
+## Follow-up: analysis of the uploaded full-tree inventory
+
+The uploaded artifact `pipa-kernel-source-inventory.zip` was inspected. Its Markdown report and raw recursive tree JSON both identify commit `77dc8e2290f3f5f15861821564f68d30ea193449`; the tree has 66,939 entries and `truncated: false`.
+
+Key results from the path inventory:
+
+- There are **no files at all under `arch/arm64/boot/dts/vendor/qcom/`** in this kernel commit, even though `AndroidKernel.mk` has a packaging rule that expects generated DTBs in that output directory. This may mean the relevant vendor DTS sources are supplied by another repository/build layer, or the source layout/build assumptions need further tracing. It is not safe to infer which explanation is correct yet.
+- The standard `arch/arm64/boot/dts/qcom/` directory is very small and includes `kona-mtp.dtsi`, `sdm845.dtsi`, and older generic Qualcomm board files, but no `sm8250-xiaomi-pipa.dts` or other pipa-specific DTS path.
+- The 27 pipa-named paths are the two defconfigs and pipa-specific power/charging driver files; none is a pipa device-tree source file.
+- The inventory lists 2,760 Makefile/Kbuild/Android build-related paths across the kernel tree. That count is broad and includes architecture subtrees; it does not mean 2,760 Android product configuration files were found.
+- The inventory's DTB/DTBO-name filter finds only five broadly named paths and no device-specific DTB or DTBO artifact. Since this is a source repository path inventory, it cannot tell us what is present in the stock firmware or generated during a complete Android build.
+
+### Updated interpretation
+
+The source audit now has a concrete gap to resolve: the Android packaging rule points to a vendor Qualcomm DTB output directory, but that source directory is absent from this repository's tracked tree. Do not create a guessed pipa DTS or substitute `kona-mtp` / `sdm845-mtp` just to satisfy the packaging rule.
+
+### Next steps
+
+1. Inspect the pipa device tree, common device tree, vendor tree, and kernel build integration repositories to find where the vendor Qualcomm DTS files and kernel variables are defined.
+2. Trace `KERNEL_DEFCONFIG`, `TARGET_KERNEL_APPEND_DTB`, `dtb.img`, and DTBO references in the pipa product configuration and BoardConfig.
+3. Compare that source evidence with the stock firmware's boot/vendor_boot/dtbo artifacts before deciding which device-tree path is relevant to UEFI/Windows.
+4. Keep this as static research only; no build or flashing has been done.
