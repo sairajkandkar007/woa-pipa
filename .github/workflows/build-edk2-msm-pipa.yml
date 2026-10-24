@@ -1,0 +1,130 @@
+name: Build EDK2-MSM for Xiaomi Pad 6 (pipa)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_mode:
+        description: Firmware build mode
+        required: true
+        type: choice
+        options:
+          - RELEASE
+          - DEBUG
+        default: RELEASE
+      toolchain:
+        description: EDK2 toolchain
+        required: true
+        type: choice
+        options:
+          - CLANG38
+          - GCC5
+        default: CLANG38
+
+permissions:
+  contents: read
+
+concurrency:
+  group: edk2-msm-pipa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build pipa UEFI
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout project repository
+        uses: actions/checkout@v4
+
+      - name: Checkout EDK2-MSM source and submodules
+        uses: actions/checkout@v4
+        with:
+          repository: edk2-porting/edk2-msm
+          ref: master
+          path: edk2-msm
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential uuid-dev clang llvm \
+            iasl nasm gcc-aarch64-linux-gnu \
+            abootimg python3-pil python3-git gettext \
+            python3-setuptools python3-wheel \
+            libgcc-s1:i386 libstdc++6:i386 \
+            ca-certificates git make perl
+
+      - name: Verify pipa platform inputs
+        working-directory: edk2-msm
+        run: |
+          set -euxo pipefail
+          test -f Platform/Xiaomi/sm8250/pipa.dsc
+          test -f Platform/Xiaomi/sm8250/pipa.fdf.inc
+          test -f Platform/Xiaomi/sm8250/FdtBlob_compat/pipa.dtb
+          test -f configs/devices/pipa.conf
+          test -f configs/sm8250.conf
+          git rev-parse HEAD | tee ../edk2-msm-commit.txt
+          git submodule status --recursive | tee ../edk2-msm-submodules.txt
+          grep -E 'PLATFORM_NAME[[:space:]]*=[[:space:]]*pipa' Platform/Xiaomi/sm8250/pipa.dsc
+          grep -E 'PLATFORM_NAME="pipa"' configs/devices/pipa.conf
+
+      - name: Build pipa firmware
+        working-directory: edk2-msm
+        env:
+          BUILD_MODE: ${{ inputs.build_mode }}
+          TOOLCHAIN: ${{ inputs.toolchain }}
+        run: |
+          set -euxo pipefail
+          ./build.sh --device pipa --release "$BUILD_MODE" --toolchain "$TOOLCHAIN"
+
+      - name: Verify and inventory outputs
+        if: always()
+        run: |
+          {
+            echo "EDK2-MSM repository: https://github.com/edk2-porting/edk2-msm"
+            echo "Device: Xiaomi Pad 6 (pipa), Qualcomm SM8250"
+            echo "Build mode: ${{ inputs.build_mode }}"
+            echo "Toolchain: ${{ inputs.toolchain }}"
+            echo "EDK2-MSM commit:"
+            cat edk2-msm-commit.txt 2>/dev/null || true
+            echo
+            echo "Submodule revisions:"
+            cat edk2-msm-submodules.txt 2>/dev/null || true
+            echo
+            echo "Generated image files:"
+            find edk2-msm -maxdepth 1 -type f -name '*.img' -printf '%p (%s bytes)\n' 2>/dev/null || true
+            echo
+            echo "Generated firmware volumes:"
+            find edk2-msm/workspace/Build/pipa -type f -name '*.fd' -printf '%p (%s bytes)\n' 2>/dev/null || true
+          } | tee edk2-msm-build-info.txt
+
+      - name: Upload firmware artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-edk2-msm-${{ inputs.build_mode }}-${{ inputs.toolchain }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            edk2-msm/boot-pipa.img
+            edk2-msm/workspace/Build/pipa/**/*.fd
+            edk2-msm-commit.txt
+            edk2-msm-submodules.txt
+            edk2-msm-build-info.txt
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-edk2-msm-failure-diagnostics
+          if-no-files-found: warn
+          retention-days: 7
+          path: |
+            edk2-msm/Build/
+            edk2-msm/workspace/Build/pipa/
+            edk2-msm-commit.txt
+            edk2-msm-submodules.txt
+            edk2-msm-build-info.txt
