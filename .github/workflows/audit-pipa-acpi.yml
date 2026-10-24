@@ -41,8 +41,10 @@ jobs:
           s = p.read_text(errors="replace")
           print(f"ASL bytes: {len(s.encode())}")
           print(f"ASL lines: {len(s.splitlines())}")
-          print(f"Device declarations: {len(re.findall(r'\\bDevice\\s*\\(', s))}")
-          print(f"Method declarations: {len(re.findall(r'\\bMethod\\s*\\(', s))}")
+          device_count = len(re.findall(r'\bDevice\s*\(', s))
+          method_count = len(re.findall(r'\bMethod\s*\(', s))
+          print(f"Device declarations: {device_count}")
+          print(f"Method declarations: {method_count}")
           print("Potential sentinel constants:")
           for token in ("0xDEADBEEF", "0xBEEFDEAD", "0xAAAAAAAA", "0xBBBBBBBB",
                         "0xCCCCCCCC", "0xDDDDDDDD", "0xEEEEEEEE", "0x77777777",
@@ -83,7 +85,8 @@ jobs:
               raise SystemExit(0)
           other = dis.read_text(errors="replace")
           def names(s, kind):
-              return sorted(set(re.findall(r"\\b" + kind + r"\\s*\\(\\s*([A-Za-z0-9_]+)", s)))
+              pattern = r"\b" + kind + r"\s*\(\s*([A-Za-z0-9_]+)"
+              return sorted(set(re.findall(pattern, s)))
           for kind in ("Device", "Method", "Name", "Scope"):
               a, b = names(src, kind), names(other, kind)
               print(f"{kind}: source={len(a)} disassembled={len(b)}")
