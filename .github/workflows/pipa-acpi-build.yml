@@ -26,7 +26,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y acpica-tools
 
-      - name: Compile clean pipa DSDT scaffold
+      - name: Compile pipa DSDT bring-up source
         working-directory: acpi/pipa
         run: |
           set -euxo pipefail
@@ -39,8 +39,8 @@ jobs:
             echo
             echo "- Source: `acpi/pipa/DSDT.asl`"
             echo "- Result: IASL compile/decompile passed."
-            echo "- Scope: empty scaffold only; not a bootable ACPI implementation."
-            echo "- No hardware resources have been asserted."
+            echo "- Scope: UFS-only bring-up draft; not a bootable ACPI implementation."
+            echo "- UFS resources are provisional references and remain unverified for pipa."
             echo
             echo '## IASL version'
             iasl -v
