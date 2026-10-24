@@ -1,18 +1,21 @@
 /*
- * Xiaomi Pad 6 (pipa) — initial ACPI DSDT bring-up
+ * Xiaomi Pad 6 (pipa) — ACPI resource-audit scaffold
  *
- * This file is authored for the pipa project rather than copied from the
- * existing Mu-Qcom DSDT. It intentionally starts with the UFS host only.
+ * This is authored from scratch, but it is NOT a usable UFS ACPI device yet.
+ * The live pipa device tree reports:
+ *   ufs_mem: 0x01D84000, length 0x3000
+ *   ufs_ice: 0x01D90000, length 0x8000
+ *   GIC specifier: <0 0x109 4>
+ * See docs/acpi/PIPA_LIVE_DT_RESOURCE_AUDIT.md.
  *
- * IMPORTANT:
- * The UFS register window and GSI below match the SM8250 lmi reference
- * implementation. They are NOT yet independently verified against pipa's
- * live DT/firmware. Do not integrate into a production firmware until the
- * resource audit and AML/runtime validation pass.
+ * The previous 0x1C000 window and 0x129 interrupt were donor-derived and
+ * contradicted by the live DT. This scaffold deliberately keeps UFS hidden
+ * until the Windows ACPI resource model, GIC mapping, PHY, clocks and reset
+ * dependencies are verified. Do not integrate or flash as production firmware.
  *
  * SPDX-License-Identifier: BSD-2-Clause-Patent
  */
-DefinitionBlock ("", "DSDT", 0x02, "XIAOMI", "PIPA0001", 0x00000001)
+DefinitionBlock ("", "DSDT", 0x02, "XIAOMI", "PIPA0001", 0x00000002)
 {
     Scope (_SB)
     {
@@ -22,37 +25,13 @@ DefinitionBlock ("", "DSDT", 0x02, "XIAOMI", "PIPA0001", 0x00000001)
             Name (_UID, Zero)
             Name (_CCA, Zero)
 
+            // Keep disabled until all ACPI resources are verified.
             Method (_STA, 0, NotSerialized)
             {
-                Return (0x0F)
+                Return (Zero)
             }
 
-            Method (_CRS, 0, NotSerialized)
-            {
-                Name (RBUF, ResourceTemplate ()
-                {
-                    Memory32Fixed (ReadWrite,
-                        0x01D84000,
-                        0x0001C000
-                    )
-
-                    Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive, , , )
-                    {
-                        0x00000129
-                    }
-                })
-
-                Return (RBUF)
-            }
-
-            Device (DEV0)
-            {
-                Name (_ADR, 0x08)
-                Method (_RMV, 0, NotSerialized)
-                {
-                    Return (Zero)
-                }
-            }
+            // No _CRS is exposed while this device is disabled.
         }
     }
 }
