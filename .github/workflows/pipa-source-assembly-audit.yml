@@ -1,0 +1,100 @@
+name: Pipa UEFI Source Assembly Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      UPSTREAM_REF:
+        description: "Mu-Qcom ref to inspect"
+        required: true
+        default: "main"
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout WoA research repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Fetch upstream without recursive submodules
+        env:
+          UPSTREAM_REF: ${{ inputs.UPSTREAM_REF }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audit
+          git clone --filter=blob:none --no-checkout https://github.com/sairajkandkar007/Mu-Qcom.git upstream
+          git -C upstream fetch --depth=1 origin "$UPSTREAM_REF"
+          git -C upstream checkout --detach FETCH_HEAD
+          git -C upstream rev-parse HEAD | tee audit/upstream-commit.txt
+          git -C upstream ls-tree -r HEAD > audit/upstream-tree.txt
+          cp upstream/.gitmodules audit/upstream.gitmodules
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root=Path('upstream')
+          report=['# Pipa UEFI source assembly audit','','- Upstream commit: `'+subprocess.check_output(['git','-C','upstream','rev-parse','HEAD'],text=True).strip()+'`','- Read-only audit: no firmware build or flashing.','','## Pinned direct submodules','','| Path | Gitlink revision | URL |','|---|---|---|']
+          entries=[]; cur={}
+          for line in (root/'.gitmodules').read_text().splitlines():
+            line=line.strip()
+            if line.startswith('[submodule '):
+              if cur: entries.append(cur)
+              cur={'name':line.split(chr(34))[1]}
+            elif '=' in line and cur:
+              k,v=[x.strip() for x in line.split('=',1)]; cur[k]=v
+          if cur: entries.append(cur)
+          for e in entries:
+            p=e.get('path',''); url=e.get('url','')
+            try: sha=subprocess.check_output(['git','-C','upstream','rev-parse','HEAD:'+p],text=True,stderr=subprocess.DEVNULL).strip()
+            except subprocess.CalledProcessError: sha='NOT A GITLINK AT THIS PATH'
+            report.append(f'| `{p}` | `{sha}` | {url} |')
+          report += ['', '## Required pipa files', '', '| Path | Status | Bytes |', '|---|---|---:|']
+          required=['configs/pipa.conf','configs/pipa.sh','Platforms/Xiaomi/pipaPkg/PlatformBuild.py','Platforms/Xiaomi/pipaPkg/pipa.dsc','Platforms/Xiaomi/pipaPkg/pipa.fdf','Platforms/Xiaomi/pipaPkg/Include/ACPI.inc','Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl','ImageResources/DTBs/pipa.dtb','ImageResources/DTBs/pipa.dts','ImageResources/ramdisk','ImageResources/mkbootimg.py','BootShim/Makefile','BootShim/BootShim.S']
+          for rel in required:
+            p=root/rel
+            report.append(f'| `{rel}` | '+(f'PRESENT | {p.stat().st_size} |' if p.is_file() else 'MISSING | - |'))
+          Path('audit/pipa-source-assembly-audit.md').write_text('\n'.join(report)+'\n')
+          PY
+
+      - name: Probe pinned submodule revisions individually
+        shell: bash
+        run: |
+          set -u
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root=Path('upstream'); entries=[]; cur={}
+          for line in (root/'.gitmodules').read_text().splitlines():
+            line=line.strip()
+            if line.startswith('[submodule '):
+              if cur: entries.append(cur)
+              cur={'name':line.split(chr(34))[1]}
+            elif '=' in line and cur:
+              k,v=[x.strip() for x in line.split('=',1)]; cur[k]=v
+          if cur: entries.append(cur)
+          with open('audit/submodule-fetch-results.txt','w') as out:
+            for e in entries:
+              p=e.get('path',''); url=e.get('url','')
+              try: sha=subprocess.check_output(['git','-C','upstream','rev-parse','HEAD:'+p],text=True,stderr=subprocess.DEVNULL).strip()
+              except subprocess.CalledProcessError: out.write(f'{p}: not a gitlink at upstream commit\n'); continue
+              out.write(f'=== {p} | {url} | pinned {sha} ===\n')
+              try:
+                r=subprocess.run(['git','ls-remote',url,sha],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=40)
+                out.write(('Remote advertises requested SHA\n' if r.returncode==0 and r.stdout.strip() else f'Remote did not advertise requested SHA (exit {r.returncode})\n')+r.stdout[-1000:]+'\n')
+              except Exception as ex: out.write(f'Probe error: {ex}\n')
+          PY
+          cat audit/submodule-fetch-results.txt
+
+      - name: Upload audit artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-source-assembly-audit
+          path: audit/
+          if-no-files-found: error
+          retention-days: 14
