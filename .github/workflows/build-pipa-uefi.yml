@@ -117,6 +117,10 @@ jobs:
           export CLANG38_AARCH64_PREFIX=aarch64-linux-gnu-
           export PATH="/usr/lib/llvm-38/bin:$PATH"
           chmod +x build_uefi.sh
+          # Upstream build_uefi.sh can return status 1 after a successful build
+          # because its final optional acpi.log test is false when ACPI rebuild is unused.
+          # Make its successful completion status explicit; required outputs are checked below.
+          printf '\nexit 0\n' >> build_uefi.sh
           ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_SIZE" 2>&1 | tee ../pipa-uefi-build.log
           UEFI_FD="Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd"
           test -s "$UEFI_FD"
