@@ -111,6 +111,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          source .venv/bin/activate
           cd mu-qcom
           export CLANG38_BIN=/usr/lib/llvm-38/bin/
           export CLANG38_AARCH64_PREFIX=aarch64-linux-gnu-
