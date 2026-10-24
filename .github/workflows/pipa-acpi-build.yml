@@ -1,0 +1,59 @@
+name: Pipa ACPI From-Scratch Compile
+
+on:
+  push:
+    paths:
+      - "acpi/pipa/**"
+      - ".github/workflows/pipa-acpi-build.yml"
+  pull_request:
+    paths:
+      - "acpi/pipa/**"
+      - ".github/workflows/pipa-acpi-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Install ACPICA compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y acpica-tools
+
+      - name: Compile clean pipa DSDT scaffold
+        working-directory: acpi/pipa
+        run: |
+          set -euxo pipefail
+          iasl -tc DSDT.asl
+          test -s DSDT.aml
+          iasl -d DSDT.aml
+          grep -q 'XIAOMI' DSDT.dsl
+          {
+            echo "# Pipa ACPI compile report"
+            echo
+            echo "- Source: `acpi/pipa/DSDT.asl`"
+            echo "- Result: IASL compile/decompile passed."
+            echo "- Scope: empty scaffold only; not a bootable ACPI implementation."
+            echo "- No hardware resources have been asserted."
+            echo
+            echo '## IASL version'
+            iasl -v
+          } > compile-report.md
+
+      - name: Upload compiled scaffold and report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-acpi-from-scratch-scaffold
+          path: |
+            acpi/pipa/DSDT.asl
+            acpi/pipa/DSDT.aml
+            acpi/pipa/DSDT.dsl
+            acpi/pipa/compile-report.md
+          if-no-files-found: error
+          retention-days: 14
