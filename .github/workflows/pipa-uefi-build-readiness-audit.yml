@@ -1,0 +1,163 @@
+name: Pipa UEFI Build Readiness Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      UPSTREAM_REF:
+        description: "Mu-Qcom ref to audit"
+        required: true
+        default: "main"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Fetch Mu-Qcom source
+        env:
+          UPSTREAM_REF: ${{ inputs.UPSTREAM_REF }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --no-checkout https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git -C mu-qcom fetch --depth=1 origin "$UPSTREAM_REF"
+          git -C mu-qcom checkout --detach FETCH_HEAD
+          git -C mu-qcom rev-parse HEAD | tee mu-qcom-commit.txt
+
+      - name: Resolve submodules
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --global url.https://github.com/tianocore/edk2-subhook.git.insteadOf https://github.com/Zeex/subhook.git
+          git config --global url.https://github.com/tianocore/edk2-subhook.insteadOf https://github.com/Zeex/subhook
+          git -C mu-qcom submodule sync
+          git -C mu-qcom -c submodule.recurse=false submodule update --init --depth 1 Binaries Common/Mu Common/Mu_OEM_Sample Common/Mu_Tiano_Plus Features/DFCI Mu_Basecore Silicon/Arm/Mu_Tiano
+          set +e
+          git -C mu-qcom submodule update --init --depth 1 --recursive
+          recursive_rc=$?
+          set -e
+          printf 'recursive_submodule_exit_code=%s\n' "$recursive_rc" > submodule-resolution-status.txt
+          git -C mu-qcom submodule status --recursive >> submodule-resolution-status.txt 2>&1 || true
+
+      - name: Audit platform files, submodules, scripts, and toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, os, shutil, subprocess
+
+          root = Path("mu-qcom")
+          checks = []
+          def check(name, ok, detail, severity="BLOCKER"):
+              checks.append({"name": name, "status": "PASS" if ok else severity, "detail": detail})
+
+          required = [
+              "build_uefi.sh", "setup_env.sh", "pip-requirements.txt",
+              "configs/pipa.conf", "configs/pipa.sh",
+              "Platforms/Xiaomi/pipaPkg/PlatformBuild.py",
+              "Platforms/Xiaomi/pipaPkg/pipa.dsc",
+              "Platforms/Xiaomi/pipaPkg/pipa.fdf",
+              "Platforms/Xiaomi/pipaPkg/pipa.dec",
+              "Platforms/Xiaomi/pipaPkg/Include/ACPI.inc",
+              "Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl",
+              "Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml",
+              "ImageResources/DTBs/pipa.dtb", "ImageResources/DTBs/pipa.dts",
+              "ImageResources/ramdisk", "ImageResources/mkbootimg.py",
+              "BootShim/Makefile", "BootShim/BootShim.S"
+          ]
+          for rel in required:
+              p = root / rel
+              check("required file: " + rel, p.is_file(), f"exists={p.is_file()}, bytes={p.stat().st_size if p.is_file() else 'n/a'}")
+
+          pb_path = root / "Platforms/Xiaomi/pipaPkg/PlatformBuild.py"
+          pb = pb_path.read_text(errors="replace") if pb_path.exists() else ""
+          dsc_candidates = {
+              "pipa.dsc": (root / "Platforms/Xiaomi/pipaPkg/pipa.dsc").is_file(),
+              "pipaNoSb.dsc": (root / "Platforms/Xiaomi/pipaPkg/pipaNoSb.dsc").is_file(),
+          }
+          references_nosb = "pipaPkg/pipaNoSb.dsc" in pb
+          active_dsc = "pipaPkg/pipa.dsc" in pb
+          check("PlatformBuild DSC selection consistency",
+                dsc_candidates["pipa.dsc"] and active_dsc,
+                f"DSC files={dsc_candidates}; GetPlatformDscAndConfig references pipaNoSb.dsc={references_nosb}; SetPlatformEnv references pipa.dsc={active_dsc}",
+                "WARNING")
+
+          conf = (root / "configs/pipa.conf").read_text(errors="replace") if (root / "configs/pipa.conf").exists() else ""
+          check("RAM size input can be supplied", "MULTIPLE_RAM_SIZE" in conf and "TARGET_FD_SIZE" in conf,
+                "pipa.conf declares RAM-size selection and FD sizing" if conf else "pipa.conf missing")
+
+          sh = (root / "configs/pipa.sh").read_text(errors="replace") if (root / "configs/pipa.sh").exists() else ""
+          ramdisk = root / "ImageResources/ramdisk"
+          check("boot image script uses expected resources",
+                all(s in sh for s in ["BootShim.bin", "PIPA_UEFI.fd", "ImageResources/DTBs/pipa.dtb", "ImageResources/ramdisk"]),
+                "config script references BootShim, UEFI FD, pipa DTB, and ramdisk")
+          check("ramdisk is non-empty", ramdisk.is_file() and ramdisk.stat().st_size > 0,
+                f"bytes={ramdisk.stat().st_size if ramdisk.is_file() else 'missing'}",
+                "WARNING")
+
+          fdf = (root / "Platforms/Xiaomi/pipaPkg/pipa.fdf").read_text(errors="replace") if (root / "Platforms/Xiaomi/pipaPkg/pipa.fdf").exists() else ""
+          referenced = sorted(set(__import__("re").findall(r"(?m)^\s*(?:INF|SECTION RAW\s*=)\s*([^\s}]+)", fdf)))
+          missing_refs = []
+          for ref in referenced:
+              if ref.startswith(("$( ", "$(")):
+                  continue
+              # EDK2 package paths can be rooted at the workspace and some are in submodules.
+              if not (root / ref).exists():
+                  missing_refs.append(ref)
+          check("FDF direct file references", not missing_refs,
+                "missing references: " + (", ".join(missing_refs) if missing_refs else "none"),
+                "WARNING")
+
+          status = subprocess.run(["git", "-C", str(root), "submodule", "status", "--recursive"],
+                                  text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+          sublines = status.stdout.splitlines()
+          uninitialized = [line for line in sublines if line.startswith("-")]
+          mismatched = [line for line in sublines if line.startswith("+") or line.startswith("U")]
+          check("submodule checkout state", not uninitialized and not mismatched,
+                f"uninitialized={len(uninitialized)}, mismatched/conflicted={len(mismatched)}; see submodule-resolution-status.txt",
+                "WARNING")
+
+          for cmd in ["gcc", "aarch64-linux-gnu-gcc", "make", "python3", "git", "nasm", "iasl"]:
+              check("tool present: " + cmd, shutil.which(cmd) is not None,
+                    shutil.which(cmd) or "not installed on the audit runner (tool presence is not a source blocker)",
+                    "WARNING")
+
+          report = [
+              "# Pipa UEFI build-readiness audit", "",
+              "- Audited Mu-Qcom commit: `" + subprocess.check_output(["git","-C",str(root),"rev-parse","HEAD"], text=True).strip() + "`",
+              "- This workflow performs static readiness checks only; it does not compile, flash, or boot the device.", "",
+              "| Check | Status | Details |", "|---|---|---|"
+          ]
+          for c in checks:
+              detail = c["detail"].replace("|", "\\|").replace("\n", " ")
+              report.append(f'| {c["name"]} | {c["status"]} | {detail} |')
+          blockers = sum(c["status"] == "BLOCKER" for c in checks)
+          warnings = sum(c["status"] == "WARNING" for c in checks)
+          report += ["", f"- Blockers: **{blockers}**", f"- Warnings: **{warnings}**", ""]
+          Path("pipa-build-readiness-report.md").write_text("\n".join(report))
+          Path("pipa-build-readiness-report.json").write_text(json.dumps(checks, indent=2) + "\n")
+          print("\n".join(report))
+          PY
+
+      - name: Upload audit report and submodule state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-uefi-build-readiness-audit
+          path: |
+            pipa-build-readiness-report.md
+            pipa-build-readiness-report.json
+            submodule-resolution-status.txt
+            mu-qcom-commit.txt
+          if-no-files-found: warn
+          retention-days: 14
