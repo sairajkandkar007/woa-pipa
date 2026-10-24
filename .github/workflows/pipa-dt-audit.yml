@@ -1,0 +1,33 @@
+name: Pipa live-DT resource audit tests
+
+on:
+  push:
+    paths:
+      - "tools/acpi/**"
+      - ".github/workflows/pipa-dt-audit.yml"
+  pull_request:
+    paths:
+      - "tools/acpi/**"
+      - ".github/workflows/pipa-dt-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-live-dt-audit:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run parser regression tests
+        run: python -m unittest discover -s tools/acpi/tests -p "test_*.py" -v
+
+      - name: Check script syntax
+        run: python -m py_compile tools/acpi/audit_live_ufs_dt.py
