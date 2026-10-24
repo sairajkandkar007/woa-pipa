@@ -46,3 +46,19 @@ The public device-specific tree is useful for board identity and overlays. A ker
 ## Current safe state
 
 The project DSDT keeps `UFS0` hidden (`_STA = Zero`) and contains no `_CRS` for it. Preserve that state until the gates above are met. The IASL workflow is a syntax check only and must not be described as hardware validation.
+
+
+
+## Kernel-source trace (SD870 Android kernel)
+
+Inspected source from the public `SD870/kernel_xiaomi_sm8250` repository, branch `17.rksu-teo`:
+
+- [`drivers/scsi/ufs/ufshcd-pltfrm.c`](https://github.com/SD870/kernel_xiaomi_sm8250/blob/17.rksu-teo/drivers/scsi/ufs/ufshcd-pltfrm.c) is the platform glue driver. It obtains the first `IORESOURCE_MEM` entry and maps it with `devm_ioremap_resource()`. This supports treating the controller's first MMIO region as a required resource, but it does not establish the Windows ACPI ID.
+- The same source obtains the `core_reset` reset control by name. Its clock parsing reads device-tree properties (including `clock-names` and `freq-table-hz`) through `dev->of_node`; this Linux driver's DT setup cannot simply be translated into ACPI resources without an explicit replacement for clock/reset configuration.
+- [`drivers/phy/qualcomm/phy-qcom-ufs-qmp-v4.c`](https://github.com/SD870/kernel_xiaomi_sm8250/blob/17.rksu-teo/drivers/phy/qualcomm/phy-qcom-ufs-qmp-v4.c) matches `qcom,ufs-phy-qmp-v4` and delegates probing to `ufs_qcom_phy_generic_probe()`. The PHY has explicit init/exit and power-on/power-off operations, so merely exposing the PHY's MMIO window is not proof that it will be initialized for Windows.
+
+### Consequence for the ACPI design
+
+The Linux source confirms this is not a controller-only MMIO declaration problem. A viable Windows boot-storage path needs a compatible Windows UFS driver and a proven way to establish the controller's clock, reset, power, and PHY state. These Linux source findings are architectural evidence only; they do not supply the Windows driver contract.
+
+The source repository's current default branch is Android-oriented and differs from the tablet's original `pipa-t-oss` kernel lineage. Therefore, treat these findings as useful Qualcomm implementation clues, not final proof of the exact firmware currently running on the tablet. The next source pin should record the tablet's kernel build fingerprint/version and identify the matching source revision.
