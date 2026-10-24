@@ -6,8 +6,9 @@ Mu-Qcom DSDT as an implementation source.
 
 ## Current status
 
-- `DSDT.asl` is an empty compile scaffold, **not a bootable DSDT**.
-- No MMIO, IRQ, GPIO, clock, reset, or power values are guessed.
+- `DSDT.asl` is a first bring-up draft with a single UFS device, **not a bootable DSDT**.
+- Its UFS MMIO window (`0x01D84000`, length `0x1C000`) and interrupt (`0x129`) are borrowed from an SM8250 reference and are explicitly **unverified for pipa**. They must not be treated as hardware facts or integrated into a production image yet.
+- No other MMIO, IRQ, GPIO, clock, reset, or power values are asserted.
 - CI compiles and decompiles the scaffold with ACPICA (`iasl`) and uploads the
   result for inspection.
 - Do not package or flash this scaffold as a working UEFI/Windows image.
