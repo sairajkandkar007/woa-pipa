@@ -88,3 +88,12 @@ The inspected `AndroidKernel.mk` shows that `KERNEL_HEADER_DEFCONFIG` defaults t
 2. Inspect DTS/Kbuild rules under `arch/arm64/boot/dts/vendor/qcom/` and any included pipa-related source.
 3. Identify the Android boot/vendor artifact packaging path for DTB and DTBO.
 4. Keep this Linux source audit separate from UEFI, Windows ACPI, and Windows driver support. No kernel build, UEFI build, or flashing was performed.
+
+
+## Automated full-tree inventory workflow
+
+Added an on-demand GitHub Actions workflow at `.github/workflows/pipa-kernel-source-inventory.yml`. It requests the recursive Git tree for the `pipa-t-oss` ref, checks that GitHub did not mark the response as truncated, groups relevant paths (defconfigs, DTS/Kbuild files, build files, and DTB/DTBO names), and uploads both the raw tree JSON and a readable Markdown inventory as a 14-day artifact. It does not build or flash anything and requires no repository write permission.
+
+**To run it:** open the workflow file in GitHub, choose **Actions → Pipa Kernel Source Inventory → Run workflow**, select the `main` branch, and start the run. After completion, open the run and download the `pipa-kernel-source-inventory` artifact. This workflow has been committed but has not been dispatched from this session because the available GitHub tools do not expose a workflow-dispatch action.
+
+The inventory is the next evidence-gathering step. It will list candidate paths; it will not alone prove which product configuration is active. The follow-up must inspect the relevant product makefiles and actual DTB/DTBO packaging references.
