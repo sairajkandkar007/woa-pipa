@@ -67,3 +67,24 @@ This identifies the expected *output* directory for the Android DTB packaging pa
 2. Inspect the source and build rules under `arch/arm64/boot/dts/vendor/qcom/`, especially the relevant Makefiles and included DTS files.
 3. Identify how the pipa device's Android build selects and packages DTB/DTBO artifacts.
 4. Keep the Linux configuration/DTS investigation separate from the Windows UEFI, ACPI, and Windows-driver work.
+
+
+## Follow-up: exact defconfig comparison and build integration
+
+On 2026-10-24, both config files were fetched from the `pipa-t-oss` branch:
+
+- `arch/arm64/configs/pipa_user_defconfig` — blob `d6a82b0f59de9cece8ba7d41a1823526c26b99b6`
+- `arch/arm64/configs/vendor/pipa_user_defconfig` — blob `f682ea85a4b51270d9ade0d7a53d48cb2a7020ab`
+
+The fetched contents are byte-for-byte identical (21,020 characters each). The distinct blob IDs mean these are separate Git blobs, but their contents match in this audit.
+
+The inspected `AndroidKernel.mk` shows that `KERNEL_HEADER_DEFCONFIG` defaults to `KERNEL_DEFCONFIG` when not set separately, and the kernel make invocation uses `$(KERNEL_DEFCONFIG)` as its target. When `TARGET_KERNEL_APPEND_DTB` is not `true`, the makefile creates `dtb.img` by concatenating generated files from `$(KERNEL_OUT)/arch/$(KERNEL_ARCH)/boot/dts/vendor/qcom/*.dtb`.
+
+**Still unconfirmed:** which pipa product/device makefile assigns `KERNEL_DEFCONFIG`, which DTB/DTBO files are produced for the device, and how the product packages them. The GitHub code-search connector searches the default branch, so its empty results do not establish absence on `pipa-t-oss`.
+
+## Next investigation items
+
+1. Locate the device/product makefiles that assign `KERNEL_DEFCONFIG` and `TARGET_KERNEL_APPEND_DTB`.
+2. Inspect DTS/Kbuild rules under `arch/arm64/boot/dts/vendor/qcom/` and any included pipa-related source.
+3. Identify the Android boot/vendor artifact packaging path for DTB and DTBO.
+4. Keep this Linux source audit separate from UEFI, Windows ACPI, and Windows driver support. No kernel build, UEFI build, or flashing was performed.
