@@ -34,6 +34,7 @@ Specifications are a starting point for research; confirm implementation details
 - [docs/driver-status.md](docs/driver-status.md) — component support tracking.
 - [docs/testing-guide.md](docs/testing-guide.md) — safe, reproducible reporting.
 - [research/references.md](research/references.md) — external technical references.
+- [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) — upstream acknowledgements, license notices, and source-reuse guidance.
 - [compatibility/status.md](compatibility/status.md) — verified compatibility status.
 
 ## Community
@@ -41,6 +42,12 @@ Specifications are a starting point for research; confirm implementation details
 Telegram group: https://t.me/+6SvVXdaRAYU5ZDZl
 
 Developers with experience in UEFI, EDK II, ACPI, ARM64, Qualcomm platforms, Windows drivers, and hardware debugging are welcome. Beginners who want to learn and document research are welcome too.
+
+## Acknowledgements and licensing
+
+This project builds on research and technical references from the Windows-on-ARM and UEFI communities. In particular, we acknowledge [Project Aloha’s `mu_aloha_platforms`](https://github.com/Project-Aloha/mu_aloha_platforms) for Qualcomm Project Mu/SM8250 platform, ACPI-integration, and build-workflow reference material; its stated upstream lineage, [WOA-Project’s `mu_andromeda_platforms`](https://github.com/WOA-Project/mu_andromeda_platforms); and the [Microsoft Project Mu](https://github.com/microsoft/mu) and [EDK II](https://github.com/tianocore/edk2) projects. Device-specific research also consults the [Xiaomi kernel source](https://github.com/MiCode/Xiaomi_Kernel_OpenSource/tree/pipa-t-oss).
+
+The applicable upstream licenses and required notices must accompany any source code actually reused. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). These acknowledgements do not imply that those projects endorse this work or that their firmware supports the Pad 6. This repository currently does not declare a single project-wide license; the license for each imported component must be checked individually.
 
 ## Safety and scope
 
