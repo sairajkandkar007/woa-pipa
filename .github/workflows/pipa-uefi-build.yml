@@ -62,7 +62,8 @@ jobs:
           test -s mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
           # Never run build_uefi.sh --acpi here: the upstream APIC/FACP/GTDT .dsl
           # files are decoded table listings, not ordinary ASL source files.
-          iasl -d mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
+          mkdir -p out/acpi
+          iasl -d -p out/acpi/DSDT-decoded mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
 
       - name: Verify required SoC ACPI binaries and platform files
         run: |
