@@ -8,9 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - "8"
           - "6"
-        default: "8"
+          - "8"
+        default: "6"
       BUILD_MODE:
         description: "EDK II build mode"
         required: true
@@ -26,70 +26,121 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    timeout-minutes: 180
+    timeout-minutes: 240
     steps:
       - name: Checkout pipa project
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
 
       - name: Install Mu-Qcom build dependencies
+        shell: bash
         run: |
           set -euxo pipefail
           sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get install -y --no-install-recommends \
             git mono-devel nuget uuid-dev build-essential iasl nasm \
-            gcc-aarch64-linux-gnu python3 python3-pip python3-venv \
-            python3-git gettext locales gnupg ca-certificates clang llvm curl
+            gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu \
+            python3 python3-dev python3-pip python3-venv python3-git \
+            python3-setuptools gettext locales gnupg ca-certificates \
+            clang-14 llvm-14 lld curl zip unzip gzip
+          sudo ln -sfn /usr/lib/llvm-14 /usr/lib/llvm-38
+          clang --version
+          iasl -v
+          aarch64-linux-gnu-gcc --version
 
-      - name: Fetch Mu-Qcom platform source
+      - name: Fetch Mu-Qcom platform source and submodules
+        shell: bash
         run: |
           set -euxo pipefail
-          git clone https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git clone --no-checkout https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git -C mu-qcom fetch --depth=1 origin main
+          git -C mu-qcom checkout --detach FETCH_HEAD
+          git config --global url.https://github.com/tianocore/edk2-subhook.git.insteadOf https://github.com/Zeex/subhook.git
+          git config --global url.https://github.com/tianocore/edk2-subhook.insteadOf https://github.com/Zeex/subhook
+          git -C mu-qcom submodule sync
+          git -C mu-qcom submodule update --init --depth 1 Binaries Common/Mu Common/Mu_OEM_Sample Common/Mu_Tiano_Plus Features/DFCI Mu_Basecore Silicon/Arm/Mu_Tiano
+          git -C mu-qcom submodule update --init --depth 1 --recursive
+          git -C mu-qcom submodule status --recursive | tee submodule-status.txt
           git -C mu-qcom rev-parse HEAD | tee mu-qcom-commit.txt
+
+      - name: Integrate and compile project pipa DSDT
+        shell: bash
+        run: |
+          set -euxo pipefail
+          target="mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables"
+          include="mu-qcom/Platforms/Xiaomi/pipaPkg/Include/ACPI.inc"
+          test -s "$include"
+          grep -Eq 'SECTION RAW = pipaPkg/AcpiTables/DSDT\.aml' "$include"
+          for table in APIC FACP GTDT; do
+            test -s "mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/$table.aml"
+          done
+          mkdir -p "$target"
+          cp acpi/pipa/DSDT.asl "$target/DSDT.asl"
+          iasl -tc -p "$target/DSDT" "$target/DSDT.asl"
+          test -s "$target/DSDT.aml"
+          iasl -d -p out/acpi/DSDT-decoded "$target/DSDT.aml"
+          test -s out/acpi/DSDT-decoded.dsl
+          grep -q 'Return (0x0F)' "$target/DSDT.asl"
+          sha256sum "$target/DSDT.asl" "$target/DSDT.aml" | tee pipa-acpi-sha256.txt
+
+      - name: Verify pipa platform files and DSC selection
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("mu-qcom/Platforms/Xiaomi/pipaPkg/PlatformBuild.py")
+          s = p.read_text()
+          if 'return ("pipaPkg/pipaNoSb.dsc", {})' in s:
+              p.write_text(s.replace('return ("pipaPkg/pipaNoSb.dsc", {})',
+                                     'return ("pipaPkg/pipa.dsc", {})', 1))
+              print("Patched missing pipaNoSb.dsc reference.")
+          elif 'return ("pipaPkg/pipa.dsc", {})' in s:
+              print("PlatformBuild.py selects the tracked pipa.dsc.")
+          else:
+              raise SystemExit("Unexpected DSC selection; refusing to patch blindly.")
+          PY
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.dsc
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.fdf
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/Include/ACPI.inc
+          test -s mu-qcom/ImageResources/DTBs/pipa.dtb
+          test -s mu-qcom/ImageResources/ramdisk
 
       - name: Install Python build requirements
         working-directory: mu-qcom
+        shell: bash
         run: |
           set -euxo pipefail
           python3 -m venv .venv
           source .venv/bin/activate
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip wheel "setuptools<81"
           python -m pip install -r pip-requirements.txt
-
-      - name: Compile and install the audited pipa DSDT
-        run: |
-          set -euxo pipefail
-          iasl -tc -p mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT acpi/pipa/DSDT.asl
-          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
-          # Never run build_uefi.sh --acpi here: the upstream APIC/FACP/GTDT .dsl
-          # files are decoded table listings, not ordinary ASL source files.
-          mkdir -p out/acpi
-          iasl -d -p out/acpi/DSDT-decoded mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
-
-      - name: Verify required SoC ACPI binaries and platform files
-        run: |
-          set -euxo pipefail
-          for table in APIC FACP GTDT; do
-            test -s "mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/$table.aml"
-          done
-          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/Include/ACPI.inc
-          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.dsc
-          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.fdf
-          test ! -e mu-qcom/Platforms/Xiaomi/pipaPkg/pipaNoSb.dsc
-          grep -q 'return ("pipaPkg/pipa.dsc", {})' mu-qcom/Platforms/Xiaomi/pipaPkg/PlatformBuild.py
 
       - name: Build pipa UEFI and boot image
         working-directory: mu-qcom
         env:
           RAM_GB: ${{ inputs.RAM_GB }}
           BUILD_MODE: ${{ inputs.BUILD_MODE }}
-          CLANG38_BIN: /usr/bin/
+          CLANG38_BIN: /usr/lib/llvm-38/bin/
           CLANG38_AARCH64_PREFIX: aarch64-linux-gnu-
+        shell: bash
         run: |
           set -euxo pipefail
           source .venv/bin/activate
-          ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_GB"
+          export PATH="/usr/lib/llvm-38/bin:$PATH"
+          chmod +x build_uefi.sh
+          # Do not use --acpi: the upstream APIC/FACP/GTDT .dsl files are
+          # decoded table listings. The pipa DSDT was compiled explicitly above.
+          ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_GB" 2>&1 | tee ../pipa-uefi-build.log
+          UEFI_FD="Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd"
+          test -s "$UEFI_FD"
+          test -s "BootShim/BootShim.bin"
+          test -s "ImageResources/DTBs/pipa.dtb"
+          test -s "Mu-pipa.img"
 
-      - name: Upload UEFI outputs and build logs
+      - name: Upload UEFI outputs and diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -97,7 +148,12 @@ jobs:
           path: |
             mu-qcom/Build/pipaPkg/
             mu-qcom/Mu-pipa.img
-            mu-qcom/Build/BUILDLOG_pipaPkg.txt
+            mu-qcom/BootShim/BootShim.bin
+            mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.asl
+            mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
             mu-qcom-commit.txt
+            submodule-status.txt
+            pipa-acpi-sha256.txt
+            pipa-uefi-build.log
           if-no-files-found: warn
           retention-days: 14
