@@ -1,74 +1,61 @@
-# ACPI upstream comparison and repository layout plan
+# ACPI upstream comparison and build integration status
 
-Audit basis: public default-branch Git trees and selected text files fetched for this review. This is a source-layout and compatibility audit, not proof that any table works on hardware.
+Audit date: 2026-10-25. This is a source/layout audit, not proof that firmware boots or that Windows drivers work.
 
-## Findings
+## Device-specific source
 
-### This repository: `sairajkandkar007/woa-pipa`
+- Authored pipa DSDT scaffold: `acpi/pipa/DSDT.asl`.
+- The scaffold deliberately hides UFS (`_STA = Zero`) and omits `_CRS`. It is syntax-testable, but it is not a finished device DSDT.
+- The legacy snapshot under `third_party/mu-qcom-pipa-snapshot/` is reference material, not the canonical source tree for builds.
+- The snapshot's old pipa DSDT contains sentinel values and a UFS resource model that must not be used as a production replacement.
 
-- The current pipa-specific source scaffold is `acpi/pipa/DSDT.asl`. Its header documents that UFS is intentionally disabled pending resource verification.
-- A legacy/reference Mu-Qcom snapshot is retained under `third_party/mu-qcom-pipa-snapshot/`.
-- Its `Platforms/Xiaomi/pipaPkg/Include/ACPI.inc` includes:
-  - `SM8250Pkg/AcpiTables/APIC.aml`
-  - `pipaPkg/AcpiTables/DSDT.aml`
-  - `SM8250Pkg/AcpiTables/FACP.aml`
-  - `SM8250Pkg/AcpiTables/GTDT.aml`
-- In the current repository tree, only the pipa `DSDT.dsl` reference file and `ACPI.inc` are present at those relevant paths. The referenced SM8250 table source/binaries and compiled pipa `DSDT.aml` are absent from the checked-in snapshot. Therefore, the existing include file points at files that are not present in this repository snapshot.
+## SoC-level tables and upstream source
 
-### Project Aloha: `Project-Aloha/mu_aloha_platforms`
+The Mu-Qcom fork, [`sairajkandkar007/Mu-Qcom`](https://github.com/sairajkandkar007/Mu-Qcom), contains these binary ACPI tables in its SM8250 package:
 
-- Contains ACPI table files for other platforms/devices, including `Platforms/IstariPkg/Device/qcom-mtp8996/ACPI/DSDT.dsl` and AML tables under IstariPkg.
-- MTP8996 is not the pipa/Snapdragon 870 platform. Those device-specific tables must **not** be copied into the pipa build as if they matched.
-- Aloha can be used as a structural/build-integration reference only after checking its exact SoC package, source licensing, and implementation assumptions.
+- `Silicon/Qualcomm/SM8250Pkg/AcpiTables/APIC.aml`
+- `Silicon/Qualcomm/SM8250Pkg/AcpiTables/FACP.aml`
+- `Silicon/Qualcomm/SM8250Pkg/AcpiTables/GTDT.aml`
 
-### Andromeda: `WOA-Project/mu_andromeda_platforms`
+It also contains the source file `Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.dsl` and the package include `Platforms/Xiaomi/pipaPkg/Include/ACPI.inc`.
 
-- The inspected tree includes ACPI material for Surface Duo devices and SoC-specific directories for SM8150 and SM8350.
-- No pipa/SM8250-specific set matching the referenced pipa include paths was found in the inspected tree.
-- Similar filenames or a shared Qualcomm/Project Mu lineage do not establish hardware compatibility. Do not import the Surface Duo or SM8150/SM8350 tables into pipa.
+**Important:** the upstream files named `APIC.dsl`, `FACP.dsl`, and `GTDT.dsl` are ACPICA decoded table listings (offsets and field values), not ordinary ASL programs. Do not feed those listings to `iasl -tc` as though they were source. The checked-in `.aml` binaries are the usable reference artifacts; the workflow fetches them from the upstream repository and attempts to decompile them for structural validation.
 
-### Mu-Silicium: `Project-Silicium/Mu-Silicium`
+The upstream pipa `DSDT.dsl` has many sentinel-like values (for example `0xDEADBEEF`, `0xABCABCAB`, and `0xFFFFFFFF`) and exposes UFS with a donor-derived resource window. It is not accepted as the current pipa DSDT. The local authored scaffold is compiled instead, with UFS intentionally disabled.
 
-- Its tree includes the pipa platform package and device-tree resources, but the older Mu-Qcom table paths do not appear as direct matching paths in the inspected tree.
-- Use its pipa package/device-tree organization as a layout reference; use the pipa DTS and live device-tree audits as evidence for pipa hardware resources.
-- Do not assume the lack of a matching path means the implementation is missing entirely; paths and generation methods may differ.
+## Aloha, Andromeda and Mu-Silicium comparison
 
-### Mu-Qcom fork: `sairajkandkar007/Mu-Qcom`
+- [Project Aloha](https://github.com/Project-Aloha/mu_aloha_platforms) contains ACPI implementations for several other Qualcomm platforms. Its MTP8996 DSDT is not a pipa table and must not be copied into the pipa build. Its SM8250 integration code can inform build structure, subject to license and implementation review.
+- [WOA-Project/Andromeda](https://github.com/WOA-Project/mu_andromeda_platforms) includes Surface Duo ACPI examples and other SoC/platform directories, but no matching pipa device table set was identified. Do not substitute Surface Duo or SM8150/SM8350 device-specific tables.
+- [Project-Silicium/Mu-Silicium](https://github.com/Project-Silicium/Mu-Silicium) has pipa platform resources and a different organization from the older Mu-Qcom package. Use it as a structural reference, not evidence that differently named tables are interchangeable.
 
-- The fork's files named `APIC.dsl`, `FACP.dsl`, and `GTDT.dsl` returned ACPI disassembly-style listings (offsets, decoded table headers and fields), not conventional ASL source suitable to feed directly to `iasl`.
-- These files should not be blindly copied into a source directory and treated as compilable DSL.
-- The fork's current table values are useful for comparison, but must be checked against the pipa hardware and table-generation path before use.
+## Current validation workflow
 
-## Restructuring decision
+`.github/workflows/pipa-acpi-build.yml` now:
 
-Keep the legacy snapshot in `third_party/` so existing scripts and provenance are not broken. Keep authored pipa ASL in `acpi/pipa/`, and use `docs/acpi/` for evidence and audit records. The new `acpi/README.md` defines this separation.
+1. Installs ACPICA tools.
+2. Fetches the APIC/FACP/GTDT binary tables from the Mu-Qcom SM8250 package.
+3. Compiles the authored pipa DSDT scaffold.
+4. Attempts to decompile all four AML tables and checks for the expected table identity.
+5. Publishes the tables, source/decompilation output, upstream commit ID and a validation report as an artifact.
 
-No unrelated Aloha or Andromeda device tables have been imported. No AML binaries have been fabricated. The missing table references are recorded as build blockers until valid, source-backed SM8250 tables and a compiled pipa DSDT are supplied or generated.
+This validates table availability and compiler/decompiler processing only. It does **not** constitute a complete EDK II/Project Mu UEFI build, validate every table field against pipa hardware, or demonstrate bootability.
 
-## Next engineering steps
+## Remaining blockers before calling UEFI build-ready
 
-1. Decide the actual upstream package layout used by the build and correct the missing-file references only after inspecting the DSC/FDF/build scripts.
-2. Obtain or author genuine compilable ASL for APIC, FACP, GTDT, and the pipa DSDT; preserve attribution and license requirements.
-3. Compile authored sources with `iasl` in CI and fail the workflow on compilation errors.
-4. Validate the generated table signatures, lengths, checksums, CPU/GIC topology, timer interrupts, and pipa resource map.
-5. Do not enable UFS in DSDT until the full controller/PHY/clock/reset/power model and Windows driver expectations are verified.
+1. Run the ACPI workflow and fix any actual ACPICA or artifact-validation failures.
+2. Resolve the upstream `PlatformBuild.py` DSC selection inconsistency: `GetPlatformDscAndConfig()` references `pipaPkg/pipaNoSb.dsc`, while the repository tree contains `pipa.dsc` and no `pipaNoSb.dsc`.
+3. Build the full Mu-Qcom firmware from a pinned commit with its required submodules and toolchain; confirm the FDF resolves every referenced input.
+4. Verify APIC CPU MPIDRs, GIC distributor/redistributor addresses, performance interrupts, GTDT timer interrupts and FADT reset settings against the actual pipa/SM8250 platform.
+5. Complete the UFS controller/ICE/PHY/clock/reset and Windows driver resource model before enabling UFS in DSDT.
 
-## Reference repositories
+Do not flash an experimental image based only on a successful ASL compile or table decompilation.
 
-- [woa-pipa](https://github.com/sairajkandkar007/woa-pipa)
+## References
+
+- [Project-Silicium ACPI guide](https://github.com/Project-Silicium/Guides/blob/main/Silicium/Porting/Snapdragon/ACPI/README.md) — explicitly marked outdated.
+- [Project-Silicium device-porting guide](https://github.com/Project-Silicium/Guides/blob/main/Silicium/Porting/Snapdragon/Device/README.md) — explicitly marked outdated.
 - [Mu-Qcom fork](https://github.com/sairajkandkar007/Mu-Qcom)
 - [Mu-Silicium](https://github.com/Project-Silicium/Mu-Silicium)
 - [Project Aloha](https://github.com/Project-Aloha/mu_aloha_platforms)
 - [Andromeda](https://github.com/WOA-Project/mu_andromeda_platforms)
-
-
-## Reference files copied into this branch
-
-The following upstream files have now been copied verbatim under `third_party/upstream-acpi-reference/` for inspection:
-
-- Mu-Qcom: `SM8250Pkg/AcpiTables/APIC.dsl`, `FACP.dsl`, `GTDT.dsl`, and pipa's `Include/ACPI.inc`.
-- Project-Aloha: the SM8250 `AcpiPlatformUpdateLib.c` and `.inf`.
-- WOA-Project/Andromeda: the Surface Duo 1 `FACP.aslc` example.
-- License files for Aloha and Andromeda are retained beside their copied references; Mu-Qcom's upstream license remains in the existing snapshot and is linked from its reference README.
-
-Important distinction: the Mu-Qcom `APIC.dsl`, `FACP.dsl`, and `GTDT.dsl` files are ACPICA disassembly listings, not conventional compilable ASL. The Aloha MTP8996 DSDT was not copied because its oversized contents could not be retrieved through the available GitHub file interface. The Andromeda FACP and Aloha SM8250 library are comparative references, not validated pipa replacements. No foreign-device table has been wired into the pipa build.
