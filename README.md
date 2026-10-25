@@ -35,6 +35,8 @@ Specifications are a starting point for research; confirm implementation details
 - [docs/testing-guide.md](docs/testing-guide.md) — safe, reproducible reporting.
 - [docs/acpi/UPSTREAM_COMPARISON.md](docs/acpi/UPSTREAM_COMPARISON.md) — ACPI compatibility audit of Mu-Qcom, Mu-Silicium, Aloha, and Andromeda.
 - [acpi/README.md](acpi/README.md) — canonical ACPI source layout and validation rules.
+- [pipa ACPI validation workflow](.github/workflows/pipa-acpi-build.yml) — compiles the authored DSDT and validates the SM8250 table set.
+- [pipa UEFI build workflow](.github/workflows/pipa-uefi-build.yml) — on-demand experimental full UEFI/boot-image build.
 - [research/references.md](research/references.md) — external technical references.
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) — upstream acknowledgements, license notices, and source-reuse guidance.
 - [compatibility/status.md](compatibility/status.md) — verified compatibility status.
