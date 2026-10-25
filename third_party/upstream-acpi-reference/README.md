@@ -5,7 +5,7 @@ This directory contains verbatim reference files copied from public upstream rep
 ## Provenance
 
 - [Mu-Qcom](https://github.com/sairajkandkar007/Mu-Qcom), `main`: SM8250 table disassembly listings and the pipa ACPI include manifest. The files named `APIC.dsl`, `FACP.dsl`, and `GTDT.dsl` are ACPICA disassembly dumps, not compilable ASL source.
-- [Project-Aloha/mu_aloha_platforms](https://github.com/Project-Aloha/mu_aloha_platforms), `main`: SM8250 `AcpiPlatformUpdateLib` source and a separate MTP8996 device DSDT. The library is relevant to compare against the SM8250 firmware architecture; the MTP8996 DSDT is retained strictly as a different-device example.
+- [Project-Aloha/mu_aloha_platforms](https://github.com/Project-Aloha/mu_aloha_platforms), `main`: SM8250 `AcpiPlatformUpdateLib` source. Aloha also contains a separate MTP8996 device DSDT, but it was not copied because the connector could not retrieve its oversized contents; it remains a different-device example, not a pipa table.
 - [WOA-Project/mu_andromeda_platforms](https://github.com/WOA-Project/mu_andromeda_platforms), `main`: Surface Duo 1 FACP ASLC example. It is not a pipa table.
 
 ## Integration rules
