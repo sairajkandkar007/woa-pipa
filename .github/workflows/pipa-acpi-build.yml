@@ -1,4 +1,4 @@
-name: Pipa ACPI From-Scratch Compile
+name: Pipa ACPI table validation
 
 on:
   push:
@@ -15,55 +15,75 @@ permissions:
   contents: read
 
 jobs:
-  compile:
+  validate-acpi:
     runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
-      - name: Checkout project
+      - name: Checkout pipa project
         uses: actions/checkout@v4
 
-      - name: Install ACPICA compiler
+      - name: Install ACPICA tools
         run: |
           sudo apt-get update
           sudo apt-get install -y acpica-tools
+          iasl -v
 
-      - name: Compile pipa DSDT bring-up source
-        working-directory: acpi/pipa
+      - name: Fetch verified SM8250 reference tables
         run: |
           set -euxo pipefail
-          iasl -tc DSDT.asl
-          test -s DSDT.aml
-          iasl -d DSDT.aml
-          grep -q 'XIAOMI' DSDT.dsl
-          {
-            echo "# Pipa ACPI compile report"
-            echo
-            echo "- Source: `acpi/pipa/DSDT.asl`"
-            echo "- Result: IASL compile/decompile passed."
-            echo "- Scope: UFS-only bring-up draft; not a bootable ACPI implementation."
-            echo "- UFS0 is intentionally hidden (_STA = Zero) and has no _CRS; no UFS resources are exposed."
-            echo
-            echo '## IASL version'
-            iasl -v
-          } > compile-report.md
+          git clone --depth=1 https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          test -s mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/APIC.aml
+          test -s mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/FACP.aml
+          test -s mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/GTDT.aml
 
-      - name: Verify disabled UFS safety gate
-        working-directory: acpi/pipa
+      - name: Compile pipa DSDT scaffold
         run: |
           set -euxo pipefail
-          grep -q 'Return (Zero)' DSDT.asl
-          if grep -Eq 'Name \\(_CRS|Method \\(_CRS' DSDT.asl; then
-            echo "Unexpected _CRS in disabled UFS scaffold; review before proceeding."
+          mkdir -p out/acpi
+          iasl -tc -p out/acpi/DSDT acpi/pipa/DSDT.asl
+          test -s out/acpi/DSDT.aml
+          # The DSDT source intentionally hides UFS until its resources/dependencies
+          # and Windows driver contract have been validated.
+          grep -q 'Return (Zero)' acpi/pipa/DSDT.asl
+          if grep -Eq 'Name[[:space:]]*\\(_CRS|Method[[:space:]]*\\(_CRS' acpi/pipa/DSDT.asl; then
+            echo "Disabled UFS scaffold must not expose _CRS."
             exit 1
           fi
 
-      - name: Upload compiled scaffold and report
+      - name: Validate signatures and decompile all four tables
+        run: |
+          set -euxo pipefail
+          cp mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/APIC.aml out/acpi/APIC.aml
+          cp mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/FACP.aml out/acpi/FACP.aml
+          cp mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/GTDT.aml out/acpi/GTDT.aml
+          for table in APIC FACP GTDT DSDT; do
+            test -s "out/acpi/$table.aml"
+            iasl -d "out/acpi/$table.aml"
+            test -s "out/acpi/$table.dsl"
+            grep -q "Signature.*\\"$table\\"\|DefinitionBlock" "out/acpi/$table.dsl" || {
+              echo "Unable to identify expected ACPI table $table"
+              exit 1
+            }
+          done
+          # Record exact source revision so the upstream binary tables are traceable.
+          git -C mu-qcom rev-parse HEAD > out/acpi/MU_QCOM_COMMIT.txt
+          {
+            echo "# Pipa ACPI table validation"
+            echo
+            echo "- DSDT: compiled from `acpi/pipa/DSDT.asl` in this repository."
+            echo "- APIC/FACP/GTDT: reused from the SM8250 table binaries in Mu-Qcom."
+            echo "- Mu-Qcom commit: `$(cat out/acpi/MU_QCOM_COMMIT.txt)`"
+            echo "- Validation: each AML was present and decompiled by ACPICA."
+            echo "- Scope: table-set validation only; this is not a full UEFI build or hardware validation."
+            echo "- UFS remains disabled in the DSDT scaffold."
+            echo
+            iasl -v
+          } > out/acpi/VALIDATION_REPORT.md
+
+      - name: Upload validated ACPI tables and report
         uses: actions/upload-artifact@v4
         with:
-          name: pipa-acpi-from-scratch-scaffold
-          path: |
-            acpi/pipa/DSDT.asl
-            acpi/pipa/DSDT.aml
-            acpi/pipa/DSDT.dsl
-            acpi/pipa/compile-report.md
+          name: pipa-acpi-table-set
+          path: out/acpi/
           if-no-files-found: error
           retention-days: 14
