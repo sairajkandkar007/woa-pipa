@@ -80,6 +80,7 @@ jobs:
           cp acpi/pipa/DSDT.asl "$target/DSDT.asl"
           iasl -tc -p "$target/DSDT" "$target/DSDT.asl"
           test -s "$target/DSDT.aml"
+          mkdir -p out/acpi
           iasl -d -p out/acpi/DSDT-decoded "$target/DSDT.aml"
           test -s out/acpi/DSDT-decoded.dsl
           grep -q 'Return (0x0F)' "$target/DSDT.asl"
