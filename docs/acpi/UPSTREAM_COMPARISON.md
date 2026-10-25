@@ -43,9 +43,9 @@ This validates table availability and compiler/decompiler processing only. It do
 
 ## Remaining blockers before calling UEFI build-ready
 
-1. Run the ACPI workflow and fix any actual ACPICA or artifact-validation failures.
-2. Resolve the upstream `PlatformBuild.py` DSC selection inconsistency: `GetPlatformDscAndConfig()` references `pipaPkg/pipaNoSb.dsc`, while the repository tree contains `pipa.dsc` and no `pipaNoSb.dsc`.
-3. Build the full Mu-Qcom firmware from a pinned commit with its required submodules and toolchain; confirm the FDF resolves every referenced input.
+1. Run the ACPI validation workflow and fix any actual ACPICA or artifact-validation failures.
+2. The DSC selection inconsistency was fixed on the Mu-Qcom fork's `main`: `GetPlatformDscAndConfig()` now returns the existing `pipaPkg/pipa.dsc` instead of the absent `pipaNoSb.dsc`.
+3. Run the on-demand `pipa-uefi-build.yml` workflow and fix any actual submodule, toolchain, FDF, or build failures. The workflow overlays the authored DSDT scaffold and builds from the Mu-Qcom fork; it is not yet a verified successful build.
 4. Verify APIC CPU MPIDRs, GIC distributor/redistributor addresses, performance interrupts, GTDT timer interrupts and FADT reset settings against the actual pipa/SM8250 platform.
 5. Complete the UFS controller/ICE/PHY/clock/reset and Windows driver resource model before enabling UFS in DSDT.
 
