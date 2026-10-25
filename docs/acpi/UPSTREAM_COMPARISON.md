@@ -60,3 +60,15 @@ No unrelated Aloha or Andromeda device tables have been imported. No AML binarie
 - [Mu-Silicium](https://github.com/Project-Silicium/Mu-Silicium)
 - [Project Aloha](https://github.com/Project-Aloha/mu_aloha_platforms)
 - [Andromeda](https://github.com/WOA-Project/mu_andromeda_platforms)
+
+
+## Reference files copied into this branch
+
+The following upstream files have now been copied verbatim under `third_party/upstream-acpi-reference/` for inspection:
+
+- Mu-Qcom: `SM8250Pkg/AcpiTables/APIC.dsl`, `FACP.dsl`, `GTDT.dsl`, and pipa's `Include/ACPI.inc`.
+- Project-Aloha: the SM8250 `AcpiPlatformUpdateLib.c` and `.inf`.
+- WOA-Project/Andromeda: the Surface Duo 1 `FACP.aslc` example.
+- License files for Aloha and Andromeda are retained beside their copied references; Mu-Qcom's upstream license remains in the existing snapshot and is linked from its reference README.
+
+Important distinction: the Mu-Qcom `APIC.dsl`, `FACP.dsl`, and `GTDT.dsl` files are ACPICA disassembly listings, not conventional compilable ASL. The Aloha MTP8996 DSDT was not copied because its oversized contents could not be retrieved through the available GitHub file interface. The Andromeda FACP and Aloha SM8250 library are comparative references, not validated pipa replacements. No foreign-device table has been wired into the pipa build.
