@@ -6,7 +6,7 @@ Input: user-provided live device-tree export, `/proc/interrupts`, `/proc/iomem`,
 
 ## Result
 
-The live tree verifies the UFS controller's first MMIO region and exposes additional resources that the initial DSDT omitted. The DSDT remains disabled until the complete ACPI representation and Windows driver expectations are established.
+The DSDT now exposes the UFS host as an **experimental ACPI device** using the two UFS host resources recorded in the live tree. This is a source/build integration step only, not proof that Windows can initialize or boot from the controller. The GSI convention and the hardware dependency path remain open validation items.
 
 ### UFS host: `/soc/ufshc@1d84000`
 
@@ -21,9 +21,9 @@ Observed in the live tree:
 - `clock-names`: `core_clk bus_aggr_clk iface_clk core_clk_unipro core_clk_ice ref_clk tx_lane0_sync_clk rx_lane0_sync_clk rx_lane1_sync_clk`
 - `reset-names`: `core_reset`
 
-The first MMIO region is 12 KiB, not the draft's 0x1C000 bytes. The second named resource is the UFS ICE window at 0x01D90000, length 0x8000.
+The first MMIO region is 12 KiB. The second named resource is the UFS ICE window at 0x01D90000, length 0x8000.
 
-The interrupt specifier follows the GIC device-tree format: type 0 means SPI, interrupt ID 0x109 is 265 decimal, and flags 0x4 mean level-triggered. The captured Linux interrupt listing reports IRQ 297, consistent with the conventional SPI-to-Linux-IRQ offset of 32. The old ASL value `0x129` is 297 decimal, so it is consistent with that translation and must **not** be described as disproven. However, the correct ACPI interrupt resource still needs validation against the target platform's GIC/ACPI setup and polarity semantics.
+The interrupt specifier follows the GIC device-tree format: type 0 means SPI, interrupt ID 0x109 is 265 decimal, and flags 0x4 mean level-triggered. The captured Linux interrupt listing reports IRQ 297, consistent with the conventional SPI-to-Linux-IRQ offset of 32. The ASL uses `0x129` as the candidate ACPI GSI. Its correctness, trigger, and polarity still need validation against the target platform's GIC/ACPI setup.
 
 ### UFS PHY: `/soc/ufsphy_mem@1d87000`
 
@@ -35,37 +35,33 @@ Observed:
 - `reg` cells: `0x01D87000 0xE00`, `0x01D90000 0x8000`
 - `clock-names`: `ref_clk_src ref_aux_clk`
 
-The UFS host references this PHY via a DT phandle. PHY initialization, clock dependencies, and shared ICE-window ownership need driver/binding review before creating an ACPI device for it.
+The host references this PHY via a DT phandle. PHY initialization, clock dependencies, and shared ICE-window ownership need driver/binding review before creating a Windows-visible PHY device.
 
 ### Separate card UFS controller
 
-`/soc/ufshc_card@1da4000` is marked `disabled` in the live tree. Do not expose it as enabled based on this snapshot alone.
+`/soc/ufshc_card@1da4000` is marked `disabled` in the live tree. It remains absent from the DSDT.
 
 ### Other ICE node
 
 `/soc/ufscardice@1db0000` reports `compatible = qcom,ice`, register range `0x01DB0000` length `0x8000`, and clocks `ufs_core_clk bus_clk iface_clk ice_core_clk`. Do not conflate this separate node with the host's named `ufs_ice` region without confirming how the vendor driver uses both.
 
-## Required changes to the scaffold
+## What the experimental DSDT currently exposes
 
-The original DSDT used:
+- UFS host HID `QCOM24A5`, UID 0.
+- MMIO region `0x01D84000`, length `0x3000`.
+- ICE region `0x01D90000`, length `0x8000`.
+- Candidate level/high interrupt GSI `0x129` (297 decimal).
 
-- UFS MMIO base `0x01D84000`, length `0x1C000` — contradicted by the live tree; the first resource is length `0x3000`.
-- Interrupt value `0x129` — consistent with Linux IRQ 297 if the SPI-to-IRQ offset is 32; not independently proven as the final ACPI GSI resource.
-- No explicit second ICE resource, PHY, clocks, or reset dependency.
+It does **not** yet model the PHY, clock providers, reset controller, or power sequencing. It also does not prove that `QCOM24A5` is the correct ACPI ID for a compatible Windows UFS driver. The device is visible in ACPI, but that alone does not make the storage controller operational.
 
-The DSDT is currently intentionally disabled. Do not integrate or flash it as production firmware. The register resources must be modeled according to the ACPI resource model expected by the Windows UFS driver, and dependencies must be addressed rather than silently omitted.
+## Remaining validation
 
-## Next source audit
-
-1. Trace pipa's exact UFS DT node through its binding and the exact kernel driver revision.
-2. Resolve clock-controller phandles and reset-controller phandle for all named UFS clocks and `core_reset`.
-3. Verify the Windows UFS driver resource contract, including controller/ICE resources and PHY initialization ownership.
-4. Confirm GIC-to-ACPI interrupt mapping and trigger/polarity.
-5. Only then implement and enable the UFS device. Keep other devices absent until independently audited.
-
-## Validation boundary
-
-This report records values present in the user's live device tree. It is a resource inventory, not a claim that Windows has a compatible driver or that an ACPI table will boot. IASL success validates syntax/AML generation only; it does not validate hardware behavior.
+1. Identify the Windows UFS driver and verify its ACPI ID and resource contract.
+2. Resolve all named host/PHY clock provider IDs, rates, sequencing, and power states.
+3. Resolve the `core_reset` provider and required sequencing.
+4. Confirm whether PHY initialization is performed by firmware or must be exposed/controlled by a Windows driver.
+5. Validate the GSI, trigger, and polarity against the target firmware's APIC/GIC tables.
+6. Compile/decompile the AML and inspect the final table set. IASL validation is syntax validation only; hardware testing is a separate step.
 
 ## References
 
