@@ -53,6 +53,7 @@ jobs:
           sudo ln -sfn /usr/lib/llvm-14 /usr/lib/llvm-38
           clang --version
           aarch64-linux-gnu-gcc --version
+          iasl -v
           python3 --version
 
       - name: Fetch Mu-Qcom source and submodules
@@ -71,6 +72,23 @@ jobs:
           git -C mu-qcom submodule update --init --depth 1 --recursive
           git -C mu-qcom submodule status --recursive | tee submodule-status.txt
           git -C mu-qcom rev-parse HEAD | tee mu-qcom-commit.txt
+
+      - name: Integrate and compile project pipa DSDT
+        shell: bash
+        run: |
+          set -euxo pipefail
+          target="mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables"
+          test -f "$target/../Include/ACPI.inc"
+          grep -Eq 'SECTION RAW = pipaPkg/AcpiTables/DSDT\.aml' "$target/../Include/ACPI.inc"
+          mkdir -p "$target"
+          cp acpi/pipa/DSDT.asl "$target/DSDT.asl"
+          iasl -tc -p "$target/DSDT" "$target/DSDT.asl"
+          test -s "$target/DSDT.aml"
+          iasl -d "$target/DSDT.aml"
+          test -s "$target/DSDT.dsl"
+          # Preserve the AML generated from this repository's authored source.
+          rm -f "$target/DSDT.dsl"
+          sha256sum "$target/DSDT.asl" "$target/DSDT.aml" | tee pipa-acpi-sha256.txt
 
       - name: Apply pipa platform compatibility fix
         shell: bash
@@ -116,9 +134,8 @@ jobs:
           export CLANG38_AARCH64_PREFIX=aarch64-linux-gnu-
           export PATH="/usr/lib/llvm-38/bin:$PATH"
           chmod +x build_uefi.sh
-          # Upstream build_uefi.sh can return status 1 after a successful build
-          # because its final optional acpi.log test is false when ACPI rebuild is unused.
-          # Make its successful completion status explicit; required outputs are checked below.
+          # Upstream build_uefi.sh may return 1 after a successful build because
+          # its optional acpi.log check is false when --acpi was not requested.
           printf '\nexit 0\n' >> build_uefi.sh
           ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_SIZE" 2>&1 | tee ../pipa-uefi-build.log
           UEFI_FD="Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd"
@@ -126,8 +143,6 @@ jobs:
           test -s "BootShim/BootShim.bin"
           test -s "ImageResources/DTBs/pipa.dtb"
 
-          # Recreate the final boot image explicitly so packaging errors are visible
-          # in the Actions log instead of being swallowed by configs/pipa.sh.
           cat BootShim/BootShim.bin "$UEFI_FD" > "$UEFI_FD-bootshim"
           gzip -c < "$UEFI_FD-bootshim" > "$UEFI_FD-bootshim.gz"
           cat "$UEFI_FD-bootshim.gz" ImageResources/DTBs/pipa.dtb > ImageResources/bootpayload.bin
@@ -145,9 +160,10 @@ jobs:
 
           mkdir -p ../build-output
           cp "Mu-pipa.img" ../build-output/
-          cp "Build/pipaPkg/${BUILD_MODE}_CLANG38/FV/PIPA_UEFI.fd" ../build-output/
+          cp "$UEFI_FD" ../build-output/
           cp "BootShim/BootShim.bin" ../build-output/
           cp "ImageResources/DTBs/pipa.dtb" ../build-output/
+          cp ../pipa-acpi-sha256.txt ../build-output/
           printf 'BUILD_MODE=%s\nRAM_SIZE_GIB=%s\n' "$BUILD_MODE" "$RAM_SIZE" > ../build-output/build-info.txt
 
       - name: Upload build outputs and logs
@@ -158,6 +174,7 @@ jobs:
           path: |
             build-output/**
             pipa-uefi-build.log
+            pipa-acpi-sha256.txt
             submodule-status.txt
             mu-qcom-commit.txt
             mu-qcom/Build/BUILDLOG_pipaPkg.txt
