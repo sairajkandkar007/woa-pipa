@@ -1,0 +1,102 @@
+name: Build pipa UEFI (experimental)
+
+on:
+  workflow_dispatch:
+    inputs:
+      RAM_GB:
+        description: "RAM size configured in pipa.dsc"
+        required: true
+        type: choice
+        options:
+          - "8"
+          - "6"
+        default: "8"
+      BUILD_MODE:
+        description: "EDK II build mode"
+        required: true
+        type: choice
+        options:
+          - DEBUG
+          - RELEASE
+        default: DEBUG
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 180
+    steps:
+      - name: Checkout pipa project
+        uses: actions/checkout@v4
+
+      - name: Install Mu-Qcom build dependencies
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            git mono-devel nuget uuid-dev build-essential iasl nasm \
+            gcc-aarch64-linux-gnu python3 python3-pip python3-venv \
+            python3-git gettext locales gnupg ca-certificates clang llvm curl
+
+      - name: Fetch Mu-Qcom platform source
+        run: |
+          set -euxo pipefail
+          git clone https://github.com/sairajkandkar007/Mu-Qcom.git mu-qcom
+          git -C mu-qcom rev-parse HEAD | tee mu-qcom-commit.txt
+
+      - name: Install Python build requirements
+        working-directory: mu-qcom
+        run: |
+          set -euxo pipefail
+          python3 -m venv .venv
+          source .venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install -r pip-requirements.txt
+
+      - name: Compile and install the audited pipa DSDT
+        run: |
+          set -euxo pipefail
+          iasl -tc -p mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT acpi/pipa/DSDT.asl
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
+          # Never run build_uefi.sh --acpi here: the upstream APIC/FACP/GTDT .dsl
+          # files are decoded table listings, not ordinary ASL source files.
+          iasl -d mu-qcom/Platforms/Xiaomi/pipaPkg/AcpiTables/DSDT.aml
+
+      - name: Verify required SoC ACPI binaries and platform files
+        run: |
+          set -euxo pipefail
+          for table in APIC FACP GTDT; do
+            test -s "mu-qcom/Silicon/Qualcomm/SM8250Pkg/AcpiTables/$table.aml"
+          done
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/Include/ACPI.inc
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.dsc
+          test -s mu-qcom/Platforms/Xiaomi/pipaPkg/pipa.fdf
+          test ! -e mu-qcom/Platforms/Xiaomi/pipaPkg/pipaNoSb.dsc
+          grep -q 'return ("pipaPkg/pipa.dsc", {})' mu-qcom/Platforms/Xiaomi/pipaPkg/PlatformBuild.py
+
+      - name: Build pipa UEFI and boot image
+        working-directory: mu-qcom
+        env:
+          RAM_GB: ${{ inputs.RAM_GB }}
+          BUILD_MODE: ${{ inputs.BUILD_MODE }}
+          CLANG38_BIN: /usr/bin/
+          CLANG38_AARCH64_PREFIX: aarch64-linux-gnu-
+        run: |
+          set -euxo pipefail
+          source .venv/bin/activate
+          ./build_uefi.sh -d pipa -r "$BUILD_MODE" -m "$RAM_GB"
+
+      - name: Upload UEFI outputs and build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipa-uefi-${{ inputs.BUILD_MODE }}-${{ inputs.RAM_GB }}gb
+          path: |
+            mu-qcom/Build/pipaPkg/
+            mu-qcom/Mu-pipa.img
+            mu-qcom/Build/BUILDLOG_pipaPkg.txt
+            mu-qcom-commit.txt
+          if-no-files-found: warn
+          retention-days: 14
