@@ -1,0 +1,5 @@
+# 1c: PMIC family
+SOC\PMIC\Core
+SOC\PMIC\Apps
+SOC\PMIC\Extension
+SOC\PMIC\GPIO

@@ -1,0 +1,12 @@
+# Never commit device backups, Windows images, proprietary firmware/drivers or built UEFI images
+backup/
+*.img
+*.wim
+*.esd
+*.iso
+*.evtx
+*.dmp
+kona_bsp/
+firmware/
+config_snapshot_*/
+hive_backup_*/

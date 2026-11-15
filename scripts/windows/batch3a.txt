@@ -1,0 +1,1 @@
+# 3a: no new drivers; re-enumerate TLMM GPIO so qcgpio replaces genpass

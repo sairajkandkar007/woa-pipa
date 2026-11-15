@@ -1,0 +1,3 @@
+# 1a: SCM + ACPI helper
+SOC\System\SCM
+SOC\ACPI

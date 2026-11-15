@@ -1,0 +1,4544 @@
+Microsoft PnP Utility
+
+Instance ID:                URS\VEN_QCOM&DEV_2597&SUBSYS_MTP08250&HOST\3&f72a661&0&0
+Device Description:         USB xHCI Compliant Host Controller
+Class Name:                 USB
+Class GUID:                 {36fc9e60-c465-11cf-8056-444553540000}
+Manufacturer Name:          Generic USB xHCI Host Controller
+Status:                     Started
+Driver Name:                usbxhci.inf
+Matching Drivers:
+    Driver Name:            usbxhci.inf
+    Provider Name:          Microsoft
+    Class Name:             USB
+    Class GUID:             {36fc9e60-c465-11cf-8056-444553540000}
+    Driver Version:         05/06/2022 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\PNP0D15
+    Driver Rank:            00802000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000020000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM251B\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000003000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#00000000796A6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2513\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000031B0E000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000009000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000001800000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000020000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000070646000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0550\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000640000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\ACPI000C\2&daba3ff&0
+Device Description:         ACPI Processor Aggregator
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                acpipagr.inf
+Matching Drivers:
+    Driver Name:            acpipagr.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *ACPI000C
+    Driver Rank:            00FF0002
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\ACPI0010\10
+Device Description:         ACPI Processor Container Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                machine.inf
+Matching Drivers:
+    Driver Name:            machine.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *ACPI0010
+    Driver Rank:            00FF0002
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM05A8\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007FFD6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SWD\PRINTENUM\PrintQueues
+Device Description:         Root Print Queue
+Class Name:                 PrintQueue
+Class GUID:                 {1ed2bbf9-11f0-4084-b21f-ad83a8e6dcdc}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                printqueue.inf
+Matching Drivers:
+    Driver Name:            printqueue.inf
+    Provider Name:          Microsoft
+    Class Name:             PrintQueue
+    Class GUID:             {1ed2bbf9-11f0-4084-b21f-ad83a8e6dcdc}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     PRINTENUM\LocalPrintQueue
+    Driver Rank:            00000000
+    Driver Status:          Best Ranked
+
+    Driver Name:            c_swdevice.inf
+    Provider Name:          Microsoft
+    Class Name:             SoftwareDevice
+    Class GUID:             {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     SWD\GenericRaw
+    Driver Rank:            00FF3000
+    Driver Status:          Outranked
+
+Instance ID:                ACPI\QCOM254C\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM0535\1b
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM254E\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM055A\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000700000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM055C\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM055C\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM055D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM055D\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM055F\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0518\12
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0518\14
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ROOT\volmgr\0000
+Device Description:         Volume Manager
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volmgr.inf
+Matching Drivers:
+    Driver Name:            volmgr.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\VOLMGR
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000079666000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SCSI\Disk&Ven_SKhynix&Prod_HN8T15DEHKX075\3&f4f72e8&0&000000
+Device Description:         SKhynix HN8T15DEHKX075
+Class Name:                 DiskDrive
+Class GUID:                 {4d36e967-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard disk drives)
+Status:                     Started
+Driver Name:                disk.inf
+Matching Drivers:
+    Driver Name:            disk.inf
+    Provider Name:          Microsoft
+    Class Name:             DiskDrive
+    Class GUID:             {4d36e967-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     GenDisk
+    Driver Rank:            00FF0005
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SCSI\Disk&Ven_SKhynix&Prod_HN8T15DEHKX075\3&f4f72e8&0&000001
+Device Description:         SKhynix HN8T15DEHKX075
+Class Name:                 DiskDrive
+Class GUID:                 {4d36e967-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard disk drives)
+Status:                     Started
+Driver Name:                disk.inf
+Matching Drivers:
+    Driver Name:            disk.inf
+    Provider Name:          Microsoft
+    Class Name:             DiskDrive
+    Class GUID:             {4d36e967-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     GenDisk
+    Driver Rank:            00FF0005
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SCSI\Disk&Ven_SKhynix&Prod_HN8T15DEHKX075\3&f4f72e8&0&000002
+Device Description:         SKhynix HN8T15DEHKX075
+Class Name:                 DiskDrive
+Class GUID:                 {4d36e967-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard disk drives)
+Status:                     Started
+Driver Name:                disk.inf
+Matching Drivers:
+    Driver Name:            disk.inf
+    Provider Name:          Microsoft
+    Class Name:             DiskDrive
+    Class GUID:             {4d36e967-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     GenDisk
+    Driver Rank:            00FF0005
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SCSI\Disk&Ven_SKhynix&Prod_HN8T15DEHKX075\3&f4f72e8&0&000003
+Device Description:         SKhynix HN8T15DEHKX075
+Class Name:                 DiskDrive
+Class GUID:                 {4d36e967-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard disk drives)
+Status:                     Started
+Driver Name:                disk.inf
+Matching Drivers:
+    Driver Name:            disk.inf
+    Provider Name:          Microsoft
+    Class Name:             DiskDrive
+    Class GUID:             {4d36e967-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     GenDisk
+    Driver Rank:            00FF0005
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SCSI\Disk&Ven_SKhynix&Prod_HN8T15DEHKX075\3&f4f72e8&0&000004
+Device Description:         SKhynix HN8T15DEHKX075
+Class Name:                 DiskDrive
+Class GUID:                 {4d36e967-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard disk drives)
+Status:                     Started
+Driver Name:                disk.inf
+Matching Drivers:
+    Driver Name:            disk.inf
+    Provider Name:          Microsoft
+    Class Name:             DiskDrive
+    Class GUID:             {4d36e967-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     GenDisk
+    Driver Rank:            00FF0005
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SCSI\Disk&Ven_SKhynix&Prod_HN8T15DEHKX075\3&f4f72e8&0&000005
+Device Description:         SKhynix HN8T15DEHKX075
+Class Name:                 DiskDrive
+Class GUID:                 {4d36e967-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard disk drives)
+Status:                     Started
+Driver Name:                disk.inf
+Matching Drivers:
+    Driver Name:            disk.inf
+    Provider Name:          Microsoft
+    Class Name:             DiskDrive
+    Class GUID:             {4d36e967-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     GenDisk
+    Driver Rank:            00FF0005
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\0
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\1
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\2
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\3
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\4
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\5
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\6
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\Qualcomm_-_ARMv8_(64-bit)_Family_8_Model_805_Revision_D0E\7
+Device Description:         Snapdragon (TM) 870 @ 3.20 GHz
+Class Name:                 Processor
+Class GUID:                 {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+Manufacturer Name:          (Standard processor types)
+Status:                     Started
+Driver Name:                cpu.inf
+Matching Drivers:
+    Driver Name:            cpu.inf
+    Provider Name:          Microsoft
+    Class Name:             Processor
+    Class GUID:             {50127dc3-0f36-415e-a6cc-4cb3be910b65}
+    Driver Version:         04/21/2009 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\Processor
+    Driver Rank:            00FF2000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\FSA04480\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000000086000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007DFC6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\10
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000003CBB6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM24A5\0
+Device Description:         Qualcomm Universal Flash Storage (UFS) Host Controller
+Class Name:                 SCSIAdapter
+Class GUID:                 {4d36e97b-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm
+Status:                     Started
+Driver Name:                storufs.inf
+Matching Drivers:
+    Driver Name:            storufs.inf
+    Provider Name:          Microsoft
+    Class Name:             SCSIAdapter
+    Class GUID:             {4d36e97b-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOM24A5
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ROOT\BasicDisplay\0000
+Device Description:         Microsoft Basic Display Driver
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard display types)
+Status:                     Started
+Driver Name:                basicdisplay.inf
+Matching Drivers:
+    Driver Name:            basicdisplay.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\BasicDisplay
+    Driver Rank:            00FB0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM05CF\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000003CB36000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM050A\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050A\5
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050A\6
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050A\7
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050A\d
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050A\e
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050A\f
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM050B\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000002000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM050C\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM25A8\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM050D\0
+Device Description:         Qualcomm(R) System Manager GPIO Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Disconnected
+Driver Name:                genpass.inf
+Matching Drivers:
+    Driver Name:            genpass.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE3
+    Driver Rank:            00FF2001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000220000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\VEN_QCOM&DEV_2509&SUBSYS_MTP08250&REV_0002\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255E\64
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000003D9B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000800000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#000000001B000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\ACPI0011\0
+Device Description:         HID Button over Interrupt Driver
+Class Name:                 HIDClass
+Class GUID:                 {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Manufacturer Name:          Microsoft
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                hidinterrupt.inf
+Matching Drivers:
+    Driver Name:            hidinterrupt.inf
+    Provider Name:          Microsoft
+    Class Name:             HIDClass
+    Class GUID:             {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\ACPI0011
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000008009E000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007DF86000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000001F00000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2550\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000018000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007CE46000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM05A2\0
+Device Description:         Qualcomm(R) Power Management
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Disconnected
+Driver Name:                genpass.inf
+Matching Drivers:
+    Driver Name:            genpass.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE2
+    Driver Rank:            00FF2001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#000000000D000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000033B16000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ROOT\VID\0000
+Device Description:         Microsoft Hyper-V Virtualization Infrastructure Driver
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                wvid.inf
+Matching Drivers:
+    Driver Name:            wvid.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\VID
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0582\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM255A\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25CF\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255C\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255C\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ROOT\CompositeBus\0000
+Device Description:         Composite Bus Enumerator
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                compositebus.inf
+Matching Drivers:
+    Driver Name:            compositebus.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\CompositeBus
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM255D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255D\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM05AA\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ROOT\vdrvroot\0000
+Device Description:         Microsoft Virtual Drive Enumerator
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                vdrvroot.inf
+Matching Drivers:
+    Driver Name:            vdrvroot.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\vdrvroot
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM255F\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#00000000599B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM056D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM05AE\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM05A7\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                SWD\PRINTENUM\{A0CC772B-4983-4D47-B4E2-56662FEB88E0}
+Device Description:         Microsoft Print to PDF
+Class Name:                 PrintQueue
+Class GUID:                 {1ed2bbf9-11f0-4084-b21f-ad83a8e6dcdc}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                printqueue.inf
+Matching Drivers:
+    Driver Name:            printqueue.inf
+    Provider Name:          Microsoft
+    Class Name:             PrintQueue
+    Class GUID:             {1ed2bbf9-11f0-4084-b21f-ad83a8e6dcdc}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     PRINTENUM\LocalPrintQueue
+    Driver Rank:            00000001
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            oem0.inf
+    Original Name:          prnms009.inf
+    Provider Name:          Microsoft
+    Class Name:             Printer
+    Class GUID:             {4d36e979-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     {084f01fa-e634-4d77-83ee-074817c03581}
+    Driver Rank:            00FF0002
+    Driver Status:          Outranked
+
+    Driver Name:            c_swdevice.inf
+    Provider Name:          Microsoft
+    Class Name:             SoftwareDevice
+    Class GUID:             {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     SWD\GenericRaw
+    Driver Rank:            00FF3001
+    Driver Status:          Outranked
+
+Instance ID:                STORAGE\Volume\{dcad9a71-cddb-11ec-992b-806e6f6e6963}#0000000000006000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000036B36000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ROOT\spaceport\0000
+Device Description:         Microsoft Storage Spaces Controller
+Class Name:                 SCSIAdapter
+Class GUID:                 {4d36e97b-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                spaceport.inf
+Matching Drivers:
+    Driver Name:            spaceport.inf
+    Provider Name:          Microsoft
+    Class Name:             SCSIAdapter
+    Class GUID:             {4d36e97b-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     Root\Spaceport
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000008100000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000000286000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000031B06000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000059EB6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000029000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#000000028B000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000289020000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000003CDB6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ROOT\KDNIC\0000
+Device Description:         Microsoft Kernel Debug Network Adapter
+Class Name:                 Net
+Class GUID:                 {4d36e972-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                kdnic630.inf
+Matching Drivers:
+    Driver Name:            kdnic630.inf
+    Provider Name:          Microsoft
+    Class Name:             Net
+    Class GUID:             {4d36e972-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     root\kdnic
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                USB\ROOT_HUB30\4&9191a0b&0&0
+Device Description:         USB Root Hub (USB 3.0)
+Class Name:                 USB
+Class GUID:                 {36fc9e60-c465-11cf-8056-444553540000}
+Manufacturer Name:          (Standard USB HUBs)
+Status:                     Started
+Driver Name:                usbhub3.inf
+Matching Drivers:
+    Driver Name:            usbhub3.inf
+    Provider Name:          Microsoft
+    Class Name:             USB
+    Class GUID:             {36fc9e60-c465-11cf-8056-444553540000}
+    Driver Version:         05/06/2022 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     USB\ROOT_HUB30
+    Driver Rank:            00800002
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007CF46000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000002F686000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000015000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0511\5
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0511\8
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0511\a
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006C416000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0512\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0512\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0512\2
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000023586000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0518\d
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0518\e
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000001000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\1
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\5
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\6
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\7
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\d
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\e
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250A\f
+Device Description:         Qualcomm(R) BAM Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem9.inf
+Matching Drivers:
+    Driver Name:            oem9.inf
+    Original Name:          qckmbam8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250A
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250B\0
+Device Description:         Qualcomm(R) System Manager SCM Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem1.inf
+Matching Drivers:
+    Driver Name:            oem1.inf
+    Original Name:          qcscm8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250B
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250C\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Started
+Matching Drivers:
+    Driver Name:            oem3.inf
+    Original Name:          qcspmi8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250C
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked
+
+Instance ID:                ACPI\QCOM05CE\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM250D\0
+Device Description:         Qualcomm(R) System Manager GPIO Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Disconnected
+Driver Name:                genpass.inf
+Matching Drivers:
+    Driver Name:            oem4.inf
+    Original Name:          qcgpio8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250D
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked
+
+    Driver Name:            genpass.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE3
+    Driver Rank:            00FF2001
+    Driver Status:          Outranked / Installed
+
+Instance ID:                ACPI\QCOM250D\1
+Device Description:         Qualcomm(R) System Manager GPIO Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem4.inf
+Matching Drivers:
+    Driver Name:            oem4.inf
+    Original Name:          qcgpio8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM250D
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            genpass.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE3
+    Driver Rank:            00FF2001
+    Driver Status:          Outranked
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000420000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2582\2&daba3ff&0
+Device Description:         Qualcomm(R) Power Management PMIC TCC Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem14.inf
+Matching Drivers:
+    Driver Name:            oem14.inf
+    Original Name:          qcpmictcc8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         11/06/2022 1.0.1680.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2582
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25AA\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\VEN_QCOM&DEV_0509&SUBSYS_MTP08250&REV_0002\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007CF86000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25A7\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000F00000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a75-cddb-11ec-992b-806e6f6e6963}#0000000000040000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000293000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#00000002D3000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000002F786000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25A2\0
+Device Description:         Qualcomm(R) Power Management
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                genpass.inf
+Matching Drivers:
+    Driver Name:            genpass.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE2
+    Driver Rank:            00FF2001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000002F8C6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\ACPI0010\100000
+Device Description:         ACPI Processor Container Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                machine.inf
+Matching Drivers:
+    Driver Name:            machine.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *ACPI0010
+    Driver Rank:            00FF0002
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000001F386000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000023686000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a75-cddb-11ec-992b-806e6f6e6963}#0000000000006000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0576\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006E63E000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM256D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ROOT\UMBUS\0000
+Device Description:         UMBus Root Bus Enumerator
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                umbus.inf
+Matching Drivers:
+    Driver Name:            umbus.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     root\umbus
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25AE\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ROOT\ARM64_HAL\0000
+Device Description:         ACPI ARM64-based PC
+Class Name:                 Computer
+Class GUID:                 {4d36e966-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard computers)
+Status:                     Started
+Driver Name:                hal.inf
+Matching Drivers:
+    Driver Name:            hal.inf
+    Provider Name:          Microsoft
+    Class Name:             Computer
+    Class GUID:             {4d36e966-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPIARM64
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000002F906000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25CE\2&daba3ff&0
+Device Description:         Qualcomm(R) Power Management PMIC Extension Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Incorporated
+Status:                     Started
+Driver Name:                oem7.inf
+Matching Drivers:
+    Driver Name:            oem7.inf
+    Original Name:          qcpmicext8250.inf
+    Provider Name:          Qualcomm Incorporated
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         01/07/2024 1.0.1840.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM25CE
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM050A\10
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                SWD\RADIO\{3DB5895D-CC28-44B3-AD3D-6F01A782B8D2}
+Device Description:         Microsoft Radio Device Enumeration Bus
+Class Name:                 SoftwareDevice
+Class GUID:                 {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                c_swdevice.inf
+Matching Drivers:
+    Driver Name:            c_swdevice.inf
+    Provider Name:          Microsoft
+    Class Name:             SoftwareDevice
+    Class GUID:             {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     SWD\GenericRaw
+    Driver Rank:            00FF3000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0508\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000001CE86000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM05A1\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                DISPLAY\Default_Monitor\1&8713bca&0&UID0
+Device Description:         Generic Monitor
+Class Name:                 Monitor
+Class GUID:                 {4d36e96e-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard monitor types)
+Status:                     Started
+Driver Name:                monitor.inf
+Matching Drivers:
+    Driver Name:            monitor.inf
+    Provider Name:          Microsoft
+    Class Name:             Monitor
+    Class GUID:             {4d36e96e-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     MONITOR\Default_Monitor
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            monitor.inf
+    Provider Name:          Microsoft
+    Class Name:             Monitor
+    Class GUID:             {4d36e96e-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *PNP09FF
+    Driver Rank:            00FF2000
+    Driver Status:          Outranked
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000002F886000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2511\5
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2511\8
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2511\a
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2512\0
+Device Description:         Qualcomm(R) Analog-to-Digital Converter Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem12.inf
+Matching Drivers:
+    Driver Name:            oem12.inf
+    Original Name:          qcadc8250.inf
+    Provider Name:          Qualcomm Technologies, Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2512
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2512\1
+Device Description:         Qualcomm(R) Analog-to-Digital Converter Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem12.inf
+Matching Drivers:
+    Driver Name:            oem12.inf
+    Original Name:          qcadc8250.inf
+    Provider Name:          Qualcomm Technologies, Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2512
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2512\2
+Device Description:         Qualcomm(R) Analog-to-Digital Converter Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem12.inf
+Matching Drivers:
+    Driver Name:            oem12.inf
+    Original Name:          qcadc8250.inf
+    Provider Name:          Qualcomm Technologies, Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2512
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000003D1B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\PNP0A08\0
+Device Description:         PCI Express Root Complex
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                pci.inf
+Matching Drivers:
+    Driver Name:            pci.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *PNP0A08
+    Driver Rank:            00FF0002
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            pci.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *PNP0A03
+    Driver Rank:            00FF2000
+    Driver Status:          Outranked
+
+Instance ID:                ACPI\QCOM2518\d
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2518\e
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM055E\64
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0527\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000079A46000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000031906000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006E436000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000620000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007FFCE000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a73-cddb-11ec-992b-806e6f6e6963}#0000000000806000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000001CF86000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI_HAL\PNP0C08\0
+Device Description:         Microsoft ACPI-Compliant System
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                acpi.inf
+Matching Drivers:
+    Driver Name:            acpi.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *PNP0C08
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                HTREE\ROOT\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Started
+
+Instance ID:                ACPI\QCOM0561\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ROOT\BasicRender\0000
+Device Description:         Microsoft Basic Render Driver
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                basicrender.inf
+Matching Drivers:
+    Driver Name:            basicrender.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\BasicRender
+    Driver Rank:            00FB0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#000000000B000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000040000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000070666000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a75-cddb-11ec-992b-806e6f6e6963}#0000000000240000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000031B16000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000000006000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2508\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006C1B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25A1\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000076666000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2572\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000100000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000006000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000001F586000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#00000000600B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0581\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM2576\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM0583\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007FFF6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000021000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000080000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000000686000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM252F\2&daba3ff&0
+Device Description:         Qualcomm(R) Power Management PMIC Apps Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem6.inf
+Matching Drivers:
+    Driver Name:            oem6.inf
+    Original Name:          qcpmicapps8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM252F
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            oem6.inf
+    Original Name:          qcpmicapps8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\VEN_QCOM&DEV_252F
+    Driver Rank:            00FF2000
+    Driver Status:          Outranked
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006C2B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\ACPI000E\2&daba3ff&0
+Device Description:         ACPI Wake Alarm
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                acpitime.inf
+Matching Drivers:
+    Driver Name:            acpitime.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     *ACPI000E
+    Driver Rank:            00FF0002
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2561\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM0507\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000008007E000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000200000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#00000000601B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0530\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                USB\ROOT_HUB30\4&39cc6b5e&0&0
+Device Description:         USB Root Hub (USB 3.0)
+Class Name:                 USB
+Class GUID:                 {36fc9e60-c465-11cf-8056-444553540000}
+Manufacturer Name:          (Standard USB HUBs)
+Status:                     Disconnected
+Driver Name:                usbhub3.inf
+Matching Drivers:
+    Driver Name:            usbhub3.inf
+    Provider Name:          Microsoft
+    Class Name:             USB
+    Class GUID:             {36fc9e60-c465-11cf-8056-444553540000}
+    Driver Version:         05/06/2022 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     USB\ROOT_HUB30
+    Driver Rank:            00800002
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SWD\COMPUTER\MFG_Xiaomi&FAM_SM8250&PROD_Pad_6&SKU_23043RP34G
+Device Description:         Xiaomi Pad 6
+Class Name:                 Computer
+Class GUID:                 {4d36e966-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                compdev.inf
+Matching Drivers:
+    Driver Name:            compdev.inf
+    Provider Name:          Microsoft
+    Class Name:             Computer
+    Class GUID:             {4d36e966-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     COMPUTER\Generic
+    Driver Rank:            00002000
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            c_swdevice.inf
+    Provider Name:          Microsoft
+    Class Name:             SoftwareDevice
+    Class GUID:             {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     SWD\GenericRaw
+    Driver Rank:            00FF3001
+    Driver Status:          Outranked
+
+Instance ID:                ACPI\QCOM2527\0
+Device Description:         Qualcomm(R) ACPI Bridge Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies Inc.
+Status:                     Started
+Driver Name:                oem2.inf
+Matching Drivers:
+    Driver Name:            oem2.inf
+    Original Name:          qcabd.inf
+    Provider Name:          Qualcomm Technologies Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2527
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006E636000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000180000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM0519\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000001D386000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                SWD\MMDEVAPI\MicrosoftGSWavetableSynth
+Device Description:         Microsoft GS Wavetable Synth
+Class Name:                 SoftwareDevice
+Class GUID:                 {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                c_swdevice.inf
+Matching Drivers:
+    Driver Name:            c_swdevice.inf
+    Provider Name:          Microsoft
+    Class Name:             SoftwareDevice
+    Class GUID:             {62f9c741-b25a-46ce-b54c-9bccce08b6f2}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     SWD\GenericRaw
+    Driver Rank:            00FF3000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM052E\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006C3B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2535\1b
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2518\12
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2518\14
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000010000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2581\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000033B36000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2583\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2507\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000289000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM05D2\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0593\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0593\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0593\2
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM057F\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0597\0
+Device Description:         Synopsys USB 3.0 Dual-Role Controller
+Class Name:                 USB
+Class GUID:                 {36fc9e60-c465-11cf-8056-444553540000}
+Manufacturer Name:          Synopsys
+Status:                     Disconnected
+Driver Name:                urssynopsys.inf
+Extension Driver Names:     qcursext.inf
+Matching Drivers:
+    Driver Name:            urssynopsys.inf
+    Provider Name:          Microsoft
+    Class Name:             USB
+    Class GUID:             {36fc9e60-c465-11cf-8056-444553540000}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\PNP0CA1
+    Driver Rank:            00FF3001
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            qcursext.inf
+    Provider Name:          Microsoft
+    Class Name:             Extension
+    Class GUID:             {e2f84ce7-8efa-411c-aa69-97454ca4cb57}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Extension ID:           {581a3261-af68-4fae-8f05-c26090b82cbd}
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE1
+    Driver Rank:            00FF2103
+    Driver Status:          Best Ranked / Installed / Extension
+
+Instance ID:                ACPI\VEN_QCOM&DEV_258C&SUBSYS_MTP08250&REV_0002\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\SSDE\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM0577\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ROOT\NdisVirtualBus\0000
+Device Description:         NDIS Virtual Network Adapter Enumerator
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                ndisvirtualbus.inf
+Matching Drivers:
+    Driver Name:            ndisvirtualbus.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\NdisVirtualBus
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM258D\0
+Device Description:         Qualcomm(R) Shared Memory Port Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Started
+Driver Name:                oem11.inf
+Matching Drivers:
+    Driver Name:            oem11.inf
+    Original Name:          qcglink8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM258D
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000007FFC6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006C3F6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM059B\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM059B\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM059D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM0533\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM2519\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Started
+
+Instance ID:                ACPI\QCOM2514\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000005BEB6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000289040000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a73-cddb-11ec-992b-806e6f6e6963}#0000000000006000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000004000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000400000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000005C0B6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000069000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM252E\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Started
+Matching Drivers:
+    Driver Name:            oem5.inf
+    Original Name:          qcpmic8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM252E
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006C436000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2530\1
+Device Description:         Qualcomm(R) System Manager PMIC GPIO Framework Extension Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Problem
+Problem Code:               38 (0x26) [CM_PROB_DRIVER_FAILED_PRIOR_UNLOAD]
+Problem Status:             0xC000038E
+Driver Name:                oem8.inf
+Matching Drivers:
+    Driver Name:            oem8.inf
+    Original Name:          qcpmicgpio8250.inf
+    Provider Name:          Qualcomm Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2530
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a75-cddb-11ec-992b-806e6f6e6963}#0000000000020000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM055F\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM257F\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM054C\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM051B\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ROOT\mssmbios\0000
+Device Description:         Microsoft System Management BIOS Driver
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                mssmbios.inf
+Matching Drivers:
+    Driver Name:            mssmbios.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\mssmbios
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2577\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM054E\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                ACPI\QCOM2533\2&daba3ff&0
+Device Description:         Qualcomm(R) Reset Power Error Notifier Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Incorporated
+Status:                     Started
+Driver Name:                oem13.inf
+Matching Drivers:
+    Driver Name:            oem13.inf
+    Original Name:          qcrpen8250.inf
+    Provider Name:          Qualcomm Incorporated
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2533
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a79-cddb-11ec-992b-806e6f6e6963}#0000000001700000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000004100000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000000E86000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000002F8E6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ROOT\SYSTEM\0000
+Device Description:         Plug and Play Software Device Enumerator
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          (Standard system devices)
+Status:                     Started
+Driver Name:                swenum.inf
+Matching Drivers:
+    Driver Name:            swenum.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         05/06/2022 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\SWENUM
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000080076000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM25D2\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2593\0
+Device Description:         Qualcomm(R) GPI Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Started
+Driver Name:                oem10.inf
+Matching Drivers:
+    Driver Name:            oem10.inf
+    Original Name:          qcgpi8250.inf
+    Provider Name:          Qualcomm Technologies, Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2593
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2593\1
+Device Description:         Qualcomm(R) GPI Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Started
+Driver Name:                oem10.inf
+Matching Drivers:
+    Driver Name:            oem10.inf
+    Original Name:          qcgpi8250.inf
+    Provider Name:          Qualcomm Technologies, Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2593
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2593\2
+Device Description:         Qualcomm(R) GPI Bus Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Started
+Driver Name:                oem10.inf
+Matching Drivers:
+    Driver Name:            oem10.inf
+    Original Name:          qcgpi8250.inf
+    Provider Name:          Qualcomm Technologies, Inc.
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         07/04/2024 1.0.2100.0
+    Signer Name:            Unknown
+    Matching Device ID:     ACPI\QCOM2593
+    Driver Rank:            00FF0001
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000000008000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000059AB6000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM250E\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ROOT\RDPBUS\0000
+Device Description:         Remote Desktop Device Redirector Bus
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                rdpbus.inf
+Matching Drivers:
+    Driver Name:            rdpbus.inf
+    Provider Name:          Microsoft
+    Class Name:             System
+    Class GUID:             {4d36e97d-e325-11ce-bfc1-08002be10318}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ROOT\RDPBUS
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM2597\0
+Device Description:         Synopsys USB 3.0 Dual-Role Controller
+Class Name:                 USB
+Class GUID:                 {36fc9e60-c465-11cf-8056-444553540000}
+Manufacturer Name:          Synopsys
+Status:                     Started
+Driver Name:                urssynopsys.inf
+Extension Driver Names:     qcursext.inf
+Matching Drivers:
+    Driver Name:            urssynopsys.inf
+    Provider Name:          Microsoft
+    Class Name:             USB
+    Class GUID:             {36fc9e60-c465-11cf-8056-444553540000}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\PNP0CA1
+    Driver Rank:            00FF3001
+    Driver Status:          Best Ranked / Installed
+
+    Driver Name:            qcursext.inf
+    Provider Name:          Microsoft
+    Class Name:             Extension
+    Class GUID:             {e2f84ce7-8efa-411c-aa69-97454ca4cb57}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Extension ID:           {581a3261-af68-4fae-8f05-c26090b82cbd}
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\QCOMFFE1
+    Driver Rank:            00FF2103
+    Driver Status:          Best Ranked / Installed / Extension
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#000000006E646000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a71-cddb-11ec-992b-806e6f6e6963}#0000000000806000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\VEN_QCOM&DEV_058C&SUBSYS_MTP08250&REV_0002\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Disconnected
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000011000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                URS\VEN_QCOM&DEV_0597&SUBSYS_MTP08250&HOST\3&4281cf3&0&0
+Device Description:         USB xHCI Compliant Host Controller
+Class Name:                 USB
+Class GUID:                 {36fc9e60-c465-11cf-8056-444553540000}
+Manufacturer Name:          Generic USB xHCI Host Controller
+Status:                     Disconnected
+Driver Name:                usbxhci.inf
+Matching Drivers:
+    Driver Name:            usbxhci.inf
+    Provider Name:          Microsoft
+    Class Name:             USB
+    Class GUID:             {36fc9e60-c465-11cf-8056-444553540000}
+    Driver Version:         05/06/2022 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     ACPI\PNP0D15
+    Driver Rank:            00802000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                ACPI\QCOM259B\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM259B\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM259D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255F\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                STORAGE\Volume\{dcad9a77-cddb-11ec-992b-806e6f6e6963}#0000000000006000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+
+Instance ID:                STORAGE\Volume\{dcad9a6f-cddb-11ec-992b-806e6f6e6963}#0000000017000000
+Device Description:         Volume
+Class Name:                 Volume
+Class GUID:                 {71a27cdd-812a-11d0-bec7-08002be2092f}
+Manufacturer Name:          Microsoft
+Status:                     Started
+Driver Name:                volume.inf
+Matching Drivers:
+    Driver Name:            volume.inf
+    Provider Name:          Microsoft
+    Class Name:             Volume
+    Class GUID:             {71a27cdd-812a-11d0-bec7-08002be2092f}
+    Driver Version:         06/21/2006 10.0.22621.1
+    Signer Name:            Microsoft Windows
+    Matching Device ID:     STORAGE\Volume
+    Driver Rank:            00FF0000
+    Driver Status:          Best Ranked / Installed
+

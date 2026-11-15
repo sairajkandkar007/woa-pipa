@@ -1,0 +1,3 @@
+# 2: USB-C role (PMIC Type-C controller + Type-C port manager)
+SOC\PMIC\TypeCController
+USB\TypeCPortManager

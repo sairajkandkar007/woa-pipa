@@ -1,0 +1,480 @@
+Microsoft PnP Utility
+
+Instance ID:                ACPI\QCOM251B\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2513\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM254C\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM254E\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\FSA04480\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25A8\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\VEN_QCOM&DEV_2509&SUBSYS_MTP08250&REV_0002\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255E\64
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\ACPI0011\0
+Device Description:         HID Button over Interrupt Driver
+Class Name:                 HIDClass
+Class GUID:                 {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Manufacturer Name:          Microsoft
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                hidinterrupt.inf
+
+Instance ID:                ACPI\QCOM2550\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255A\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25CF\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255C\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255C\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255D\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255F\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2582\2&daba3ff&0
+Device Description:         Qualcomm(R) Power Management PMIC TCC Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem14.inf
+
+Instance ID:                ACPI\QCOM25AA\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25A7\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM256D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25AE\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2511\5
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2511\8
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2511\a
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2512\0
+Device Description:         Qualcomm(R) Analog-to-Digital Converter Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem12.inf
+
+Instance ID:                ACPI\QCOM2512\1
+Device Description:         Qualcomm(R) Analog-to-Digital Converter Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem12.inf
+
+Instance ID:                ACPI\QCOM2512\2
+Device Description:         Qualcomm(R) Analog-to-Digital Converter Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Technologies, Inc.
+Status:                     Problem
+Problem Code:               51 (0x33) [CM_PROB_WAITING_ON_DEPENDENCY]
+Driver Name:                oem12.inf
+
+Instance ID:                ACPI\QCOM2518\d
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2518\e
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2508\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25A1\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2572\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2576\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2561\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2535\1b
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2518\12
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2518\14
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2581\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2583\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2507\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\VEN_QCOM&DEV_258C&SUBSYS_MTP08250&REV_0002\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\SSDE\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2514\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2530\1
+Device Description:         Qualcomm(R) System Manager PMIC GPIO Framework Extension Device
+Class Name:                 System
+Class GUID:                 {4d36e97d-e325-11ce-bfc1-08002be10318}
+Manufacturer Name:          Qualcomm Inc.
+Status:                     Problem
+Problem Code:               38 (0x26) [CM_PROB_DRIVER_FAILED_PRIOR_UNLOAD]
+Problem Status:             0xC000038E
+Driver Name:                oem8.inf
+
+Instance ID:                ACPI\QCOM257F\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM2577\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM25D2\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM250E\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM259B\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM259B\1
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM259D\0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+
+Instance ID:                ACPI\QCOM255F\2&daba3ff&0
+Device Description:         Unknown
+Class Name:                 Unknown
+Class GUID:                 Unknown
+Manufacturer Name:          Unknown
+Status:                     Problem
+Problem Code:               28 (0x1C) [CM_PROB_FAILED_INSTALL]
+Problem Status:             0xC0000490
+

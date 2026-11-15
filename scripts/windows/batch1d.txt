@@ -1,0 +1,6 @@
+# 1d: BAM, GPI, GLINK, ADC, RPEN
+SOC\System\BusAccessModule
+SOC\Buses\GPI
+SOC\Buses\GLINK
+SOC\VoltageCurrentMonitoring
+SOC\ResetPower\ResetProtectionEnabler

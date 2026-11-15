@@ -1,0 +1,38 @@
+## Claude: auto-start USB Mass Storage of UFS LUN0 at ReadyToBoot (diagnostic build, never boots an OS)
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = AutoMassStorageDxe
+  FILE_GUID                      = 6E4C1D9A-3B2F-4E8A-9C71-5A0D2B7F1C33
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = AutoMassStorageEntry
+
+[Sources]
+  AutoMassStorageDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  QcomPkg/QcomPkg.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+  UefiLib
+  DebugLib
+  BaseLib
+  BaseMemoryLib
+  DevicePathLib
+
+[Guids]
+  gEfiUfsLU0Guid
+  gEfiEventReadyToBootGuid
+
+[Protocols]
+  gEfiGraphicsOutputProtocolGuid
+  gEfiUsbMsdProtocolGuid
+  gEfiBlockIoProtocolGuid
+
+[Depex]
+  TRUE

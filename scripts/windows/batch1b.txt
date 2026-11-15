@@ -1,0 +1,3 @@
+# 1b: SPMI + GPIO
+SOC\SPMI
+SOC\GPIO
