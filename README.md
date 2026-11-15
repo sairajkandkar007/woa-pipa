@@ -48,6 +48,7 @@ UEFI images are not included (they contain proprietary Qualcomm binaries). Build
 | `RUN_PHASE4B_UEFI_MSC.bat` | With UEFI Mass Storage active: compare LUN0 partitions with the backups, copy Windows logs/Enum hive/`C:\pipa-logs` |
 | `RUN_PHASE5_BATCH*.bat` → `phase5_drivers.ps1` | Inject a Kona driver batch offline (DISM) after a full `System32\config` snapshot; installs a logon device-state dump |
 | `RUN_PHASE5_UNDO2.bat` | Restore the last registry snapshot |
+| `RUN_PHASE6_FLASH_UEFI.bat` / `RUN_PHASE6_RESTORE_BOOT_A.bat` | Flash the UEFI into `boot_a` (MD5, product, unlock, slot and size checks + typed FLASH) / write the original boot_a backup back |
 | `RUN_DIAG_*.bat` | Read-only fastboot / disk diagnostics |
 | `unattend.xml` | Skips OOBE; local admin `pipa` (password `pipa`, change it), auto-logon |
 
