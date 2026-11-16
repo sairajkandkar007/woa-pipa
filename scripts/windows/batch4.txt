@@ -1,0 +1,2 @@
+# 4: PEP (qcpep, desktop "wd" INF only) + TSENS/ADC thermal devices it also serves. PEP0 flagged for reinstall (was NULL-installed).
+_sel\PEP_wd

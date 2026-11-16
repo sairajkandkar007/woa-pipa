@@ -1,0 +1,16 @@
+# base: all known-good Kona drivers (1a-1d, 2), injected BEFORE the first boot of a fresh install
+SOC\System\SCM
+SOC\ACPI
+SOC\SPMI
+SOC\GPIO
+SOC\PMIC\Core
+SOC\PMIC\Apps
+SOC\PMIC\Extension
+SOC\PMIC\GPIO
+SOC\System\BusAccessModule
+SOC\Buses\GPI
+SOC\Buses\GLINK
+SOC\VoltageCurrentMonitoring
+SOC\ResetPower\ResetProtectionEnabler
+SOC\PMIC\TypeCController
+USB\TypeCPortManager

@@ -1,0 +1,16 @@
+Windows Registry Editor Version 5.00
+
+; Claude: remove the PMIC GPIO debug boot trace and restore the qcspmi INF autologger to its original (in-memory) settings
+[-HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\PipaPmicGpio]
+
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\spmi]
+"LogFileMode"=dword:00000400
+"FileName"=-
+"FileMax"=-
+"FlushTimer"=-
+"MaximumFileSize"=-
+
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\spmi\{c1de55d4-9831-472f-a17d-3500da9c7fa8}]
+"EnableLevel"=dword:00000004
+
+[-HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Services\qcpmgpio\Parameters\Wdf]

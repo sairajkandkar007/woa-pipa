@@ -1,5 +1,14 @@
 # Status log
 
+## 2026-11-16 (evening): PEP attempt failed, clean rebuild
+
+- **PEP (`qcpep.wd8250`)** → `INACCESSIBLE_BOOT_DEVICE` (param2 `0xC0000034`): the UFS disk disappears once PEP manages power.
+  Likely cause: the MTP DSDT's UFS0 PEP rail votes (LDO10_A 2.904 V, LDO3_C 1.2 V) don't match pipa, whose stock DT has UFS VCC = PM8150 **L17A**, VCCQ = **L6A**, VCCQ2 = S4A, PHY = L5A/L9A. `acpi/make_pipa_k.py --ufs-rails` retargets them (built, **not yet tested with PEP**).
+- PEP's INF also drops `PPMSettings-8250Profiles.wd.ppkg` into `Windows\Provisioning\Packages`. The registry undo does not remove it; Windows applied it on a later boot → **`CRITICAL_PROCESS_DIED` on every boot**, even after restoring an older registry snapshot. Recovered by **full reinstall**.
+- **New install procedure:** `RUN_PHASE2_INSTALL.bat`, then (before first boot) `RUN_PHASE5_BATCH_BASE.bat` (batches 1a–2 in one go). With drivers present at first boot, SPMI/PMIC are installed properly (no NULL-driver problem): SPMI ✅ PMIC ✅ PMIC GPIO ✅ buttons ✅ ADC ✅ TCC ✅. Only code 28 left.
+  Side effect: TLMM GPIO (`QCOM250D`) and Type-C (`QCOM257D`) picked Microsoft `genpass.inf` instead of the Kona INFs on first boot.
+- **Rules for the next PEP try:** install without the .ppkg, use the `--ufs-rails` UEFI via `fastboot boot`, and extend undo to remove non-registry leftovers (INF, ppkg).
+
 ## 2026-11-16 (later): SPMI/PMIC root cause found and fixed, PMIC GPIO + power button working
 
 **Root cause:** on Windows' first boot (before any Qualcomm driver was in the store) ACPI devices that are allowed to run without a driver ("raw"), namely SPMI (`QCOM250C`), PMIC core (`QCOM252E`) and PEP0 (`QCOM2519`), were installed with a **NULL driver** (`ConfigFlags=0`, no `Service`). Windows never re-checks them when drivers are added later (unlike devices with no driver at all, `ConfigFlags=0x40`, which retry). So qcspmi/qcpmic never attached, the SPMI and PMIC device interfaces (`{A44DA282…}`, `{5186FCEA…}`, `{9A8FF884…}`) were never published, and PMIC GPIO failed its start (`0xC0000001`, then `0xC000026C`/`0xC000038E` on retries).
