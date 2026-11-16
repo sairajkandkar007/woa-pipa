@@ -1,0 +1,54 @@
+Windows Registry Editor Version 5.00
+
+; Claude: boot-time ETW trace (AutoLogger) for the PMIC GPIO driver load failure -> C:\pipa-logs\pmicgpio.etl
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\PipaPmicGpio]
+"Start"=dword:00000001
+"GUID"="{6B1F3C2E-7A51-4C0B-9E2D-5F1A9C7D3E01}"
+"FileName"="C:\\pipa-logs\\pmicgpio.etl"
+"FileMax"=dword:00000001
+"BufferSize"=dword:00000040
+"MaximumFileSize"=dword:00000020
+"FlushTimer"=dword:00000001
+"ClockType"=dword:00000001
+"LogFileMode"=dword:00000001
+
+; Qualcomm-WOA-PMIC-GPIO-CLX (qcpmicgpio8250.sys)
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\PipaPmicGpio\{720101D6-8233-4892-A82C-FDCFCD2B4A9A}]
+"Enabled"=dword:00000001
+"EnableLevel"=dword:00000005
+"MatchAnyKeyword"=hex(b):ff,ff,ff,ff,ff,ff,ff,ff
+
+; qcpmicgpio WPP (software tracing) control GUID
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\PipaPmicGpio\{5BBED14F-3671-4598-AD2F-A9B6BCD3824D}]
+"Enabled"=dword:00000001
+"EnableLevel"=dword:00000005
+"EnableFlags"=dword:ffffffff
+
+; qcpmic WPP
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\PipaPmicGpio\{23A49036-9AE1-4D2F-B167-16849DD6040D}]
+"Enabled"=dword:00000001
+"EnableLevel"=dword:00000005
+"EnableFlags"=dword:ffffffff
+
+; Microsoft-Windows-Kernel-PnP
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\PipaPmicGpio\{9C205A39-1250-487D-ABD7-E831C6290539}]
+"Enabled"=dword:00000001
+"EnableLevel"=dword:00000005
+"MatchAnyKeyword"=hex(b):ff,ff,ff,ff,ff,ff,ff,ff
+
+; KMDF verbose logging for the service (in-flight recorder; harmless)
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Services\qcpmgpio\Parameters\Wdf]
+"VerboseOn"=dword:00000001
+"LogPages"=dword:00000010
+
+; Redirect the qcspmi INF autologger (in-memory) to a file
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\spmi]
+"LogFileMode"=dword:00000001
+"FileName"="C:\\pipa-logs\\spmi.etl"
+"FileMax"=dword:00000001
+"FlushTimer"=dword:00000001
+"MaximumFileSize"=dword:00000020
+
+[HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001\Control\WMI\Autologger\spmi\{c1de55d4-9831-472f-a17d-3500da9c7fa8}]
+"EnableLevel"=dword:00000005
+

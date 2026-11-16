@@ -1,0 +1,1 @@
+# 3b: no new drivers; boot-time ETW trace for PMIC GPIO (pmicgpio_trace.reg)

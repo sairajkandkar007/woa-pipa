@@ -1,0 +1,2 @@
+# 3c: no new drivers. Mark for reinstall SPMI, PMIC core and PEP0, which were installed with NO driver (raw) at first boot,
+# so Windows installs qcspmi/qcpmic now.

@@ -1,6 +1,6 @@
 # Phase 5 (Claude): inject a driver batch OFFLINE into tablet Windows (tablet in UEFI Mass Storage: Vol Down at Silicium screen).
 # Backs up SYSTEM/SOFTWARE/DRIVERS hives first so the batch can be undone with RUN_PHASE5_UNDO.
-param([string]$Batch = 'batch1.txt', [string[]]$ReEnumerate = @())
+param([string]$Batch = 'batch1.txt', [string[]]$ReEnumerate = @(), [string]$SystemReg = '')
 $ErrorActionPreference = 'Continue'
 $root = $PSScriptRoot
 $stamp = Get-Date -Format 'yyyyMMdd_HHmm'
@@ -20,6 +20,8 @@ else { Add-PartitionAccessPath -DiskNumber $disk.Number -PartitionNumber 35 -Acc
 if (-not (Test-Path "${W}:\Windows\System32\config\SYSTEM")) { Fail 'Windows not found on p35' }
 
 Copy-Item "${W}:\pipa-logs" (Join-Path $root "pipa_logs_$stamp") -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force (Join-Path $root 'tablet_bins') | Out-Null
+foreach ($b in 'msgpioclx.sys','spbcx.sys','acpi.sys','wdf01000.sys') { Copy-Item "${W}:\Windows\System32\drivers\$b" (Join-Path $root 'tablet_bins') -Force -ErrorAction SilentlyContinue }
 # 1. Snapshot the WHOLE registry folder (hives + .LOG1/.LOG2 + txr) so undo is consistent
 $cfg = "${W}:\Windows\System32\config"
 $bk = Join-Path $root "config_snapshot_$stamp"; New-Item -ItemType Directory -Force $bk | Out-Null
@@ -49,14 +51,41 @@ foreach ($rel in $list) {
   Write-Host "`n### Add-Driver $rel" -ForegroundColor Cyan
   dism /English /Image:"${W}:\" /Add-Driver /Driver:"$dir" /Recurse /ForceUnsigned | Select-String -Pattern 'Installing|successfully|Error|error|failed' | ForEach-Object { Write-Host $_ }
 }
-# 3. Re-enumerate devices (delete their offline Enum records so Windows re-detects them and picks the best-ranked driver)
+# 3. Mark devices for reinstall (ConfigFlags = CONFIGFLAG_REINSTALL) so Windows installs the best driver at next boot.
+#    Enum keys are SYSTEM-only, so open them with SeRestorePrivilege + REG_OPTION_BACKUP_RESTORE.
+$ReEnumerate = @($ReEnumerate | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 if ($ReEnumerate.Count -gt 0) {
+  if (-not ('PipaReg' -as [type])) {
+  Add-Type @"
+using System; using System.Runtime.InteropServices;
+public static class PipaReg {
+  [DllImport("advapi32.dll", CharSet=CharSet.Unicode)] static extern int RegOpenKeyEx(UIntPtr h, string sub, int opt, int sam, out UIntPtr res);
+  [DllImport("advapi32.dll", CharSet=CharSet.Unicode)] static extern int RegSetValueEx(UIntPtr h, string name, int r, int type, byte[] data, int len);
+  [DllImport("advapi32.dll")] static extern int RegCloseKey(UIntPtr h);
+  [DllImport("advapi32.dll", SetLastError=true)] static extern bool OpenProcessToken(IntPtr p, int acc, out IntPtr t);
+  [DllImport("advapi32.dll", SetLastError=true, CharSet=CharSet.Unicode)] static extern bool LookupPrivilegeValue(string s, string n, out long luid);
+  [DllImport("advapi32.dll", SetLastError=true)] static extern bool AdjustTokenPrivileges(IntPtr t, bool d, ref TP n, int l, IntPtr p, IntPtr r);
+  [DllImport("kernel32.dll")] static extern IntPtr GetCurrentProcess();
+  [StructLayout(LayoutKind.Sequential, Pack=4)] struct TP { public int Count; public long Luid; public int Attr; }
+  public static void Priv(string n) { IntPtr t; OpenProcessToken(GetCurrentProcess(), 0x28, out t); TP tp = new TP(); tp.Count=1; tp.Attr=2; LookupPrivilegeValue(null, n, out tp.Luid); AdjustTokenPrivileges(t, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero); }
+  public static int SetDword(string sub, string name, int val) {
+    UIntPtr h; int rc = RegOpenKeyEx(new UIntPtr(0x80000002u), sub, 4 /*REG_OPTION_BACKUP_RESTORE*/, 0x20006 /*KEY_WRITE*/, out h);
+    if (rc != 0) return rc; rc = RegSetValueEx(h, name, 0, 4, BitConverter.GetBytes(val), 4); RegCloseKey(h); return rc; }
+}
+"@
+  }
+  [PipaReg]::Priv('SeRestorePrivilege'); [PipaReg]::Priv('SeBackupPrivilege')
   reg load HKLM\PIPA_SYS "${W}:\Windows\System32\config\SYSTEM" | Out-Null
   foreach ($e in $ReEnumerate) {
-    $k = "HKLM\PIPA_SYS\ControlSet001\Enum\$e"
-    reg query $k *> $null
-    if ($LASTEXITCODE -eq 0) { reg delete $k /f | Out-Null; Write-Host "Re-enumerate: deleted $k" } else { Write-Host "Re-enumerate: $k not present" }
+    $rc = [PipaReg]::SetDword("PIPA_SYS\ControlSet001\Enum\$e", 'ConfigFlags', 0x20)
+    Write-Host "Reinstall flag on $e : $(if ($rc -eq 0) {'OK'} else {"FAILED rc=$rc"})"
   }
+  [gc]::Collect(); Start-Sleep 2; reg unload HKLM\PIPA_SYS | Out-Null
+}
+# 3b. Import extra SYSTEM-hive settings (a .reg file whose keys start with HKEY_LOCAL_MACHINE\PIPA_SYS\ControlSet001)
+if ($SystemReg) {
+  reg load HKLM\PIPA_SYS "${W}:\Windows\System32\config\SYSTEM" | Out-Null
+  reg import (Join-Path $root $SystemReg); Write-Host "Imported $SystemReg (exit $LASTEXITCODE)"
   [gc]::Collect(); Start-Sleep 2; reg unload HKLM\PIPA_SYS | Out-Null
 }
 dism /English /Image:"${W}:\" /Get-Drivers /Format:Table | Out-File (Join-Path $root "logs\drivers_after_$stamp.txt")

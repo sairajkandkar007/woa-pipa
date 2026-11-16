@@ -12,7 +12,7 @@ Bring-up notes, patches and tooling for running **Windows 11 Pro ARM64** on the
 - ✅ Windows 11 Pro 22621 installs and boots to the desktop (unattended; no input devices needed)
 - ✅ Current upstream Mu-Silicium boots again on pipa with [`uefi/patches/0001-pipa-fix-boot-ram-manager.patch`](uefi/patches/0001-pipa-fix-boot-ram-manager.patch) (upstream regression since 2026-05-21)
 - ✅ ACPI with Kona BSP hardware IDs ([`acpi/make_pipa_k.py`](acpi/make_pipa_k.py)): 15 Kona drivers installed, 20 devices running (SCM, SPMI, TLMM GPIO, PMIC core/apps/ext, BAM, GPI, GLINK, RPEN…)
-- 🟡 PMIC GPIO driver fails to load → side buttons / Type-C controller / ADC blocked
+- ✅ SPMI, PMIC core, PMIC GPIO, power/side buttons, PMIC Type-C controller, ADC (after fixing NULL-driver installs, see STATUS_LOG)
 - ⏳ PEP, I2C/SPI, SMMU, DSP subsystems, battery, USB host, touch, Wi-Fi, GPU
 
 Details: [`docs/STATUS_LOG.md`](docs/STATUS_LOG.md) · Plan: [`docs/ROADMAP.md`](docs/ROADMAP.md) · UEFI build: [`uefi/BUILD.md`](uefi/BUILD.md)
