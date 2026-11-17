@@ -1,0 +1,39 @@
+# local IDE state and root build output
+/.vs/
+/ARM64/
+/build/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+
+# compiler, linker and WPP intermediates
+*.obj
+*.pdb
+*.idb
+*.ilk
+*.pch
+*.lib
+*.exp
+*.tmh
+*.tmf
+*.tmc
+*.tlog
+*.lastbuildstate
+*.binlog
+*.log
+*.sys
+*.cat
+*.cer
+*.etl
+*.json
+*.jsonc
+*.json5
+
+# Python caches and external signing keys
+__pycache__/
+*.py[cod]
+*.pfx
+*.p12
