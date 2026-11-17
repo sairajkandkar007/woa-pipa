@@ -1,5 +1,15 @@
 # Status log
 
+## 2026-11-17: PEP root causes found, PEP now starts but boot hangs
+
+- **Why PEP blue-screened the boot (`INACCESSIBLE_BOOT_DEVICE`):** UFS0 has `_DEP` on PEP0. Without a PEP driver PEP0 is raw-started, so UFS starts; with qcpep installed PEP0 failed (code 31) → UFS0 waited forever → no boot disk. Fix: `make_pipa_k.py --ufs-dep-scm` (UFS0 depends on SCM0 instead). With it Windows boots even when PEP fails.
+- **Why qcpep failed AddDevice (code 31, `0xC000000E`):** `\_SB.PEP0.PEPH` returns the PEP's own hardware ID string `"ACPI\\VEN_QCOM&DEV_0519"` (missed by the QCOM05→25 rename). qcpep compares it to its device ID. Fix: rename `VEN_QCOM&DEV_05xx` strings too (now always done by `make_pipa_k.py`).
+- **First-boot effect:** a PEP installed during a boot loads late (as a normal driver) and cannot register with PoFx; it only works from the next boot (boot-start).
+- **Diagnostic WinPE (RAM disk on the ESP, one-time BCD boot):** `RUN_PHASE8_BUILD_DIAG.bat` / `RUN_PHASE8_INSTALL_DIAG.bat`. WIM must have boot index set (`/Bootable`), BCD must use an explicit `partition=`/`[S:]` device on pipa.
+- **Current blocker:** with the PEPH fix, PEP0 attaches and **boot hangs at the spinner** (no BSOD). Not fixed by qcpep "safe mode" registry (`pep_safe.reg`: processor management/LPM/LPI/AVS/BCL/BW-mon off, WPP on) nor by removing UFS0 from PEP's config. No trace survives (hang happens before the log file is created).
+- Flashed UEFI = `Mu-pipa-konaIDs-ufsdepscm.img` (no PEPH fix → PEP fails quietly, Windows boots). Test UEFIs: `pepfix`, `pepfix-ufsnopep` via `fastboot boot` only.
+- Next idea: capture the hang (USB keyboard + CrashOnCtrlScroll → dump → WinDbg on the PC), or bisect PEP's default resources (SRDL: display clocks / MMCX rail / bus votes).
+
 ## 2026-11-16 (evening): PEP attempt failed, clean rebuild
 
 - **PEP (`qcpep.wd8250`)** → `INACCESSIBLE_BOOT_DEVICE` (param2 `0xC0000034`): the UFS disk disappears once PEP manages power.

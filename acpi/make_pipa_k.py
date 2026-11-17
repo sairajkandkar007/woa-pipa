@@ -14,7 +14,12 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      8c4cdc43 pipa DSDT).
   4. fixes the ACPI table checksum
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails]
+  (--ufs-dep-scm) UFS0's _DEP on \\_SB.PEP0 -> \\_SB.SCM0 (boot-start qcscm), so the boot disk does not
+     wait for PEP0. With qcpep installed but failing (code 31), Windows still boots.
+  (--ufs-nopep) EXPERIMENT: renames the three PEP config entries for "\\_SB.UFS0" to "\\_SB.UFSZ"
+     so PEP does not power-manage the UFS controller (it stays as UEFI left it).
+
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm]
 """
 import sys
 
@@ -27,6 +32,11 @@ def main():
     n = bytes(d).count(b'QCOM05')
     d = bytearray(bytes(d).replace(b'QCOM05', b'QCOM25'))
     print(f'renamed {n} QCOM05xx -> QCOM25xx')
+    # PEP0.PEPH returns the PEP's own hardware ID as a string ("ACPI\\VEN_QCOM&DEV_0519"); qcpep compares it
+    # with its device ID and fails AddDevice with STATUS_NO_SUCH_DEVICE (code 31) on a mismatch.
+    m = bytes(d).count(b'VEN_QCOM&DEV_05')
+    d = bytearray(bytes(d).replace(b'VEN_QCOM&DEV_05', b'VEN_QCOM&DEV_25'))
+    print(f'renamed {m} VEN_QCOM&DEV_05xx -> DEV_25xx string(s)')
     if '--keep-uid' not in sys.argv:
         dev = None
         i = d.find(b'GIO0')
@@ -51,6 +61,18 @@ def main():
         repl_nth(d, b'PPP_RESOURCE_ID_LDO10_A\x00', b'PPP_RESOURCE_ID_LDO17_A\x00', [1, 2, 3, 4, 5])
         repl_nth(d, b'PPP_RESOURCE_ID_LDO3_C\x00', b'PPP_RESOURCE_ID_LDO6_A\x00', [15, 16, 17, 18])
         print('UFS0 PEP rails: LDO10_A -> LDO17_A (x5), LDO3_C -> LDO6_A (x4)')
+    if '--ufs-dep-scm' in sys.argv:
+        dev = bytes(d).find(b'UFS0')
+        dep = bytes(d).find(b'_DEP', dev)
+        k = bytes(d).find(b'\\._SB_PEP0', dep)
+        assert dev == 0x192 and 0 < dep - dev < 40 and 0 < k - dep < 16, 'unexpected DSDT layout'
+        d[k + 6:k + 10] = b'SCM0'
+        print('UFS0 _DEP: PEP0 -> SCM0')
+    if '--ufs-nopep' in sys.argv:
+        old, new = b'\\_SB.UFS0\x00', b'\\_SB.UFSZ\x00'
+        assert bytes(d).count(old) == 3, 'unexpected DSDT'
+        d = bytearray(bytes(d).replace(old, new))
+        print('UFS0 removed from PEP config (3 entries -> \\_SB.UFSZ)')
     d[9] = 0
     d[9] = (-sum(d)) & 0xFF
     assert sum(d) & 0xFF == 0 and len(d) == int.from_bytes(d[4:8], 'little')
