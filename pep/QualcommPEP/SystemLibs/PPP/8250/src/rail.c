@@ -79,6 +79,24 @@ int rail_cmd_db_name(const char* ppp_name, char out[RAIL_CMDDB_BYTES], uint32_t*
     if (*p != 0)
         return 0;
 
+#if defined(PEP_TARGET_8250)
+    /* SM8250 cmd-db uses legacy names: ldoa5, smpc1, bobb1, lnbclka1 (instance must be 0). */
+    if (instance)
+        return 0;
+    {
+        const char* k = kind == 'L' ? "ldo" : kind == 'S' ? "smp" : kind == 'B' ? "bob" : "lnbclk";
+        while (*k)
+            out[n++] = *k++;
+    }
+    out[n++] = (char)(pmic - 'A' + 'a');
+    if (number >= 10u)
+        out[n++] = (char)('0' + (number / 10u) % 10u);
+    out[n++] = (char)('0' + number % 10u);
+    out[n] = 0;
+    if (type_arg)
+        *type_arg = type;
+    return 1;
+#endif
     out[n++] = kind;
     if (number >= 100u)
         out[n++] = (char)('0' + number / 100u);

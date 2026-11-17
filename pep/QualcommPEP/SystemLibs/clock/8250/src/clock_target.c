@@ -36,10 +36,11 @@ static const clock_config_rule_t config_rules[] = {
 };
 
 static const char* const probe_clocks[] = {
-    "gcc_qupv3_wrap3_core_clk",
-    "gcc_qupv3_wrap3_core_2x_clk",
-    "gcc_qupv3_wrap_3_m_ahb_clk",
-    "gcc_qupv3_wrap_3_s_ahb_clk",
+    /* SM8250: QUP wrap1 is the always-used (UART/I2C) wrapper on pipa. */
+    "gcc_qupv3_wrap1_core_clk",
+    "gcc_qupv3_wrap1_core_2x_clk",
+    "gcc_qupv3_wrap_1_m_ahb_clk",
+    "gcc_qupv3_wrap_1_s_ahb_clk",
 };
 
 const clock_config_rule_t* clock_config_rule(const char* name, uint32_t selector)

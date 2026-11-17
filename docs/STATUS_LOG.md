@@ -87,3 +87,10 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - DSDT: `make_pipa_k.py --qpep-crs` replaces 4 unused PEP0 interrupts with Memory32Fixed RSC DRV2 0x18220000/0x10000 + AOP MSGRAM (QualcommPEP needs DRV2 as a PnP memory resource).
 - Build: `qpep/RUN_QPEP8250_BUILD.bat` (downloads repo main, builds QcPep8250.sln, test-signs). Not yet compiled.
 - Before installing on the tablet: remove the old Kona qcpep (same HWID QCOM2519).
+
+## 2026-11-18 00:20 — QualcommPEP SM8250 first boot
+- Boots to desktop. PEP0 `ACPI\QCOM2519` DeviceNodeStarted with service qcpep_8480; PoFx registered.
+- Trace: cmd-db 0x80860000 parsed (16 BCMs), RSC DRV2 identity+geometry OK, GPLL0 locked, TLMM pin 52 OK, QMP mailbox mapped.
+- Admission denied: probes=2A/3F (missing CMDDB rail, RPMH read, CLOCK sentinel).
+  - rails: 8845 cmd-db naming (L10B_E0) -> added SM8250 legacy naming (ldob10/smpa1/bobb1/lnbclka1).
+  - clock sentinel: probe list was QUP wrap3 (8845) -> QUP wrap1.
