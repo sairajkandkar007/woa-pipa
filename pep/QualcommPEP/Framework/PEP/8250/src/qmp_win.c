@@ -295,8 +295,7 @@ static VOID close_ipcc(qmp_win_t* ctx)
         MmUnmapIoSpace((PVOID)ctx->doorbell, sizeof(ULONG));
         ctx->doorbell = NULL;
     }
-    return;
-#endif
+#else
     if (ctx->handle) {
         (VOID) ctx->ipcc.close(&ctx->handle);
         ctx->handle = NULL;
@@ -312,6 +311,7 @@ static VOID close_ipcc(qmp_win_t* ctx)
         ctx->target = NULL;
     }
     ctx->target_open = FALSE;
+#endif
 }
 
 static NTSTATUS open_ipcc(qmp_win_t* ctx)
@@ -361,8 +361,8 @@ static NTSTATUS open_ipcc(qmp_win_t* ctx)
 fail:
     close_ipcc(ctx);
     return status;
-}
 #endif
+}
 
 void qmp_win_start(WDFDEVICE dev)
 {

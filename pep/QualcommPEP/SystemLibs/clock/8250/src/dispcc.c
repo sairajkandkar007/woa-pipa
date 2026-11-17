@@ -55,18 +55,18 @@ int dispcc_rate_group(const gcc_clock_t* clock)
 
 int dispcc_probe(dispcc_t* d)
 {
-    uint32_t version, cfg, nodes, enabled, status;
 #if defined(PEP_TARGET_8250)
-    (void)version; (void)cfg; (void)nodes; (void)enabled; (void)status;
     (void)d;
     return 0; /* no display CRM on SM8250 */
-#endif
+#else
+    uint32_t version, cfg, nodes, enabled, status;
     if (!d || d->quarantined || !rd(&d->common, 0u, &version) || !rd(&d->common, 4u, &cfg) ||
         !rd(&d->common, 8u, &nodes) || !rd(&d->common, 12u, &enabled) ||
         !rd(&d->crm, VOTE_FSM, &status))
         return 0;
     return ((version >> 16) & 0xffu) == 3u && ((cfg >> 18) & 0x1fu) > 1u && ((cfg >> 23) & 7u) &&
            ((nodes >> 26) & 0x1fu) && (enabled & 1u);
+#endif
 }
 
 static int mdp_hz(dispcc_t* d, uint32_t* hz)
