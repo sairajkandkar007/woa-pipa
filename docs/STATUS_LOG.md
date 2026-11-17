@@ -1,5 +1,13 @@
 # Status log
 
+## 2026-11-17 23:30: PEP plan switched to QualcommPEP port; toolchain works
+
+- Assessment: `docs/QUALCOMMPEP_ASSESSMENT.md` (feasible, better long-term; qcpep patching parked).
+- PC toolchain installed: VS 2022 Community 17.14 (C++ ARM64), SDK + WDK 10.0.26100 (+ VS DriverKit component).
+- `qpep/RUN_QPEP_BUILD.bat` clones QualcommPEP (sm8845), creates a test cert, builds ARM64 Release: **qcpep.sys built OK**
+  (infverif error 1323 on service-key values worked around in the local INF copy).
+- Next: create the sm8250 target (CPU perf/idle off, QMP via APCS doorbell, SM8250 RPMh/cmd-db, clocks/ICB for UFS+QUP).
+
 ## 2026-11-17 21:30: PEP debugged with the kernel debugger; init completes, device loading still crashes
 
 - Kernel debugging over USB (KDNET-EEM) works on pipa (`scripts/RUN_PHASE9_KD_ON.bat`, WinDbg "Break on connection").
