@@ -83,6 +83,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(IntDir);..\Framework\DeviceLib\inc;..\Framework\PEP\8250\inc;..\Framework\PEP\inc;..\SystemLibs\GLINK\inc;..\SystemLibs\SCMI\inc;..\SystemLibs\SCMI\8250\inc;..\SystemLibs\ARC\inc;..\SystemLibs\CmdDb\inc;..\SystemLibs\DAL\inc;..\SystemLibs\ICB\8250\inc;..\SystemLibs\NPA\inc;..\SystemLibs\PPP\8250\inc;..\SystemLibs\RPMh\8250\inc;..\SystemLibs\TLMM\8250\inc;..\SystemLibs\Tsens\inc;..\SystemLibs\clock\8250\inc;..\api;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PEP_TARGET_8250=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WppEnabled>false</WppEnabled>
       <WppKernelMode>true</WppKernelMode>
       <WppRecorderEnabled>true</WppRecorderEnabled>
@@ -103,6 +104,7 @@
       <TreatWarningAsError>false</TreatWarningAsError>
       <Optimization>MaxSpeed</Optimization>
       <AdditionalIncludeDirectories>$(IntDir);..\Framework\DeviceLib\inc;..\Framework\PEP\8250\inc;..\Framework\PEP\inc;..\SystemLibs\GLINK\inc;..\SystemLibs\SCMI\inc;..\SystemLibs\SCMI\8250\inc;..\SystemLibs\ARC\inc;..\SystemLibs\CmdDb\inc;..\SystemLibs\DAL\inc;..\SystemLibs\ICB\8250\inc;..\SystemLibs\NPA\inc;..\SystemLibs\PPP\8250\inc;..\SystemLibs\RPMh\8250\inc;..\SystemLibs\TLMM\8250\inc;..\SystemLibs\Tsens\inc;..\SystemLibs\clock\8250\inc;..\api;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PEP_TARGET_8250=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WppEnabled>false</WppEnabled>
       <WppKernelMode>true</WppKernelMode>
       <WppRecorderEnabled>true</WppRecorderEnabled>

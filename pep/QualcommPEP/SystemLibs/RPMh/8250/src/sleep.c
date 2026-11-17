@@ -45,7 +45,7 @@ static int idle(rpmh_sleep_t* owner)
     rsc_hlos_geometry_t geometry;
     if (!authorized(owner) || !owner->io.quiescent(owner->io.ctx) ||
         !owner->io.read(owner->io.ctx, RSC_ID_OFFSET, &value) ||
-        (value & RSC_ID_MASK) != RSC_ID_POR ||
+        !RSC_ID_MATCH(value) ||
         !owner->io.read(owner->io.ctx, RSC_PARENTCHILD_CONFIG_OFFSET, &value) ||
         !rpmh_tcs_check_hlos_geometry(value, owner->layout.total_tcs, owner->layout.commands,
                                       &geometry) ||

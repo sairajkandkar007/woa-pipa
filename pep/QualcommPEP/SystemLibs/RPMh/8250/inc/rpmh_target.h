@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define HLOS_RSC_DRV2_PHYS UINT64_C(0x18920000)
+#define HLOS_RSC_DRV2_PHYS UINT64_C(0x18220000)
 #define RSC_DRV2_BYTES 0x10000u
 
 #define MOLOKAI_UEFI_HW_DRV 2u

@@ -42,7 +42,7 @@ int rsc_d0_map_open_win(rsc_d0_map_win_t* map, uint64_t pnp_generation,
     for (i = 0; i < MOLOKAI_WIN_AMC_CNT; ++i)
         status_after[i] = read_reg(base, TCS_STATUS(i));
     if (first_id != expected->rsc_id || first_config != expected->driver_config ||
-        (first_id & RSC_ID_MASK) != RSC_ID_POR ||
+        !RSC_ID_MATCH(first_id) ||
         !rpmh_tcs_check_hlos_geometry(first_config, MOLOKAI_WIN_TCS_TOTAL, TCS_BATCH_MAX,
                                       &geometry) ||
         geometry.tcs_cnt != expected->tcs_cnt ||

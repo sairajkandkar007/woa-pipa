@@ -164,7 +164,7 @@ int oem_sleep_wake_program_commit(oem_sleepwake_program_t* p, uint64_t token)
             if (!oem_sleep_wake_deps_get(p->dependencies, token, i, &wait_masks[i]))
                 return 0;
     if (!valid_image(p->bridge) || !p->ops.read32(p->ops.ctx, RSC_ID_OFFSET, &id) ||
-        ((id & RSC_ID_MASK) != RSC_ID_POR) ||
+        !RSC_ID_MATCH(id) ||
         !p->ops.read32(p->ops.ctx, RSC_PARENTCHILD_CONFIG_OFFSET, &cfg))
         return 0;
     {

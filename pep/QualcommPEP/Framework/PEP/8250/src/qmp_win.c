@@ -38,6 +38,9 @@ typedef struct qmp_win {
     WDFIOTARGET target;
     PVOID handle;
     ipcc_interface_t ipcc;
+#if defined(PEP_TARGET_8250)
+    volatile ULONG* doorbell; /* SM8250: APCS IPC register (0x17C0000C), mapped in open_ipcc */
+#endif
     qmp_t transport;
     qmp_interface_t interface;
 } qmp_win_t;
@@ -80,7 +83,16 @@ static int kick_qmp(void* context)
     qmp_win_t* ctx = context;
 
     KeMemoryBarrier();
+#if defined(PEP_TARGET_8250)
+    /* SM8250 has no IPCC: AOP is signalled through the APCS IPC register (Linux qcom_aoss
+     * "mboxes = <&apss_shared 0>"). _DSM client = doorbell physical address, signal = bit. */
+    if (!ctx->doorbell)
+        return 1;
+    WRITE_REGISTER_ULONG((PULONG)ctx->doorbell, 1u << (ctx->signal & 31u));
+    return 0;
+#else
     return ctx->ipcc.trigger(ctx->handle, ctx->client, ctx->signal, ctx->signal) != 0;
+#endif
 }
 
 static void delay_qmp(void* context)
@@ -261,6 +273,13 @@ NTSTATUS qmp_win_prepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST translate
 
 static VOID close_ipcc(qmp_win_t* ctx)
 {
+#if defined(PEP_TARGET_8250)
+    if (ctx->doorbell) {
+        MmUnmapIoSpace((PVOID)ctx->doorbell, sizeof(ULONG));
+        ctx->doorbell = NULL;
+    }
+    return;
+#endif
     if (ctx->handle) {
         (VOID) ctx->ipcc.close(&ctx->handle);
         ctx->handle = NULL;
@@ -280,6 +299,15 @@ static VOID close_ipcc(qmp_win_t* ctx)
 
 static NTSTATUS open_ipcc(qmp_win_t* ctx)
 {
+#if defined(PEP_TARGET_8250)
+    PHYSICAL_ADDRESS bell;
+    /* only the APCS shared IPC register is accepted as a doorbell on this target. */
+    if (ctx->client != 0x17C0000Cu || ctx->signal > 31u)
+        return STATUS_DEVICE_CONFIGURATION_ERROR;
+    bell.QuadPart = (LONGLONG)ctx->client;
+    ctx->doorbell = (volatile ULONG*)MmMapIoSpaceEx(bell, sizeof(ULONG), PAGE_READWRITE | PAGE_NOCACHE);
+    return ctx->doorbell ? STATUS_SUCCESS : STATUS_INSUFFICIENT_RESOURCES;
+#else
     WDF_OBJECT_ATTRIBUTES attrs;
     WDF_IO_TARGET_OPEN_PARAMS params;
     UNICODE_STRING name = RTL_CONSTANT_STRING(L"\\Device\\IPCC");
@@ -316,6 +344,7 @@ fail:
     close_ipcc(ctx);
     return status;
 }
+#endif
 
 void qmp_win_start(WDFDEVICE dev)
 {

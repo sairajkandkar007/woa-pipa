@@ -8,7 +8,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define OEM_RSC_DIRECT_BASE UINT64_C(0x18920000)
+#define OEM_RSC_DIRECT_BASE UINT64_C(0x18220000)
 #define OEM_RSC_DIRECT_BYTES 0x10000u
 #define OEM_RSC_MAP_COLD 0u
 #define OEM_RSC_MAP_LIVE 1u

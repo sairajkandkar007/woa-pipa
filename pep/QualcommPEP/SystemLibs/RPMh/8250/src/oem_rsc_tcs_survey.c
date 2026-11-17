@@ -72,7 +72,7 @@ int oem_rsc_tcs_survey(oem_direct_rsc_map_t* map, uint64_t epoch, const oem_rsc_
     a.owner_epoch = epoch;
     a.tcs_cnt = geometry.tcs_cnt;
     a.commands_per_tcs = geometry.commands_per_tcs;
-    a.controller_id_matches_firmware = ((a.rsc_id & RSC_ID_MASK) == RSC_ID_POR);
+    a.controller_id_matches_firmware = (RSC_ID_MATCH(a.rsc_id));
     a.geometry_meets_firmware = 1u;
     a.pending_irq_mask = a.irq_status & ((1u << OEM_RSC_SURVEY_TCS_CNT) - 1u);
     for (i = 0; i < OEM_RSC_SURVEY_TCS_CNT; i++) {

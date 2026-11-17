@@ -1022,7 +1022,7 @@ BOOLEAN hw_backend_win_idle_quiescent(VOID)
     for (ULONG i = 0u; i < RPMH_JOBS; ++i)
         if (owner->rpmh_scheduler.jobs[i].state != RPMH_JOB_FREE)
             return FALSE;
-    if (!rpmh_read(owner, RSC_ID_OFFSET, &value) || (value & RSC_ID_MASK) != RSC_ID_POR ||
+    if (!rpmh_read(owner, RSC_ID_OFFSET, &value) || !RSC_ID_MATCH(value) ||
         !rpmh_read(owner, TCS_IRQ_STATUS, &value) || value)
         return FALSE;
     for (ULONG i = 0u; i < MOLOKAI_WIN_AMC_CNT; ++i)
@@ -4023,7 +4023,7 @@ skip_catalog_probe:
         /* tcs geometry does not grant AMC ownership; validate both geometry and the current owner.
          */
 
-        if ((o->rsc_id & RSC_ID_MASK) == RSC_ID_POR && (status & TCS_STATUS_IDLE) &&
+        if (RSC_ID_MATCH(o->rsc_id) && (status & TCS_STATUS_IDLE) &&
             rpmh_tcs_check_hlos_geometry(o->drv_config, (uint8_t)MOLOKAI_WIN_TCS_TOTAL,
                                          (uint8_t)TCS_BATCH_MAX, &rsc_geometry))
             o->probe |= PROBE_RSC_ID;

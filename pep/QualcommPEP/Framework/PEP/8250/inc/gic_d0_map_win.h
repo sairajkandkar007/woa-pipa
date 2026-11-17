@@ -6,8 +6,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define GICD_PHYS 0x17000000ULL
-#define GICD_BYTES 0x390000u
+#define GICD_PHYS 0x17A00000ULL /* SM8250 GIC-600 distributor */
+#define GICD_BYTES 0x10000u
 #define GICD_TYPER 0x004u
 #define GICD_IIDR 0x008u
 #define GICD_ISENABLER1 0x104u

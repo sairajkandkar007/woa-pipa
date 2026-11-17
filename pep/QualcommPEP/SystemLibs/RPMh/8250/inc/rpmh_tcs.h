@@ -1,9 +1,10 @@
 #ifndef RPMH_TCS_H
 #define RPMH_TCS_H
-/* reg facts (BOOT.MXF Molokai RpmhTargetLib rsc_hal_hwio.h, APSS RSC; offsets relative to
- * the DRV window, 0x10000 per DRV; op15r.dts apps_rsc drv-2 at physical 0x18920000):
- * RSC_ID +0x000 (POR 0x00040300, mask 0xFFFFFF) RSC_PARENTCHILD_CONFIG +0x00C
- * TCS_AMC_MODE_IRQ_ENABLE/STATUS/CLEAR +0xD00 / */
+/* SM8250 (kona) APSS RSC, version 2.x register layout (Linux rpmh-rsc "pre-v3" table):
+ * DRV2 at 0x18220000 (pipa DT apps_rsc reg drv-2), qcom,tcs-offset 0xD00, TCS stride 672 (0x2A0),
+ * command stride 20 (0x14). Per-TCS registers: CMD_WAIT 0x10, CONTROL 0x14, STATUS 0x18,
+ * CMD_ENABLE 0x1C, CMD_MSGID 0x30, CMD_ADDR 0x34, CMD_DATA 0x38, CMD_STATUS 0x3C, CMD_RESP 0x40.
+ * PARENT_CHILD_CONFIG +0x0C read on pipa: 0x800C8104 (DRV2: 8 TCS, 16 commands per TCS). */
 
 #include <stdint.h>
 #include "rpmh_target.h"
@@ -12,24 +13,26 @@ extern "C" {
 #endif
 #define RSC_ID_OFFSET 0x0u
 #define RSC_ID_MASK 0xFFFFFFu
-#define RSC_ID_POR 0x040300u
+#define RSC_ID_POR 0x020000u /* informational; use RSC_ID_MATCH */
+/* accept any RSC major version 2 (SM8250); minor revision not verified on pipa yet. */
+#define RSC_ID_MATCH(v) ((((v) >> 16) & 0xFFu) == 0x02u)
 #define RSC_PARENTCHILD_CONFIG_OFFSET 0xCu
 #define TCS_BASE 0xD00u
 #define TCS_STRIDE 0x2A0u
-#define TCS_CMD_STRIDE 0x18u
+#define TCS_CMD_STRIDE 0x14u
 #define TCS_BATCH_MAX 16u
 #define TCS_IRQ_ENABLE 0xD00u
 #define TCS_IRQ_STATUS 0xD04u
 #define TCS_IRQ_CLEAR 0xD08u
-#define TCS_WAIT(m) (0xD20u + (m) * TCS_STRIDE)
-#define TCS_CONTROL(m) (0xD24u + (m) * TCS_STRIDE)
-#define TCS_STATUS(m) (0xD28u + (m) * TCS_STRIDE)
-#define TCS_ENABLE(m) (0xD2Cu + (m) * TCS_STRIDE)
-#define TCS_MSGID(m) (0xD34u + (m) * TCS_STRIDE)
-#define TCS_ADDR(m) (0xD38u + (m) * TCS_STRIDE)
-#define TCS_DATA(m) (0xD3Cu + (m) * TCS_STRIDE)
-#define TCS_CMD_STATUS(m) (0xD40u + (m) * TCS_STRIDE)
-#define TCS_CMD_RESP(m) (0xD44u + (m) * TCS_STRIDE)
+#define TCS_WAIT(m) (0xD10u + (m) * TCS_STRIDE)
+#define TCS_CONTROL(m) (0xD14u + (m) * TCS_STRIDE)
+#define TCS_STATUS(m) (0xD18u + (m) * TCS_STRIDE)
+#define TCS_ENABLE(m) (0xD1Cu + (m) * TCS_STRIDE)
+#define TCS_MSGID(m) (0xD30u + (m) * TCS_STRIDE)
+#define TCS_ADDR(m) (0xD34u + (m) * TCS_STRIDE)
+#define TCS_DATA(m) (0xD38u + (m) * TCS_STRIDE)
+#define TCS_CMD_STATUS(m) (0xD3Cu + (m) * TCS_STRIDE)
+#define TCS_CMD_RESP(m) (0xD40u + (m) * TCS_STRIDE)
 #define TCS_CMD_MSGID(m, n) (TCS_MSGID(m) + (n) * TCS_CMD_STRIDE)
 #define TCS_CMD_ADDR(m, n) (TCS_ADDR(m) + (n) * TCS_CMD_STRIDE)
 #define TCS_CMD_DATA(m, n) (TCS_DATA(m) + (n) * TCS_CMD_STRIDE)

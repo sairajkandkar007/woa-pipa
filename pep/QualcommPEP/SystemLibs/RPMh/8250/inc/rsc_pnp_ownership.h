@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 #define RSC_PNP_MAX_MEMORY 32u
-#define RSC_DRV2_PNP_BASE UINT64_C(0x18920000)
+#define RSC_DRV2_PNP_BASE UINT64_C(0x18220000)
 #define RSC_DRV2_PNP_SIZE UINT64_C(0x10000)
 
 typedef struct rsc_pnp_memory {

@@ -1,4 +1,4 @@
-/* firmware BOOT.MXF places the HLOS DRV2 at 0x18920000 / 0x10000. This probe DOES NOT
+/* firmware BOOT.MXF places the HLOS DRV2 at 0x18220000 / 0x10000. This probe DOES NOT
  * assume a PnP IRQ grants AMC or MMIO write ownership. */
 
 #include <ntddk.h>
@@ -31,7 +31,7 @@ int rsc_read_only_identify_hlos_win(rsc_identity_t* out)
         return 0;
     first_id = probe_read(regs, RSC_ID_OFFSET);
     first_config = probe_read(regs, RSC_PARENTCHILD_CONFIG_OFFSET);
-    if ((first_id & RSC_ID_MASK) != RSC_ID_POR ||
+    if (!RSC_ID_MATCH(first_id) ||
         !rpmh_tcs_check_hlos_geometry(first_config, MOLOKAI_WIN_TCS_TOTAL, TCS_BATCH_MAX, &geom))
         goto unmap;
     local.irq_enable = probe_read(regs, TCS_IRQ_ENABLE);

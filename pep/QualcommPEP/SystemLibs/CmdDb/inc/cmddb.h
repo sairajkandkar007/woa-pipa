@@ -12,7 +12,12 @@ extern "C" {
 #define CMDDB_VERSION 1u
 
 #define CMDDB_MAX_BYTES 0x20000u
+#if defined(PEP_TARGET_8250)
+/* SM8250 / pipa: "AOP CMD DB" reserved region (stock DT reserved-memory@80860000, Silicium memory map). */
+#define CMDDB_PHYS UINT64_C(0x80860000)
+#else
 #define CMDDB_PHYS UINT64_C(0x81c60000)
+#endif
 #define CMDDB_HEADER_BYTES 144u
 #define CMDDB_ENTRY_BYTES 24u
 #define CMDDB_SLV_CNT 8u

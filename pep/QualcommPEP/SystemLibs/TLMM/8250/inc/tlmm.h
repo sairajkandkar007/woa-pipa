@@ -1,24 +1,27 @@
 #ifndef TLMM_H
 #define TLMM_H
-/* the TLMM block is at physical 0x0f000000 (op15r.dts, msmhwiobase.h TLMM_BASE, 16 MiB).
- * the vendor TLMM HAL places the pin registers in tile 0 at TLMM_BASE + 0x100000 with a
- * 0x1000 stride per pin (GPIOMolokai.c block desc: aTiles[0] = 0x100000, nPinRegWidth =
- * 0x1000, 204 pins; HALgpioCore.c. */
+/* SM8250 (kona) TLMM: three tiles WEST 0x0F100000, SOUTH 0x0F500000, NORTH 0x0F900000 (each 0x300000,
+ * pipa DT / Silicium memory map). Pin n's registers are at <tile base> + n * 0x1000 (Linux
+ * pinctrl-sm8250.c). One window 0x0F100000..0x0FC00000 is mapped; the tile of each pin is below. */
 
 #include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define TLMM_BLOCK_PHYS UINT64_C(0x0f000000)
-#define TLMM_TILE0_OFFSET 0x100000u
+#define TLMM_BLOCK_PHYS UINT64_C(0x0f100000)
+#define TLMM_TILE0_OFFSET 0x0u
 
 #define TLMM_PHYS (TLMM_BLOCK_PHYS + TLMM_TILE0_OFFSET)
-#define TLMM_BYTES 0x100000u
-#define TLMM_PIN_CNT 204u
+#define TLMM_BYTES 0xB00000u
+#define TLMM_PIN_CNT 180u
 #define TLMM_PIN_STRIDE 0x1000u
 #define TLMM_CFG_EGPIO_PRESENT 0x800u
 #define TLMM_CFG_EGPIO_ENABLE 0x1000u
-#define TLMM_CTL(pin) ((uint32_t)(pin) * TLMM_PIN_STRIDE)
+/* 'W' = WEST (+0x000000), 'S' = SOUTH (+0x400000), 'N' = NORTH (+0x800000), generated from Linux. */
+#define TLMM_TILE_MAP "SSSSNNNNNNNNNNNNNNNNNNNNSSSSNNNNSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSNNNSSSSSSSSNNNNNNNNSSSSSSSNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNSSSSSSSSWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+#define TLMM_TILE_OFFSET(pin) \
+    (TLMM_TILE_MAP[(pin)] == 'S' ? 0x400000u : TLMM_TILE_MAP[(pin)] == 'N' ? 0x800000u : 0u)
+#define TLMM_CTL(pin) (TLMM_TILE_OFFSET(pin) + (uint32_t)(pin) * TLMM_PIN_STRIDE)
 #define TLMM_IO(pin) (TLMM_CTL(pin) + 4u)
 /* Configuration bounds do not grant pin ownership. */
 
