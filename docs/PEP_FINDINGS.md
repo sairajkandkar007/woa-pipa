@@ -1,7 +1,7 @@
 # qcpep8250 on pipa: findings from kernel debugging (2026-11-17)
 
 Kernel debugging over USB (KDNET-EEM, `kd_8003_5143.dll`, DBG2 entry for USB0 at 0xA600000) works on pipa:
-`scripts/RUN_PHASE9_KD_ON.bat` (BCD via UEFI Mass Storage, port 50000, key 1.2.3.4, busparams 1) and WinDbg
+`scripts/windows/RUN_PHASE9_KD_ON.bat` (BCD via UEFI Mass Storage, port 50000, key 1.2.3.4, busparams 1) and WinDbg
 **File → Attach to kernel → Net, "Break on connection"**. WinDbg (new) rejects `-b`, and `-c "$$<..."` on the command line;
 paste `$$< ...\pipa_peppatch.txt` at the first `brk` instead. Max 32 breakpoints.
 

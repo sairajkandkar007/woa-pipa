@@ -1,27 +1,30 @@
 # Roadmap: Windows 11 ARM64 on Xiaomi Pad 6 (pipa)
-_Last updated 2026-11-16._
+_Last updated 2026-11-17._
 
 | Phase | State |
 |---|---|
 | 0: Backups / ground truth | ✅ 113 partitions + GPTs MD5-verified (kept offline, not in this repo) |
-| 1: UEFI from source | ✅ Upstream Mu-Silicium main (fb4efb3) + `uefi/patches/0001-pipa-fix-boot-ram-manager.patch` |
-| 2: Windows install + first boot | ✅ Win11 Pro 22621, unattended (no touch/USB-host needed) |
-| 3a: ACPI for drivers | ✅ `pipa_k` DSDT (pipa DSDT with Kona HIDs, see `acpi/`) |
-| 3b: Kona BSP driver bring-up | 🟡 15 drivers installed, 20 devices running (see STATUS_LOG) |
-| 4: Polish / upstream | ⏳ |
+| 1: UEFI from source | ✅ Upstream Mu-Silicium main (fb4efb3) + RAM-manager patch; flashed to `boot_a` (ufsdepscm DSDT) |
+| 2: Windows install + first boot | ✅ Win11 Pro 22621, unattended; `RUN_REBUILD_KNOWN_GOOD.bat` reinstalls + known-good drivers |
+| 3a: ACPI for drivers | ✅ `pipa_k` DSDT via `acpi/make_pipa_k.py` (Kona IDs, PEPH, UFS `_DEP`, package counts) |
+| 3b: Kona BSP base drivers | ✅ SCM, ACPI, SPMI, PMIC core/apps/ext/GPIO, BAM, GPI, GLINK, VCM, RPEN, PMIC TCC, TCPM |
+| 3c: **PEP** | 🔧 in progress, kernel debugger; see `docs/PEP_FINDINGS.md` |
+| 4+: buses, peripherals | ⏳ blocked on PEP |
 
 ## Next steps
-1. **PMIC GPIO** (`qcpmicgpio8250`, `ACPI\QCOM2530`) fails to load (`0xC000026C`). It blocks side buttons, the PMIC Type-C controller and the ADCs.
-2. HALs (timer/watchdog) → **PEP** (+TSENS) → I2C/SPI/UART → SMMU (+IORT).
-3. PIL + ADSP/CDSP firmware → PMIC GLINK / UCSI / battery & charging.
-4. Touch: Novatek NT36532 on QUP SE4 SPI (port the nabu `nt36xxx` driver).
-5. Wi-Fi/BT (QCA6390), GPU (Adreno 650), audio.
-6. Flash the UEFI to `boot_a` once stable. Upstream the RAM fix (Mu-Silicium) and the pipa_k DSDT (Silicium-ACPI).
+1. **PEP:** remove/adjust `\_SB.UARD` PEP config (or make BUSARB work: find/emulate the bus-arbiter/ICB provider), continue until boot completes with qcpep running.
+2. Turn the in-memory patches into a patched, test-signed `qcpep8250.sys` + DSDT; flash; boot without the debugger.
+3. AOP messages via QMP mailbox (0xC300000) instead of GLINK `rpm_requests` (needed before DSPs). CPU DVFS via EPSS (0x18591000) instead of OSM.
+4. TLMM GPIO + Type-C off `genpass`; admin rights on the tablet install.
+5. I2C/SPI/UART → SMMU (+IORT) → PIL + ADSP/CDSP → PMIC GLINK/UCSI/battery & charging.
+6. Touch: Novatek NT36532 on QUP SE4 SPI (0x990000, IRQ TLMM GPIO 39, per UniXNU-pipa; verify against stock DT).
+7. Wi-Fi/BT (QCA6390), GPU (Adreno 650), audio. Upstream the RAM fix and DSDT fixes.
 
 ## Risks
 | Risk | Mitigation |
 |---|---|
 | Windows "Initialize disk"/format prompts for the tablet disk or `persist` | Never accept them. Scripts check exact disk/partition sizes. |
-| Bad UEFI/driver | Always `fastboot boot` (temporary). Small driver batches with a full registry snapshot (`RUN_PHASE5_UNDO2`). Full reset = `RUN_PHASE2_INSTALL` (~20 min). |
-| PMIC/charger misconfiguration | Bring up charging last, review PMIC nodes. |
+| Bad UEFI/driver | Test UEFIs with `fastboot boot`. Small driver batches with a registry snapshot. Crashed PEP boots: rebuild (`RUN_REBUILD_KNOWN_GOOD.bat`), not registry undo. |
+| PEP `.ppkg` | Never install it (CRITICAL_PROCESS_DIED loop). |
+| qcpep touching locked registers (LMh/OSM) | Bus hang → hard reset only (hold power ~8 s). |
 | Windows 24H2+ | Stay on 22621/23H2. |

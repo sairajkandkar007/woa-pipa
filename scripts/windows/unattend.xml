@@ -33,13 +33,13 @@
         <LocalAccounts>
           <LocalAccount wcm:action="add">
             <Name>pipa</Name><Group>Administrators</Group><DisplayName>pipa</DisplayName>
-            <Password><Value>pipa</Value><PlainText>true</PlainText></Password>
+            <Password><Value>CHANGE_ME</Value><PlainText>true</PlainText></Password>
           </LocalAccount>
         </LocalAccounts>
       </UserAccounts>
       <AutoLogon>
         <Enabled>true</Enabled><Username>pipa</Username><LogonCount>9999</LogonCount>
-        <Password><Value>pipa</Value><PlainText>true</PlainText></Password>
+        <Password><Value>CHANGE_ME</Value><PlainText>true</PlainText></Password>
       </AutoLogon>
       <FirstLogonCommands>
         <SynchronousCommand wcm:action="add"><Order>1</Order><CommandLine>cmd /c mkdir C:\pipa-logs &amp; pnputil /enum-devices /problem &gt; C:\pipa-logs\problem-devices.txt &amp; pnputil /enum-devices &gt; C:\pipa-logs\all-devices.txt</CommandLine></SynchronousCommand>
