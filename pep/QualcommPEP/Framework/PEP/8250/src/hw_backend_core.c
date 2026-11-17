@@ -225,9 +225,16 @@ int win_backend_five_delegations_live(const win_backend_t* b)
     unsigned i;
     if (!b || !b->registered)
         return 0;
-    for (i = 0; i < 5u; ++i)
+    for (i = 0; i < 5u; ++i) {
+#if defined(PEP_TARGET_8250)
+        /* SM8250: no PMIC GPIO provider (pmicgpio IOCTL) yet; PMIC GPIO actions fail
+         * individually instead of blocking every DPM provider. */
+        if (kinds[i] == POWER_PMIC_GPIO)
+            continue;
+#endif
         if (win_backend_delegation(b, kinds[i]) != HW_DELEGATION_LIVE)
             return 0;
+    }
     return 1;
 }
 

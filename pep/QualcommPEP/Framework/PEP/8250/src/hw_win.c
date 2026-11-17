@@ -6450,7 +6450,12 @@ static NTSTATUS hw_backend_win_try_publish_locked(_In_ WDFDEVICE dev)
 
     if (!win_backend_five_delegations_live(&g_win_backend->core)) {
         TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE,
-                    "resources: runtime providers unavailable DPM=rejected");
+                    "resources: runtime providers unavailable DPM=rejected clk=%d icb=%d tlmm=%d pgpio=%d reg=%d",
+                    (int)win_backend_delegation(&g_win_backend->core, POWER_CLOCK),
+                    (int)win_backend_delegation(&g_win_backend->core, POWER_ICB),
+                    (int)win_backend_delegation(&g_win_backend->core, POWER_TLMM_GPIO),
+                    (int)win_backend_delegation(&g_win_backend->core, POWER_PMIC_GPIO),
+                    (int)win_backend_delegation(&g_win_backend->core, POWER_PMIC_REGULATOR));
         trace_report(&g_win_backend->core);
         return STATUS_DEVICE_NOT_READY;
     }

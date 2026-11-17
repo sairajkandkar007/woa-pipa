@@ -94,3 +94,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Admission denied: probes=2A/3F (missing CMDDB rail, RPMH read, CLOCK sentinel).
   - rails: 8845 cmd-db naming (L10B_E0) -> added SM8250 legacy naming (ldob10/smpa1/bobb1/lnbclka1).
   - clock sentinel: probe list was QUP wrap3 (8845) -> QUP wrap1.
+
+## 2026-11-18 00:35 — run 2: all probes pass at D0
+- `D0 revalidation complete admission=open` (RPMh read of a cmd-db rail works through TCS on DRV2).
+- Blocked at `runtime providers unavailable DPM=rejected`: PMIC GPIO provider (8845 pmic 5 gpio 5 IOCTL probe) unavailable.
+- Fix: on 8250, PMIC GPIO delegation no longer gates DPM; trace now prints each delegation state.
