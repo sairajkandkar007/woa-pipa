@@ -1,0 +1,6 @@
+.logopen /t C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/logs/peppatch.log
+.echo ===== PIPA PEP LMh SKIP (stage 1: wait for qcpep LMh map) =====
+bc *
+bp0 nt!MmMapIoSpaceEx "j (@x0 = 0x18358800) '$$< C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/pipa_peppatch2.txt'; 'gc'"
+bl
+g

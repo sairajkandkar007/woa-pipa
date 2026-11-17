@@ -1,0 +1,12 @@
+.logopen /t C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/logs/bugcheck.log
+.echo ===== BUGCHECK DATA =====
+dq nt!KiBugCheckData L5
+.echo ===== SOC DETAILS =====
+dx -r3 (nt!_SOC_SUBSYSTEM_FAILURE_DETAILS*)(*(unsigned __int64*)(&nt!KiBugCheckData + 1))
+db poi(nt!KiBugCheckData+8) L100
+.echo ===== STACK =====
+kn 80
+.echo ===== ANALYZE =====
+!analyze -v
+.echo ===== DONE =====
+.logclose

@@ -1,0 +1,8 @@
+.echo ===== CLK: skip CPU-cluster clock LUT init (fbc00), trace PEP init steps =====
+bp qcpep8250+0x3d654 ".printf \"CLKFREQ %d Hz not in table -> request dropped\\n\", dwo(@sp+0x64); gc"
+bp qcpep8250+0x1eb828 ".printf \"RES-NULL dev %ma type %x id %x v %x %x -> skipped\\n\", poi(@sp+0xa8)+0xcc, dwo(poi(@sp+0x50)+0x10), dwo(poi(@sp+0x50)+0x18), dwo(poi(@sp+0x50)+0x20), dwo(poi(@sp+0x50)+0x28); r pc=qcpep8250+0x1eb858; gc"
+bp qcpep8250+0x144b28 ".printf \"AOP MSG dropped: %ma\\n\", @x0; r x0=0; r pc=@lr; gc"
+bp qcpep8250+0x144478 ".printf \"FAIL rpm_requests channel open (144478 -> 5, no wait)\\n\"; r x0=5; r pc=@lr; gc"
+bp qcpep8250+0xfbc00 ".printf \"SKIP fbc00 (CPU clock LUT via OSM 0x1832xxxx)\\n\"; r x0=0; r pc=@lr; gc"
+bp qcpep8250+0xf5d04 ".printf \"Clock_DriverInit f9768 -> %x\\n\", @x0; gc"
+bp qcpep8250+0x1dbfc4 ".printf \"INIT done\\n\"; gc"

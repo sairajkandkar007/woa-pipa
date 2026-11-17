@@ -19,7 +19,11 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
   (--ufs-nopep) EXPERIMENT: renames the three PEP config entries for "\\_SB.UFS0" to "\\_SB.UFSZ"
      so PEP does not power-manage the UFS controller (it stays as UEFI left it).
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm]
+  (--pkg-fix) Silicium removed PM8009 entries from 8 packages but kept their element counts
+     (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
+     STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
+
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix]
 """
 import sys
 
@@ -73,6 +77,13 @@ def main():
         assert bytes(d).count(old) == 3, 'unexpected DSDT'
         d = bytearray(bytes(d).replace(old, new))
         print('UFS0 removed from PEP config (3 entries -> \\_SB.UFSZ)')
+    if '--pkg-fix' in sys.argv:
+        fix = {0x3469: (61, 57), 0x3b4a: (33, 27), 0x3c431: (17, 14), 0x3c5ee: (16, 13),
+               0x3c7a7: (17, 14), 0x3c964: (16, 13), 0x3cb1d: (16, 14), 0x3ccda: (15, 13)}
+        for off, (old, new) in fix.items():
+            assert d[off] == old and 0x12 in (d[off - 2], d[off - 3]), f'unexpected DSDT at {off:#x}'
+            d[off] = new
+        print('fixed 8 package element counts (PPPP, PRRP, 6x CPXC)')
     d[9] = 0
     d[9] = (-sum(d)) & 0xFF
     assert sum(d) & 0xFF == 0 and len(d) == int.from_bytes(d[4:8], 'little')

@@ -1,0 +1,4 @@
+.logopen /t C:\Users\nisha\.gemini\antigravity\scratch\win11-pipa\claude\logs\stack.log
+.for (r $t1 = 0; @$t1 < 8; r $t1 = @$t1 + 1) { r? $t0 = ((nt!_KPRCB**)@@masm(nt!KiProcessorBlock))[@$t1]->CurrentThread; .if (@@c++(((nt!_KTHREAD*)@$t0)->Priority) != 0) { .printf "=== CPU %d thread %p ===\n", @$t1, @$t0; r? $t2 = ((nt!_KTHREAD*)@$t0)->StackLimit; r? $t3 = ((nt!_KTHREAD*)@$t0)->InitialStack; r? $t4 = ((nt!_KTHREAD*)@$t0)->KernelStack; .printf "limit %p init %p kernelstack %p\n", @$t2, @$t3, @$t4; dps @$t2 @$t3 } }
+.echo ===== DONE =====
+.logclose

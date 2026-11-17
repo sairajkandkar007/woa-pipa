@@ -1,0 +1,26 @@
+.echo ===== stage 2: qcpep is mapping LMh, installing skips =====
+.reload
+.exepath C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/kona_bsp/Drivers/_sel/PEP_noppkg
+lm m qcpep*
+.printf "first LMh map from %y\n", @lr
+bc 0
+.echo patch display RSC (0xaf20000) min TCS 4 -> 2
+ed qcpep8250+0x19ff84 2
+dd qcpep8250+0x19ff80 L4
+.echo patch PPP: rails missing from pipa cmd-db are skipped instead of fatal
+ed qcpep8250+0x117918 37f80374
+u qcpep8250+0x117918 L1
+.echo patch CPU DCVS (LDCV): no CPU clock domains is not fatal (0x14E/0x37)
+ed qcpep8250+0x20c180 14000050
+u qcpep8250+0x20c180 L1
+.echo patch: ignore registry resource DSGP (\_SB.SDFR)
+ed qcpep8250+0x40244 14000009
+u qcpep8250+0x40244 L1
+.echo patch: clock frequency not in table -> drop that request (no 0x14E/0x3A)
+ed qcpep8250+0x3d654 1400025a
+u qcpep8250+0x3d654 L1
+bp1 qcpep8250+0x5b88 ".printf \"SKIP LMh write 5b88(%x,%x) from %y\\n\", @x0, @x1, @lr; r pc=@lr; gc"
+bp2 qcpep8250+0x5b20 ".printf \"SKIP LMh write 5b20(%x,%x) from %y\\n\", @x0, @x1, @lr; r pc=@lr; gc"
+bp4 nt!MmMapIoSpaceEx ".printf \"MAP phys %p len %p from %y\\n\", @x0, @x1, @lr; gc"
+$$< C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/pipa_clk.txt
+g

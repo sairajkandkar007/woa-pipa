@@ -1,5 +1,16 @@
 # Status log
 
+## 2026-11-17 21:30: PEP debugged with the kernel debugger; init completes, device loading still crashes
+
+- Kernel debugging over USB (KDNET-EEM) works on pipa (`scripts/RUN_PHASE9_KD_ON.bat`, WinDbg "Break on connection").
+- The PEP boot hang was qcpep writing the LMh registers (0x18350800); 10 further pipa/firmware differences found and
+  worked around **in memory** via WinDbg scripts (`debug/windbg/`). Full table: `docs/PEP_FINDINGS.md`.
+- New DSDT option `make_pipa_k.py --pkg-fix` (PM8009 removal left wrong package counts) → `Mu-pipa-pepfix-pkgfix.img`.
+- qcpep now reaches `INIT done`; it crashes while loading device power resources (0x14E/0x3A on `\_SB.UARD`;
+  BUSARB resources fail because no bus-arbiter provider is registered).
+- Tablet state unchanged otherwise: flashed UEFI = ufsdepscm; KD is ON in BCD (`RUN_PHASE9_KD_OFF.bat` to disable);
+  DSGP deleted from PEP Device Parameters (batch 4f).
+
 ## 2026-11-17: PEP root causes found, PEP now starts but boot hangs
 
 - **Why PEP blue-screened the boot (`INACCESSIBLE_BOOT_DEVICE`):** UFS0 has `_DEP` on PEP0. Without a PEP driver PEP0 is raw-started, so UFS starts; with qcpep installed PEP0 failed (code 31) → UFS0 waited forever → no boot disk. Fix: `make_pipa_k.py --ufs-dep-scm` (UFS0 depends on SCM0 instead). With it Windows boots even when PEP fails.

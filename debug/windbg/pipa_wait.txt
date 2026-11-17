@@ -1,0 +1,10 @@
+.logopen /t C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/logs/wait.log
+.echo ===== RUNNING =====
+!running -it
+.echo ===== QCPEP THREADS =====
+!stacks 2 qcpep8250
+.echo ===== PNP THREADS =====
+!stacks 2 PnpCallAddDevice
+!stacks 2 IopInitializeBootDrivers
+.echo ===== DONE =====
+.logclose

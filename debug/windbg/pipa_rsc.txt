@@ -1,0 +1,10 @@
+.logopen /t C:/Users/nisha/.gemini/antigravity/scratch/win11-pipa/claude/logs/rsc.log
+.echo ===== RSC TABLE =====
+r $t0 = qcpep8250+0x18a6a8
+dd @$t0 L10
+r $t1 = poi(@$t0+0x20)
+.for (r $t2 = 0; @$t2 < dwo(@$t0); r $t2 = @$t2 + 1) { r $t3 = @$t1 + @$t2 * 0x50; .printf "== RSC %d elem %p\n", @$t2, @$t3; dd @$t3 L14; .printf "base %p  reg+0xc = %08x  reg+0xd8 = %08x  limit = %08x\n", poi(@$t3+0x38), dwo(poi(@$t3+0x38)+0xc), dwo(poi(@$t3+0x38)+0xd8), dwo(poi(poi(@$t3+0x48))) }
+.echo ===== FRAME 4 REGS =====
+.frame /r 4
+.echo ===== DONE =====
+.logclose
