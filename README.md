@@ -17,7 +17,7 @@ Bring-up notes, patches and tooling for running **Windows 11 Pro ARM64** on the
 | SPMI, PMIC core/apps/ext, PMIC GPIO, ADC | ✅ (after fixing NULL-driver installs) |
 | USB host | ⚠️ USB mouse works; Type-C port manager code 10, VBUS/role inconsistent |
 | TLMM GPIO, Type-C | ⚠️ still on `genpass` (no admin rights in the tablet's Windows yet) |
-| **PEP (qcpep8250)** | 🔧 **current blocker.** Without it PEP0 fails quietly (code 31) and Windows boots. With it: debugged live, 11 pipa/firmware differences found; init completes (`INIT done`) with in-memory patches, device-resource loading still crashes. See [`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) |
+| **PEP** | 🔧 **current blocker.** Plan: port open-source [QualcommPEP](https://github.com/NikkaGames/QualcommPEP) to SM8250 ([assessment](docs/QUALCOMMPEP_ASSESSMENT.md)); qcpep8250 patching parked. Without it PEP0 fails quietly (code 31) and Windows boots. With it: debugged live, 11 pipa/firmware differences found; init completes (`INIT done`) with in-memory patches, device-resource loading still crashes. See [`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) |
 | I2C/SPI/UART, SMMU, DSPs, battery/charging, touch, Wi-Fi/BT, GPU, audio | ⏳ blocked on PEP |
 
 Details: [`docs/STATUS_LOG.md`](docs/STATUS_LOG.md) · PEP debugging: [`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) · Plan: [`docs/ROADMAP.md`](docs/ROADMAP.md) · UEFI build: [`uefi/BUILD.md`](uefi/BUILD.md)
