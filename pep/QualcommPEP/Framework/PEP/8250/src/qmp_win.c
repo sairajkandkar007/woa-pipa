@@ -85,7 +85,7 @@ static int kick_qmp(void* context)
     KeMemoryBarrier();
 #if defined(PEP_TARGET_8250)
     /* SM8250 has no IPCC: AOP is signalled through the APCS IPC register (Linux qcom_aoss
-     * "mboxes = <&apss_shared 0>"). _DSM client = doorbell physical address, signal = bit. */
+     * "mboxes = <&apss_shared 0>"). _DSM signal = bit in APCS IPC register 0x17C0000C. */
     if (!ctx->doorbell)
         return 1;
     WRITE_REGISTER_ULONG((PULONG)ctx->doorbell, 1u << (ctx->signal & 31u));
@@ -223,6 +223,16 @@ NTSTATUS qmp_win_prepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST translate
 
     status = acpi_eval_dsm_package_ulongs(dev, &qmp_guid, 1, 1, NULL, 0, values,
                                           RTL_NUMBER_OF(values), &count);
+#if defined(PEP_TARGET_8250)
+    /* Kona DSDT has no QMP _DSM; use the AOP MSGRAM from PEP0.INTR (0x0C300000, Linux
+     * qcom_aoss uses the first 0x400 bytes) with APCS IPC bit 0 as doorbell. */
+    if (!NT_SUCCESS(status)) {
+        values[0] = 1; values[1] = 0x0C300000u; values[2] = 0x400u;
+        values[3] = 0; values[4] = 0; values[5] = 0;
+        count = RTL_NUMBER_OF(values);
+        status = STATUS_SUCCESS;
+    }
+#endif
     if (!NT_SUCCESS(status))
         return status;
     if (count == 1 && values[0] == 0)
@@ -253,6 +263,13 @@ NTSTATUS qmp_win_prepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST translate
         address = t->u.Memory.Start;
         ++matches;
     }
+#if defined(PEP_TARGET_8250)
+    /* PEP0 _CRS on Kona carries no memory resources: map the MSGRAM directly. */
+    if (matches == 0) {
+        address.QuadPart = (LONGLONG)values[1];
+        matches = 1;
+    }
+#endif
     if (matches != 1)
         return STATUS_DEVICE_CONFIGURATION_ERROR;
 
@@ -302,9 +319,10 @@ static NTSTATUS open_ipcc(qmp_win_t* ctx)
 #if defined(PEP_TARGET_8250)
     PHYSICAL_ADDRESS bell;
     /* only the APCS shared IPC register is accepted as a doorbell on this target. */
-    if (ctx->client != 0x17C0000Cu || ctx->signal > 31u)
+    /* _DSM protocol/client are ignored; signal = APCS IPC bit (0 for AOP on SM8250). */
+    if (ctx->signal > 31u)
         return STATUS_DEVICE_CONFIGURATION_ERROR;
-    bell.QuadPart = (LONGLONG)ctx->client;
+    bell.QuadPart = 0x17C0000CLL; /* APCS_ALIAS0_IPC_INTERRUPT (Linux apss_shared + 0xc) */
     ctx->doorbell = (volatile ULONG*)MmMapIoSpaceEx(bell, sizeof(ULONG), PAGE_READWRITE | PAGE_NOCACHE);
     return ctx->doorbell ? STATUS_SUCCESS : STATUS_INSUFFICIENT_RESOURCES;
 #else

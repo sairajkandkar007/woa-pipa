@@ -153,6 +153,11 @@ NTSTATUS mmio_d0_map_peripherals(_Inout_ mmio_t* mmio)
         NTSTATUS display = window ? map_one(&mmio->dispcc, window->physical, window->bytes,
                                             PAGE_READWRITE | PAGE_NOCACHE)
                                   : STATUS_NOT_FOUND;
+#if defined(PEP_TARGET_8250)
+        /* SM8250 has no display CESTA/CRM: leave dispcc unmapped so dispcc_probe() fails closed. */
+        if (NT_SUCCESS(display))
+            display = STATUS_NOT_SUPPORTED;
+#endif
         if (NT_SUCCESS(display))
             display = map_one(&mmio->disp_crm, DISP_CRM_PHYS, DISP_CRM_BYTES,
                               PAGE_READWRITE | PAGE_NOCACHE);

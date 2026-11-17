@@ -1,3 +1,8 @@
+#if defined(PEP_TARGET_8250)
+#define PEP_CPU_DEFAULT_ENABLE 0u /* SM8250: no SCMI/CPUCP; CPU perf/idle off unless opted in */
+#else
+#define PEP_CPU_DEFAULT_ENABLE 1u
+#endif
 #include "dcvs.h"
 #include "soc_model.h"
 #include "soc_transport.h"
@@ -37,7 +42,7 @@ NTSTATUS dcvs_init(VOID)
     InterlockedIncrement(&generation);
     KeInitializeSpinLock(&requests_lock);
     /* A disabled CPU provider does not affect device power management. */
-    if (registry_query_u_long(L"CpuPerformanceEnable", 1u) != 1u) {
+    if (registry_query_u_long(L"CpuPerformanceEnable", PEP_CPU_DEFAULT_ENABLE) != 1u) {
         InterlockedExchange(&initialized, 3);
         return STATUS_SUCCESS;
     }

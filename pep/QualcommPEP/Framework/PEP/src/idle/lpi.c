@@ -1,3 +1,8 @@
+#if defined(PEP_TARGET_8250)
+#define PEP_CPU_DEFAULT_ENABLE 0u /* SM8250: no SCMI/CPUCP; CPU perf/idle off unless opted in */
+#else
+#define PEP_CPU_DEFAULT_ENABLE 1u
+#endif
 #include "lpi.h"
 #include "acpi.h"
 #include "cpu_device.h"
@@ -103,7 +108,7 @@ VOID lpi_mutex_release(PKMUTEX mutex)
 VOID lpi_init(ULONG processors)
 {
     if (processors && processors <= LPI_PROCESSORS &&
-        registry_query_u_long(L"CpuIdleEnable", 1u) == 1u) {
+        registry_query_u_long(L"CpuIdleEnable", PEP_CPU_DEFAULT_ENABLE) == 1u) {
         processor_count = processors;
         KeInitializeMutex(&configuration_lock, 0);
         InterlockedExchange(&enabled, 1);

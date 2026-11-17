@@ -8,9 +8,7 @@ static const molokai_gdsc_location_t verified[] = {
     {"disp_cc_mdss_core_gdsc", 0x00020006u, DISP_CC_PHYS, DISP_CC_BYTES, DISP_CORE_GDSCR_OFFSET,
      DISP_CORE_GDSCR_PHYS, RAIL_VDD_MM | RAIL_VDD_MX, 0u},
     {"gcc_pcie_0_gdsc", 0xC1C9C0D4u, GCC_WINDOW_PHYS, GCC_WINDOW_BYTES, 0x6B004u,
-     UINT64_C(0x0016B004), RAIL_VDD_CX | RAIL_VDD_MX, 0u},
-    {"gcc_pcie_0_phy_gdsc", 0x2AE8F85Bu, GCC_WINDOW_PHYS, GCC_WINDOW_BYTES, 0x6C000u,
-     UINT64_C(0x0016C000), RAIL_VDD_CX | RAIL_VDD_MX, 0u}};
+     UINT64_C(0x0016B004), RAIL_VDD_CX | RAIL_VDD_MX, 0u}};  /* SM8250 has no separate PCIe0 PHY GDSC */
 
 const molokai_gdsc_location_t* molokai_gdsc_at(uint32_t index)
 {

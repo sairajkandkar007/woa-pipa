@@ -1,3 +1,11 @@
+/* SM8250: BWMON targets/IRQs are still the 8845 ones - keep bus DCVS off. */
+#if defined(PEP_TARGET_8250)
+#define PEP_BWMON_DISABLE_DEFAULT 1u
+#define PEP_LAGG_DEFAULT 0u
+#else
+#define PEP_BWMON_DISABLE_DEFAULT 0u
+#define PEP_LAGG_DEFAULT 1u
+#endif
 #include "bus_dcvs_win.h"
 #include "bwmon.h"
 #include "hw_backend.h"
@@ -272,7 +280,7 @@ NTSTATUS bus_dcvs_prepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST translat
     WDF_DPC_CONFIG dpc_config;
     bus_dcvs_t* owner;
     NTSTATUS status;
-    if (!ctx || ctx->is_control_dev || setting(dev, L"DisableBWMonBusDCVS", 0u))
+    if (!ctx || ctx->is_control_dev || setting(dev, L"DisableBWMonBusDCVS", PEP_BWMON_DISABLE_DEFAULT))
         return STATUS_SUCCESS;
     if (ctx->bus_dcvs || !raw || !translated ||
         WdfCmResourceListGetCount(raw) != WdfCmResourceListGetCount(translated))
@@ -416,7 +424,7 @@ VOID bus_dcvs_start(WDFDEVICE dev)
             --started;
         }
     }
-    if (started && setting(dev, L"EnableLaggBwmon", 1u)) {
+    if (started && setting(dev, L"EnableLaggBwmon", PEP_LAGG_DEFAULT)) {
         address.QuadPart = lagg_base;
         if (!owner->lagg_map)
             owner->lagg_map = MmMapIoSpaceEx(address, 0x400u, PAGE_READWRITE | PAGE_NOCACHE);

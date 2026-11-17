@@ -23,7 +23,7 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
      STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix]
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs]
 """
 import sys
 
@@ -84,6 +84,18 @@ def main():
             assert d[off] == old and 0x12 in (d[off - 2], d[off - 3]), f'unexpected DSDT at {off:#x}'
             d[off] = new
         print('fixed 8 package element counts (PPPP, PRRP, 6x CPXC)')
+    if '--qpep-crs' in sys.argv:
+        # QualcommPEP (SM8250 build) needs the RSC DRV2 window and AOP MSGRAM as PEP0 memory
+        # resources. Replace 4 PEP0 interrupts unused by QualcommPEP (0xA1,0x1A5,0x40,0x41;
+        # 36 bytes) with 3 Memory32Fixed descriptors (36 bytes) - same length, in place.
+        import struct
+        ints = b''.join(b'\x89\x06\x00' + bytes([f]) + b'\x01' + struct.pack('<I', v)
+                        for f, v in [(0x01, 0xA1), (0x03, 0x1A5), (0x01, 0x40), (0x01, 0x41)])
+        mem = b''.join(b'\x86\x09\x00\x01' + struct.pack('<II', a, n)
+                       for a, n in [(0x18220000, 0x10000), (0x0C300000, 0x400), (0x0C300400, 0xC00)])
+        assert len(ints) == len(mem) == 36 and bytes(d).count(ints) == 1, 'PEP0 _CRS pattern not found'
+        d = bytearray(bytes(d).replace(ints, mem))
+        print('PEP0 _CRS: 4 interrupts -> RSC DRV2 0x18220000 + AOP MSGRAM 0x0C300000 memory')
     d[9] = 0
     d[9] = (-sum(d)) & 0xFF
     assert sum(d) & 0xFF == 0 and len(d) == int.from_bytes(d[4:8], 'little')

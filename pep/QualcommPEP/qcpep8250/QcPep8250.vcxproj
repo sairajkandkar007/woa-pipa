@@ -924,7 +924,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Framework\PEP\inc\trace.h" />
-    <Inf Include="..\inf\qcpep.inx" />
+    <Inf Include="..\inf\qcpep8250.inx" />
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
 

@@ -13,7 +13,7 @@ extern "C" {
 /* keep the BSP register sequence, but do not allow its MMIO adapter to reach an unassigned
  * neighbor range. */
 
-#define GCC_WINDOW_BYTES 0x001F4200u
+#define GCC_WINDOW_BYTES 0x001F0000u
 
 typedef struct gcc_freq {
     uint32_t hz;

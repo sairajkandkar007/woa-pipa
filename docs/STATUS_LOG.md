@@ -78,3 +78,12 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Install over USB Mass Storage of the whole UFS LUN0: diskpart p34/p35 → DISM → unattend → offline registry → bcdboot. 4096-byte sectors are fine.
 - Windows 11 Pro ARM64 22621 boots to the desktop; unattend skips OOBE with auto-logon.
 - The XDA TWRP in boot_a boot-loops (pre-existing kernel issue); not needed any more.
+
+## 2026-11-18 00:30 — QualcommPEP SM8250 port, first compile candidate
+- AOP QMP: APCS IPC doorbell 0x17C0000C bit 0 replaces IPCC; built-in MSGRAM fallback (0x0C300000/0x400) when PEP0 has no QMP `_DSM`.
+- Clocks: `SystemLibs/clock/8250/src/clock_data.c` regenerated from Linux gcc-sm8250.c (`gen_gcc.py`): 66 GCC clocks/GDSCs, 24 RCG domains all READ_ONLY (no rate programming). Display CRM/CESTA disabled (none on SM8250); GPUCC/TCSR windows removed; dispcc 0x0AF00000; GDSC table: UFS 0x77004, PCIe0 0x6B004, MDSS 0xAF03000.
+- CPU perf/idle default OFF on 8250 (no SCMI/CPUCP); BWMON bus DCVS default OFF (targets still 8845).
+- New minimal INF `inf/qcpep8250.inx` (HWID ACPI\QCOM2519, no 8845 resource blobs).
+- DSDT: `make_pipa_k.py --qpep-crs` replaces 4 unused PEP0 interrupts with Memory32Fixed RSC DRV2 0x18220000/0x10000 + AOP MSGRAM (QualcommPEP needs DRV2 as a PnP memory resource).
+- Build: `qpep/RUN_QPEP8250_BUILD.bat` (downloads repo main, builds QcPep8250.sln, test-signs). Not yet compiled.
+- Before installing on the tablet: remove the old Kona qcpep (same HWID QCOM2519).

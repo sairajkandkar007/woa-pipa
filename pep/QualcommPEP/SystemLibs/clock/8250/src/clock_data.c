@@ -1,742 +1,113 @@
-/* Register and frequency data from the Molokai Clock BSP and HALclkHWIO.h.
- * Request-only branches preserve the Loader BSP's NO_POLL_AFTER_ENABLE flags.
- * Offsets are relative to the CLK_CTL window at 0x00100000 (size 0x1F4200). */
+/* SM8250 GCC data generated from Linux drivers/clk/qcom/gcc-sm8250.c (tools gen_gcc.py).
+ * All RCG domains are READ_ONLY: rates stay as UEFI left them; only branch enable/vote is used. */
 #include "gcc.h"
 
 const gcc_freq_t gcc_freqs[] = {
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 6u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {201500000u, 5u, 8u, 0u, 0u, 255u, 2u}, /* ClockSource_GCC_GCCGPLL4 */
-    {403000000u, 5u, 4u, 0u, 0u, 255u, 2u}, /* ClockSource_GCC_GCCGPLL4 */
-    {66666667u, 6u, 9u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {133333333u, 1u, 9u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {200000000u, 1u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {240000000u, 1u, 5u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {50000000u, 6u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {200000000u, 1u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {50000000u, 6u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {200000000u, 1u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {50000000u, 6u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {200000000u, 1u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {100000000u, 6u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 1u, 20u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {150000000u, 6u, 4u, 0u, 0u, 7u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {250000000u, 2u, 4u, 0u, 0u, 255u, 3u}, /* ClockSource_GCC_GCCGPLL7 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {128000000u, 1u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {37500000u, 6u, 16u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {7372800u, 6u, 2u, 384u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {14745600u, 6u, 2u, 768u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {19200000u, 0u, 2u, 0u, 0u, 0u, 0u}, /* ClockSource_XO */
-    {29491200u, 6u, 2u, 1536u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {32000000u, 6u, 2u, 8u, 75u, 1u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {48000000u, 6u, 2u, 4u, 25u, 2u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {51200000u, 6u, 2u, 64u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {60000000u, 6u, 10u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {64000000u, 6u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {66666667u, 1u, 18u, 0u, 0u, 3u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {80000000u, 6u, 2u, 4u, 15u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {96000000u, 6u, 2u, 8u, 25u, 4u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 1u, 12u, 0u, 0u, 5u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {102400000u, 6u, 2u, 128u, 375u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {112000000u, 6u, 2u, 28u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {117964800u, 6u, 2u, 6144u, 15625u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {120000000u, 1u, 10u, 0u, 0u, 6u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {128000000u, 1u, 2u, 16u, 75u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {400000u, 0u, 24u, 1u, 4u, 255u, 0u}, /* ClockSource_XO */
-    {25000000u, 6u, 24u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {37500000u, 6u, 16u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {50000000u, 6u, 12u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 6u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {202000000u, 2u, 8u, 0u, 0u, 255u, 3u}, /* ClockSource_GCC_GCCGPLL9 */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 6u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {201500000u, 5u, 8u, 0u, 0u, 255u, 2u}, /* ClockSource_GCC_GCCGPLL4 */
-    {403000000u, 5u, 4u, 0u, 0u, 255u, 2u}, /* ClockSource_GCC_GCCGPLL4 */
-    {9600000u, 0u, 4u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {100000000u, 6u, 6u, 0u, 0u, 255u, 1u}, /* ClockSource_GCC_GCCGPLL0 */
-    {201500000u, 5u, 8u, 0u, 0u, 255u, 2u}, /* ClockSource_GCC_GCCGPLL4 */
-    {403000000u, 5u, 4u, 0u, 0u, 255u, 2u}, /* ClockSource_GCC_GCCGPLL4 */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
-    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* ClockSource_XO */
+    {19200000u, 0u, 1u, 0u, 0u, 255u, 0u},
 };
-const unsigned int gcc_freq_cnt = 413u;
+const unsigned int gcc_freq_cnt = 1u;
 
 const gcc_domain_t gcc_domains[] = {
-    {"ClockDomain_GCC_GCCAGGRENOCSF", 0x823F0u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYAXI", 0x77034u, 8u, 0u, 4u, 0u, 0u},
-    {"ClockDomain_GCC_GCCUSB30PRIMMASTER", 0x39034u, 8u, 4u, 4u, 0u, 0u},
-    {"ClockDomain_GCC_GCCCONFIGNOC", 0x74400u, 0u, 8u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCMMNOCHFQX", 0x1C0C8u, 0u, 8u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCMMNOCSFQX", 0x1C1F8u, 0u, 8u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCXO", 0x43054u, 0u, 8u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCAGGRENOCSFDDR", 0x82578u, 0u, 8u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCGP1", 0x64004u, 16u, 8u, 3u, 0u, 0u},
-    {"ClockDomain_GCC_GCCGP2", 0x65004u, 16u, 11u, 3u, 0u, 0u},
-    {"ClockDomain_GCC_GCCGP3", 0x66004u, 16u, 14u, 3u, 0u, 0u},
-    {"ClockDomain_GCC_CLOCKDRIVERGENXO", 0x0u, 0u, 17u, 0u, GCC_DOMAIN_READ_ONLY | GCC_DOMAIN_NO_RCG, 0u},
-    {"ClockDomain_GCC_GCCGEMNOC", 0x4402Cu, 0u, 17u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_CLOCKDRIVERGENNOSOURCE", 0x0u, 0u, 17u, 0u, GCC_DOMAIN_READ_ONLY | GCC_DOMAIN_NO_RCG, 0u},
-    {"ClockDomain_GCC_GCCPCIE0AUX", 0x6B094u, 16u, 17u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCPCIE0PHYAUX", 0x6B0ACu, 0u, 18u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCPCIE0PHYRCHNG", 0x6B078u, 0u, 19u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCPCIE0PIPE", 0x6B090u, 0u, 20u, 0u, GCC_DOMAIN_MUX_ONLY, 0u},
-    {"ClockDomain_GCC_GCCCNOCCENTERQX", 0x742D4u, 0u, 20u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCPDM2", 0x33010u, 0u, 20u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCCNOCPERIPH", 0x7452Cu, 0u, 21u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCQUPV3I2CCORE", 0x23014u, 0u, 21u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCQUPV3I2CS0", 0x17008u, 0u, 21u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQUPV3I2CS1", 0x17024u, 0u, 22u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQUPV3I2CS2", 0x17040u, 0u, 23u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQUPV3I2CS3", 0x1705Cu, 0u, 24u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQUPV3I2CS4", 0x17078u, 0u, 25u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1CORE2X", 0x2316Cu, 0u, 26u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1QSPIREF", 0x188C0u, 16u, 26u, 19u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S0", 0x18014u, 16u, 45u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S1", 0x18150u, 16u, 63u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S3", 0x182A0u, 16u, 81u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S4", 0x183DCu, 16u, 95u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S5", 0x18518u, 16u, 113u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S6", 0x18654u, 16u, 127u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP1S7", 0x18790u, 16u, 141u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2CORE2X", 0x232C4u, 0u, 155u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S0", 0x1E014u, 16u, 155u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S1", 0x1E150u, 16u, 173u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S2", 0x1E28Cu, 16u, 191u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S3", 0x1E3C8u, 16u, 209u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S4", 0x1E504u, 16u, 227u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S5", 0x1E640u, 16u, 241u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S6", 0x1E77Cu, 16u, 255u, 19u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP2S7", 0x1E8B8u, 16u, 274u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3CORE2X", 0x2341Cu, 0u, 292u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3IBICTRL0", 0xA877Cu, 0u, 292u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3S0", 0xA8014u, 16u, 293u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3S1", 0xA8150u, 16u, 311u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3S2", 0xA828Cu, 16u, 329u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3S3", 0xA83C8u, 16u, 343u, 14u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3S4", 0xA8504u, 16u, 357u, 18u, 0u, 8u},
-    {"ClockDomain_GCC_GCCQUPV3WRAP3S5", 0xA8640u, 16u, 375u, 19u, 0u, 8u},
-    {"ClockDomain_GCC_GCCAGGRENOC", 0x8206Cu, 0u, 394u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCSDCC2APPS", 0x1401Cu, 8u, 394u, 7u, 0u, 0u},
-    {"ClockDomain_GCC_GCCQDSSATBA", 0x1F058u, 0u, 401u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYICECORE", 0x7708Cu, 0u, 401u, 4u, 0u, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYPHYAUX", 0x770C0u, 0u, 405u, 2u, 0u, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYRXSYMBOL0", 0x77068u, 0u, 407u, 0u, GCC_DOMAIN_MUX_ONLY, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYRXSYMBOL1", 0x770ECu, 0u, 407u, 0u, GCC_DOMAIN_MUX_ONLY, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYTXSYMBOL0", 0x77058u, 0u, 407u, 0u, GCC_DOMAIN_MUX_ONLY, 0u},
-    {"ClockDomain_GCC_GCCUFSPHYUNIPROCORE", 0x770A4u, 0u, 407u, 4u, 0u, 0u},
-    {"ClockDomain_GCC_GCCUSB30PRIMMOCKUTMI", 0x3904Cu, 0u, 411u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCUSB3PRIMPHYAUX", 0x39078u, 0u, 412u, 1u, 0u, 0u},
-    {"ClockDomain_GCC_GCCUSB3PRIMPHYPIPE", 0x39074u, 0u, 413u, 0u, GCC_DOMAIN_MUX_ONLY, 0u},
+    {"gcc_ufs_phy_axi_clk_src", 0x77024u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_usb30_prim_master_clk_src", 0xf020u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_gp1_clk_src", 0x64004u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_gp2_clk_src", 0x65004u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_gp3_clk_src", 0x66004u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_pcie_0_aux_clk_src", 0x6b038u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_pdm2_clk_src", 0x33010u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap1_s0_clk_src", 0x18010u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap1_s1_clk_src", 0x18140u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap1_s2_clk_src", 0x18270u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap1_s3_clk_src", 0x183a0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap1_s4_clk_src", 0x184d0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap1_s5_clk_src", 0x18600u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap2_s0_clk_src", 0x1e010u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap2_s1_clk_src", 0x1e140u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap2_s2_clk_src", 0x1e270u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap2_s3_clk_src", 0x1e3a0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap2_s4_clk_src", 0x1e4d0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap2_s5_clk_src", 0x1e600u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_sdcc2_apps_clk_src", 0x1400cu, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_ufs_phy_ice_core_clk_src", 0x7706cu, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_ufs_phy_phy_aux_clk_src", 0x770a0u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_ufs_phy_unipro_core_clk_src", 0x77084u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_usb3_prim_phy_aux_clk_src", 0xf064u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
 };
-const unsigned int gcc_domain_cnt = 65u;
+const unsigned int gcc_domain_cnt = 24u;
 
 const gcc_clock_t gcc_clocks[] = {
-    {"gcc_aggre_noc_pcie_axi_clk", GCC_KIND_VOTE, 0x10068u, 0x52000u, 0x1000u, 0, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_aggre_ufs_phy_axi_clk", GCC_KIND_BRANCH, 0x770F0u, 0x0u, 0x0u, 1, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_aggre_usb3_prim_axi_clk", GCC_KIND_BRANCH, 0x39094u, 0x0u, 0x0u, 2, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_boot_rom_ahb_clk", GCC_KIND_VOTE, 0x38004u, 0x52010u, 0x40000u, 3, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_cam_bist_mclk_ahb_clk", GCC_KIND_BRANCH, 0xA0004u, 0x0u, 0x0u, 3, 0x0u, 0xA0000u, CLOCK_CTL_GCC},
-    {"gcc_camera_ahb_clk", GCC_KIND_BRANCH, 0x26004u, 0x0u, 0x0u, 3, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_camera_hf_axi_clk", GCC_KIND_BRANCH, 0x26014u, 0x0u, 0x0u, 4, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_camera_hf_axi_cloned_clk", GCC_KIND_BRANCH, 0x26040u, 0x0u, 0x0u, 4, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_camera_sf_axi_clk", GCC_KIND_BRANCH, 0x26028u, 0x0u, 0x0u, 5, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_camera_xo_clk", GCC_KIND_BRANCH, 0x2603Cu, 0x0u, 0x0u, 6, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_cfg_noc_pcie_anoc_ahb_clk", GCC_KIND_VOTE, 0x10050u, 0x52000u, 0x100000u, 3, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_cfg_noc_usb3_prim_axi_clk", GCC_KIND_BRANCH, 0x39090u, 0x0u, 0x0u, 2, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_cnoc_pcie_sf_axi_clk", GCC_KIND_VOTE, 0x10058u, 0x52008u, 0x40u, 0, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_ddrss_pcie_sf_qtb_clk", GCC_KIND_VOTE, 0x1007Cu, 0x52000u, 0x80000u, 7, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_disp_ahb_clk", GCC_KIND_BRANCH, 0x27004u, 0x0u, 0x0u, 3, 0x0u, 0x27000u, CLOCK_CTL_GCC},
-    {"gcc_disp_hf_axi_clk", GCC_KIND_BRANCH, 0x2701Cu, 0x0u, 0x0u, 4, 0x0u, 0x27000u, CLOCK_CTL_GCC},
-    {"gcc_disp_sf_axi_clk", GCC_KIND_BRANCH, 0x27008u, 0x0u, 0x0u, 5, 0x0u, 0x27000u, CLOCK_CTL_GCC},
-    {"gcc_eva_ahb_clk", GCC_KIND_BRANCH, 0x9F004u, 0x0u, 0x0u, 3, 0x0u, 0x9F000u, CLOCK_CTL_GCC},
-    {"gcc_eva_axi0_clk", GCC_KIND_BRANCH, 0x9F008u, 0x0u, 0x0u, 5, 0x0u, 0x9F000u, CLOCK_CTL_GCC},
-    {"gcc_eva_axi0c_clk", GCC_KIND_BRANCH, 0x9F01Cu, 0x0u, 0x0u, 5, 0x0u, 0x9F000u, CLOCK_CTL_GCC},
-    {"gcc_eva_xo_clk", GCC_KIND_BRANCH, 0x9F024u, 0x0u, 0x0u, 6, 0x0u, 0x9F000u, CLOCK_CTL_GCC},
-    {"gcc_gp1_clk", GCC_KIND_BRANCH, 0x64000u, 0x0u, 0x0u, 8, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_gp2_clk", GCC_KIND_BRANCH, 0x65000u, 0x0u, 0x0u, 9, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_gp3_clk", GCC_KIND_BRANCH, 0x66000u, 0x0u, 0x0u, 10, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_gpll0_ufs_phy_rx_symbol_0_clk", GCC_KIND_BRANCH, 0x7705Cu, 0x0u, 0x0u, 11, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_gpll0_ufs_phy_rx_symbol_1_clk", GCC_KIND_BRANCH, 0x770E0u, 0x0u, 0x0u, 11, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_gpll0_ufs_phy_tx_symbol_0_clk", GCC_KIND_BRANCH, 0x7704Cu, 0x0u, 0x0u, 11, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_gpu_cfg_ahb_clk", GCC_KIND_BRANCH, 0x71004u, 0x0u, 0x0u, 3, 0x0u, 0x71000u, CLOCK_CTL_GCC},
-    {"gcc_gpu_gemnoc_clk_en", GCC_KIND_BRANCH, 0x71254u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_gpu_gemnoc_gfx_clk", GCC_KIND_BRANCH, 0x71010u, 0x0u, 0x0u, 12, 0x0u, 0x71000u, CLOCK_CTL_GCC},
-    {"gcc_gpu_smmu_vote_clk", GCC_KIND_REQ, 0x7D000u, 0x0u, 0x0u, 13, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_gpu_smmu_vote_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D03Cu, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_aggre_noc_mmu_pcie_qtb_clk", GCC_KIND_REQ, 0x7D010u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_aggre_noc_mmu_pcie_qtb_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D04Cu, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_aggre_noc_mmu_qtb1_clk", GCC_KIND_REQ, 0x7D008u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_aggre_noc_mmu_qtb1_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D044u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_aggre_noc_mmu_qtb2_clk", GCC_KIND_REQ, 0x7D00Cu, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_aggre_noc_mmu_qtb2_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D048u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_all_smmu_mmu_clk", GCC_KIND_REQ, 0x7D028u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_all_smmu_mmu_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D064u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_gpu_smmu_clk", GCC_KIND_REQ, 0x7D000u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_gpu_smmu_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D03Cu, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_lpass_qtb_clk", GCC_KIND_REQ, 0x7D004u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_lpass_qtb_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D040u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmnoc_mmu_qtb_hf01_clk", GCC_KIND_REQ, 0x7D018u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmnoc_mmu_qtb_hf01_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D050u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmnoc_mmu_qtb_hf23_clk", GCC_KIND_REQ, 0x7D070u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmnoc_mmu_qtb_hf23_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D078u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmnoc_mmu_qtb_sf_clk", GCC_KIND_REQ, 0x7D014u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmnoc_mmu_qtb_sf_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D054u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmu_tcu_clk", GCC_KIND_REQ, 0x7D02Cu, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_mmu_tcu_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D068u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_turing_mmu_qtb0_clk", GCC_KIND_REQ, 0x7D020u, 0x0u, 0x0u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_hlos1_vote_turing_mmu_qtb0_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D05Cu, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_mmu_tcu_vote_clk", GCC_KIND_REQ, 0x7D02Cu, 0x0u, 0x0u, 13, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_mmu_tcu_vote_gds", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x7D068u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_aux_clk", GCC_KIND_VOTE, 0x6B044u, 0x52008u, 0x8u, 14, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_cfg_ahb_clk", GCC_KIND_VOTE, 0x6B040u, 0x52008u, 0x4u, 3, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_gdsc", GCC_KIND_GDSC, 0x0u, 0x5214Cu, 0x1u, -1, 0x6B004u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_mstr_axi_clk", GCC_KIND_VOTE, 0x6B030u, 0x52008u, 0x2u, 0, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_phy_aux_clk", GCC_KIND_VOTE, 0x6B054u, 0x52018u, 0x80000000u, 15, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_phy_gdsc", GCC_KIND_GDSC, 0x0u, 0x5214Cu, 0x4u, -1, 0x6C000u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_phy_rchng_clk", GCC_KIND_VOTE, 0x6B074u, 0x52000u, 0x400000u, 16, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_pipe_clk", GCC_KIND_VOTE_REQ, 0x6B064u, 0x52008u, 0x10u, 17, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_pipe_div2_clk", GCC_KIND_VOTE_REQ, 0x6B0D8u, 0x52028u, 0x10u, 17, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_slv_axi_clk", GCC_KIND_VOTE, 0x6B020u, 0x52008u, 0x1u, 18, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_0_slv_q2a_axi_clk", GCC_KIND_VOTE, 0x6B01Cu, 0x52008u, 0x20u, 18, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_rscc_ahb_clk", GCC_KIND_VOTE, 0x11004u, 0x52010u, 0x100000u, 3, 0x0u, 0x11000u, CLOCK_CTL_GCC},
-    {"gcc_pcie_rscc_xo_clk", GCC_KIND_VOTE, 0x11008u, 0x52010u, 0x200000u, 6, 0x0u, 0x11000u, CLOCK_CTL_GCC},
-    {"gcc_pdm2_clk", GCC_KIND_BRANCH, 0x3300Cu, 0x0u, 0x0u, 19, 0x0u, 0x33000u, CLOCK_CTL_GCC},
-    {"gcc_pdm_ahb_clk", GCC_KIND_BRANCH, 0x33004u, 0x0u, 0x0u, 20, 0x0u, 0x33000u, CLOCK_CTL_GCC},
-    {"gcc_pdm_xo4_clk", GCC_KIND_BRANCH, 0x33008u, 0x0u, 0x0u, 6, 0x0u, 0x33000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_camera_cmd_ahb_clk", GCC_KIND_BRANCH, 0x26010u, 0x0u, 0x0u, 3, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_camera_nrt_ahb_clk", GCC_KIND_BRANCH, 0x26008u, 0x0u, 0x0u, 3, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_camera_rt_ahb_clk", GCC_KIND_BRANCH, 0x2600Cu, 0x0u, 0x0u, 3, 0x0u, 0x26000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_disp_dcp_sf_ahb_clk", GCC_KIND_BRANCH, 0x27030u, 0x0u, 0x0u, 3, 0x0u, 0x27000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_gpu_ahb_clk", GCC_KIND_BRANCH, 0x71008u, 0x0u, 0x0u, 3, 0x0u, 0x71000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_pcie_ahb_clk", GCC_KIND_VOTE, 0x6B018u, 0x52010u, 0x80000u, 3, 0x0u, 0x6B000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_video_cv_cpu_ahb_clk", GCC_KIND_BRANCH, 0x32014u, 0x0u, 0x0u, 3, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_video_cvp_ahb_clk", GCC_KIND_BRANCH, 0x32008u, 0x0u, 0x0u, 3, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_video_v_cpu_ahb_clk", GCC_KIND_BRANCH, 0x32010u, 0x0u, 0x0u, 3, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_qmip_video_vcodec_ahb_clk", GCC_KIND_BRANCH, 0x3200Cu, 0x0u, 0x0u, 3, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_core_clk", GCC_KIND_VOTE, 0x23004u, 0x52008u, 0x100u, 21, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_s0_clk", GCC_KIND_VOTE, 0x17004u, 0x52008u, 0x400u, 22, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_s1_clk", GCC_KIND_VOTE, 0x17020u, 0x52008u, 0x800u, 23, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_s2_clk", GCC_KIND_VOTE, 0x1703Cu, 0x52008u, 0x1000u, 24, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_s3_clk", GCC_KIND_VOTE, 0x17058u, 0x52008u, 0x2000u, 25, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_s4_clk", GCC_KIND_VOTE, 0x17074u, 0x52008u, 0x4000u, 26, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_i2c_s_ahb_clk", GCC_KIND_VOTE, 0x23000u, 0x52008u, 0x80u, 3, 0x0u, 0x17000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_core_2x_clk", GCC_KIND_VOTE, 0x2315Cu, 0x52008u, 0x40000u, 27, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_core_clk", GCC_KIND_VOTE, 0x23148u, 0x52008u, 0x80000u, 27, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_qspi_ref_clk", GCC_KIND_VOTE, 0x188BCu, 0x52010u, 0x20000000u, 28, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s0_clk", GCC_KIND_VOTE, 0x18004u, 0x52008u, 0x400000u, 29, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s1_clk", GCC_KIND_VOTE, 0x18140u, 0x52008u, 0x800000u, 30, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s2_clk", GCC_KIND_VOTE, 0x1827Cu, 0x52008u, 0x1000000u, 28, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s3_clk", GCC_KIND_VOTE, 0x18290u, 0x52008u, 0x2000000u, 31, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s4_clk", GCC_KIND_VOTE, 0x183CCu, 0x52008u, 0x4000000u, 32, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s5_clk", GCC_KIND_VOTE, 0x18508u, 0x52008u, 0x8000000u, 33, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s6_clk", GCC_KIND_VOTE, 0x18644u, 0x52008u, 0x10000000u, 34, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap1_s7_clk", GCC_KIND_VOTE, 0x18780u, 0x52010u, 0x10000u, 35, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_core_2x_clk", GCC_KIND_VOTE, 0x232B4u, 0x52010u, 0x8u, 36, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_core_clk", GCC_KIND_VOTE, 0x232A0u, 0x52010u, 0x1u, 36, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s0_clk", GCC_KIND_VOTE, 0x1E004u, 0x52010u, 0x10u, 37, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s1_clk", GCC_KIND_VOTE, 0x1E140u, 0x52010u, 0x20u, 38, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s2_clk", GCC_KIND_VOTE, 0x1E27Cu, 0x52010u, 0x40u, 39, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s3_clk", GCC_KIND_VOTE, 0x1E3B8u, 0x52010u, 0x80u, 40, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s4_clk", GCC_KIND_VOTE, 0x1E4F4u, 0x52010u, 0x100u, 41, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s5_clk", GCC_KIND_VOTE, 0x1E630u, 0x52010u, 0x200u, 42, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s6_clk", GCC_KIND_VOTE, 0x1E76Cu, 0x52010u, 0x400u, 43, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap2_s7_clk", GCC_KIND_VOTE, 0x1E8A8u, 0x52010u, 0x800u, 44, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_core_2x_clk", GCC_KIND_VOTE, 0x2340Cu, 0x52018u, 0x800u, 45, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_core_clk", GCC_KIND_VOTE, 0x233F8u, 0x52018u, 0x400u, 45, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_ibi_ctrl_1_clk", GCC_KIND_VOTE, 0xA8774u, 0x52018u, 0x100000u, 46, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_ibi_ctrl_2_clk", GCC_KIND_VOTE, 0xA8778u, 0x52018u, 0x200000u, 46, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_s0_clk", GCC_KIND_VOTE, 0xA8004u, 0x52018u, 0x1000u, 47, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_s1_clk", GCC_KIND_VOTE, 0xA8140u, 0x52018u, 0x2000u, 48, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_s2_clk", GCC_KIND_VOTE, 0xA827Cu, 0x52018u, 0x4000u, 49, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_s3_clk", GCC_KIND_VOTE, 0xA83B8u, 0x52018u, 0x8000u, 50, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_s4_clk", GCC_KIND_VOTE, 0xA84F4u, 0x52018u, 0x10000u, 51, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap3_s5_clk", GCC_KIND_VOTE, 0xA8630u, 0x52018u, 0x20000u, 52, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_1_m_axi_clk", GCC_KIND_VOTE, 0x23140u, 0x52008u, 0x100000u, 53, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_1_s_ahb_clk", GCC_KIND_VOTE, 0x23144u, 0x52008u, 0x200000u, 3, 0x0u, 0x18000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_2_m_ahb_clk", GCC_KIND_VOTE, 0x23298u, 0x52010u, 0x4u, 53, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_2_s_ahb_clk", GCC_KIND_VOTE, 0x2329Cu, 0x52010u, 0x2u, 3, 0x0u, 0x1E000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_3_ibi_1_ahb_clk", GCC_KIND_VOTE, 0xA876Cu, 0x52018u, 0x40000u, 3, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_3_ibi_2_ahb_clk", GCC_KIND_VOTE, 0xA8770u, 0x52018u, 0x80000u, 3, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_3_m_ahb_clk", GCC_KIND_VOTE, 0x233F0u, 0x52018u, 0x100u, 53, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_qupv3_wrap_3_s_ahb_clk", GCC_KIND_VOTE, 0x233F4u, 0x52018u, 0x200u, 3, 0x0u, 0xA8000u, CLOCK_CTL_GCC},
-    {"gcc_sdcc2_ahb_clk", GCC_KIND_BRANCH, 0x14014u, 0x0u, 0x0u, 20, 0x0u, 0x14000u, CLOCK_CTL_GCC},
-    {"gcc_sdcc2_apps_clk", GCC_KIND_BRANCH, 0x14004u, 0x0u, 0x0u, 54, 0x0u, 0x14000u, CLOCK_CTL_GCC},
-    {"gcc_sdcc2_at_clk", GCC_KIND_BRANCH, 0x14018u, 0x0u, 0x0u, 55, 0x0u, 0x14000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_mem_phy_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x9E000u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_ahb_clk", GCC_KIND_BRANCH, 0x77028u, 0x0u, 0x0u, 3, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_axi_clk", GCC_KIND_BRANCH, 0x77018u, 0x0u, 0x0u, 1, 0x0u, 0x77000u, CLOCK_CTL_GCC},
+    {"gcc_aggre_ufs_phy_axi_clk", GCC_KIND_BRANCH, 0x770CCu, 0x0u, 0x0u, 0, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_aggre_usb3_prim_axi_clk", GCC_KIND_BRANCH, 0xF080u, 0x0u, 0x0u, 1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_boot_rom_ahb_clk", GCC_KIND_VOTE, 0x38004u, 0x52000u, 0x400u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_camera_hf_axi_clk", GCC_KIND_BRANCH, 0xB02Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_camera_sf_axi_clk", GCC_KIND_BRANCH, 0xB030u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_camera_xo_clk", GCC_KIND_BRANCH, 0xB040u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_cfg_noc_usb3_prim_axi_clk", GCC_KIND_BRANCH, 0xF07Cu, 0x0u, 0x0u, 1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_disp_hf_axi_clk", GCC_KIND_BRANCH, 0xB034u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_disp_sf_axi_clk", GCC_KIND_BRANCH, 0xB038u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_gp1_clk", GCC_KIND_BRANCH, 0x64000u, 0x0u, 0x0u, 2, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_gp2_clk", GCC_KIND_BRANCH, 0x65000u, 0x0u, 0x0u, 3, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_gp3_clk", GCC_KIND_BRANCH, 0x66000u, 0x0u, 0x0u, 4, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_aux_clk", GCC_KIND_VOTE, 0x6B028u, 0x52008u, 0x8u, 5, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_cfg_ahb_clk", GCC_KIND_VOTE, 0x6B024u, 0x52008u, 0x4u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x6b004u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_mstr_axi_clk", GCC_KIND_VOTE, 0x6B01Cu, 0x52008u, 0x2u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_pipe_clk", GCC_KIND_REQ, 0x6B02Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_slv_axi_clk", GCC_KIND_VOTE, 0x6B014u, 0x52008u, 0x1u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_slv_q2a_axi_clk", GCC_KIND_VOTE, 0x6B010u, 0x52008u, 0x20u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pdm2_clk", GCC_KIND_BRANCH, 0x3300Cu, 0x0u, 0x0u, 6, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pdm_ahb_clk", GCC_KIND_BRANCH, 0x33004u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pdm_xo4_clk", GCC_KIND_BRANCH, 0x33008u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qmip_camera_nrt_ahb_clk", GCC_KIND_BRANCH, 0xB018u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qmip_camera_rt_ahb_clk", GCC_KIND_BRANCH, 0xB01Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qmip_video_cvp_ahb_clk", GCC_KIND_BRANCH, 0xB010u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qmip_video_vcodec_ahb_clk", GCC_KIND_BRANCH, 0xB014u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_core_2x_clk", GCC_KIND_VOTE, 0x23140u, 0x52008u, 0x40000u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_core_clk", GCC_KIND_VOTE, 0x23138u, 0x52008u, 0x80000u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_s0_clk", GCC_KIND_VOTE, 0x1800Cu, 0x52008u, 0x400000u, 7, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_s1_clk", GCC_KIND_VOTE, 0x1813Cu, 0x52008u, 0x800000u, 8, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_s2_clk", GCC_KIND_VOTE, 0x1826Cu, 0x52008u, 0x1000000u, 9, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_s3_clk", GCC_KIND_VOTE, 0x1839Cu, 0x52008u, 0x2000000u, 10, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_s4_clk", GCC_KIND_VOTE, 0x184CCu, 0x52008u, 0x4000000u, 11, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap1_s5_clk", GCC_KIND_VOTE, 0x185FCu, 0x52008u, 0x8000000u, 12, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_core_2x_clk", GCC_KIND_VOTE, 0x23278u, 0x52010u, 0x8u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_core_clk", GCC_KIND_VOTE, 0x23270u, 0x52010u, 0x1u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_s0_clk", GCC_KIND_VOTE, 0x1E00Cu, 0x52010u, 0x10u, 13, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_s1_clk", GCC_KIND_VOTE, 0x1E13Cu, 0x52010u, 0x20u, 14, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_s2_clk", GCC_KIND_VOTE, 0x1E26Cu, 0x52010u, 0x40u, 15, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_s3_clk", GCC_KIND_VOTE, 0x1E39Cu, 0x52010u, 0x80u, 16, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_s4_clk", GCC_KIND_VOTE, 0x1E4CCu, 0x52010u, 0x100u, 17, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap2_s5_clk", GCC_KIND_VOTE, 0x1E5FCu, 0x52010u, 0x200u, 18, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap_1_s_ahb_clk", GCC_KIND_VOTE, 0x18008u, 0x52008u, 0x200000u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap_2_m_ahb_clk", GCC_KIND_VOTE, 0x1E004u, 0x52010u, 0x4u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap_2_s_ahb_clk", GCC_KIND_VOTE, 0x1E008u, 0x52010u, 0x2u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_sdcc2_ahb_clk", GCC_KIND_BRANCH, 0x14008u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_sdcc2_apps_clk", GCC_KIND_BRANCH, 0x14004u, 0x0u, 0x0u, 19, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_ahb_clk", GCC_KIND_BRANCH, 0x77018u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_axi_clk", GCC_KIND_BRANCH, 0x77010u, 0x0u, 0x0u, 0, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x77004u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_ice_core_clk", GCC_KIND_BRANCH, 0x7707Cu, 0x0u, 0x0u, 56, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_phy_aux_clk", GCC_KIND_BRANCH, 0x770BCu, 0x0u, 0x0u, 57, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_rx_symbol_0_clk", GCC_KIND_REQ, 0x77030u, 0x0u, 0x0u, 58, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_rx_symbol_1_clk", GCC_KIND_REQ, 0x770D8u, 0x0u, 0x0u, 59, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_tx_symbol_0_clk", GCC_KIND_REQ, 0x7702Cu, 0x0u, 0x0u, 60, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_ufs_phy_unipro_core_clk", GCC_KIND_BRANCH, 0x7706Cu, 0x0u, 0x0u, 61, 0x0u, 0x77000u, CLOCK_CTL_GCC},
-    {"gcc_usb30_prim_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x39004u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_usb30_prim_master_clk", GCC_KIND_BRANCH, 0x39018u, 0x0u, 0x0u, 2, 0x0u, 0x39000u, CLOCK_CTL_GCC},
-    {"gcc_usb30_prim_mock_utmi_clk", GCC_KIND_BRANCH, 0x3902Cu, 0x0u, 0x0u, 62, 0x0u, 0x39000u, CLOCK_CTL_GCC},
-    {"gcc_usb30_prim_sleep_clk", GCC_KIND_BRANCH, 0x39028u, 0x0u, 0x0u, 13, 0x0u, 0x39000u, CLOCK_CTL_GCC},
-    {"gcc_usb3_phy_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x50018u, 0x0u, CLOCK_CTL_GCC},
-    {"gcc_usb3_prim_phy_aux_clk", GCC_KIND_BRANCH, 0x39068u, 0x0u, 0x0u, 63, 0x0u, 0x39000u, CLOCK_CTL_GCC},
-    {"gcc_usb3_prim_phy_com_aux_clk", GCC_KIND_BRANCH, 0x3906Cu, 0x0u, 0x0u, 63, 0x0u, 0x39000u, CLOCK_CTL_GCC},
-    {"gcc_usb3_prim_phy_pipe_clk", GCC_KIND_REQ, 0x39070u, 0x0u, 0x0u, 64, 0x0u, 0x39000u, CLOCK_CTL_GCC},
-    {"gcc_video_ahb_clk", GCC_KIND_BRANCH, 0x32004u, 0x0u, 0x0u, 3, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_video_axi0_clk", GCC_KIND_BRANCH, 0x32018u, 0x0u, 0x0u, 5, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_video_axi1_clk", GCC_KIND_BRANCH, 0x3202Cu, 0x0u, 0x0u, 5, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gcc_video_xo_clk", GCC_KIND_BRANCH, 0x32040u, 0x0u, 0x0u, 6, 0x0u, 0x32000u, CLOCK_CTL_GCC},
-    {"gpu_cc_gpu_smmu_vote_clk", GCC_KIND_REQ, 0x7000u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_GPUCC},
-    {"gpu_cc_hlos1_vote_gpu_smmu_clk", GCC_KIND_REQ, 0x7000u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_GPUCC},
-    /* Molokai DISP_CC branch offsets; sources remain firmware-owned. */
-    {"disp_cc_debug_clk", GCC_KIND_BRANCH, 0xD004u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_debug_clk", GCC_KIND_BRANCH, 0xE020u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_sleep_clk", GCC_KIND_BRANCH, 0xE064u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_esync0_clk", GCC_KIND_BRANCH, 0x80CCu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_esync1_clk", GCC_KIND_BRANCH, 0x80D0u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_ahb1_clk", GCC_KIND_BRANCH, 0xA028u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_ahb_clk", GCC_KIND_BRANCH, 0x80C4u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_ahb_swi_clk", GCC_KIND_BRANCH, 0x80C0u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_non_gdsc_ahb_clk", GCC_KIND_BRANCH, 0xC004u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_rscc_ahb_clk", GCC_KIND_BRANCH, 0xC00Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_byte0_clk", GCC_KIND_BRANCH, 0x8044u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_byte0_intf_clk", GCC_KIND_BRANCH, 0x8048u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_byte1_clk", GCC_KIND_BRANCH, 0x804Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_byte1_intf_clk", GCC_KIND_BRANCH, 0x8050u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_aux_clk", GCC_KIND_BRANCH, 0x8074u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_crypto_clk", GCC_KIND_BRANCH, 0x8068u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_link_clk", GCC_KIND_BRANCH, 0x805Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_link_intf_clk", GCC_KIND_BRANCH, 0x8064u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_usb_router_link_intf_clk", GCC_KIND_BRANCH, 0x8060u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_dp_crypto_clk", GCC_KIND_BRANCH, 0xE014u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_pixel0_clk", GCC_KIND_BRANCH, 0x806Cu, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_dp_pixel_clk", GCC_KIND_BRANCH, 0xE018u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx0_pixel1_clk", GCC_KIND_BRANCH, 0x8070u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_dp_pixel1_clk", GCC_KIND_BRANCH, 0xE01Cu, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_aux_clk", GCC_KIND_BRANCH, 0x8090u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_crypto_clk", GCC_KIND_BRANCH, 0x808Cu, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_link_clk", GCC_KIND_BRANCH, 0x8080u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_link_intf_clk", GCC_KIND_BRANCH, 0x8088u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_usb_router_link_intf_clk", GCC_KIND_BRANCH, 0x8084u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_pixel0_clk", GCC_KIND_BRANCH, 0x8078u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx1_pixel1_clk", GCC_KIND_BRANCH, 0x807Cu, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx2_aux_clk", GCC_KIND_BRANCH, 0x80A8u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx2_crypto_clk", GCC_KIND_BRANCH, 0x80A4u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx2_link_clk", GCC_KIND_BRANCH, 0x809Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx2_link_intf_clk", GCC_KIND_BRANCH, 0x80A0u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx2_pixel0_clk", GCC_KIND_BRANCH, 0x8094u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx2_pixel1_clk", GCC_KIND_BRANCH, 0x8098u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx3_aux_clk", GCC_KIND_BRANCH, 0x80B8u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx3_crypto_clk", GCC_KIND_BRANCH, 0x80BCu, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx3_link_clk", GCC_KIND_BRANCH, 0x80B0u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx3_link_intf_clk", GCC_KIND_BRANCH, 0x80B4u, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_dptx3_pixel0_clk", GCC_KIND_BRANCH, 0x80ACu, 0u, 0u, -1, 0u, 0u,
-     CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_esc0_clk", GCC_KIND_BRANCH, 0x8054u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_esc1_clk", GCC_KIND_BRANCH, 0x8058u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_mdp1_clk", GCC_KIND_BRANCH, 0xA004u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_mdp_clk", GCC_KIND_BRANCH, 0x8010u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_mdp_lut1_clk", GCC_KIND_BRANCH, 0xA014u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_mdp_lut_clk", GCC_KIND_BRANCH, 0x8020u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_mdp_ss_ip_clk", GCC_KIND_BRANCH, 0x8030u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_mdp_clk", GCC_KIND_BRANCH, 0xE010u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_pclk0_clk", GCC_KIND_BRANCH, 0x8004u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_pclk0_clk", GCC_KIND_BRANCH, 0xE004u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_pclk1_clk", GCC_KIND_BRANCH, 0x8008u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_pclk1_clk", GCC_KIND_BRANCH, 0xE008u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_pclk2_clk", GCC_KIND_BRANCH, 0x800Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_spdm_pclk2_clk", GCC_KIND_BRANCH, 0xE00Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_rscc_vsync_clk", GCC_KIND_BRANCH, 0xC008u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_vsync1_clk", GCC_KIND_BRANCH, 0xA024u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_vsync_clk", GCC_KIND_BRANCH, 0x8040u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_osc_clk", GCC_KIND_BRANCH, 0x80C8u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_pll_test_clk", GCC_KIND_BRANCH, 0xD010u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_mdss_accu_shift_clk", GCC_KIND_BRANCH, 0xE060u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"disp_cc_xo_clk", GCC_KIND_BRANCH, 0xE05Cu, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_DISPCC},
-    {"tcsr_pcie_0_clkref_en", GCC_KIND_REQ, 0x44u, 0u, 0u, -1, 0u, 0u, CLOCK_CTL_TCSR},
+    {"gcc_ufs_phy_ice_core_clk", GCC_KIND_BRANCH, 0x77064u, 0x0u, 0x0u, 20, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_phy_aux_clk", GCC_KIND_BRANCH, 0x7709Cu, 0x0u, 0x0u, 21, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_rx_symbol_0_clk", GCC_KIND_REQ, 0x77020u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_rx_symbol_1_clk", GCC_KIND_REQ, 0x770B8u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_tx_symbol_0_clk", GCC_KIND_REQ, 0x7701Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_unipro_core_clk", GCC_KIND_BRANCH, 0x7705Cu, 0x0u, 0x0u, 22, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb30_prim_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0xf004u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb30_prim_master_clk", GCC_KIND_BRANCH, 0xF010u, 0x0u, 0x0u, 1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb30_prim_mock_utmi_clk", GCC_KIND_BRANCH, 0xF01Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb30_prim_sleep_clk", GCC_KIND_BRANCH, 0xF018u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb3_prim_phy_aux_clk", GCC_KIND_BRANCH, 0xF054u, 0x0u, 0x0u, 23, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb3_prim_phy_com_aux_clk", GCC_KIND_BRANCH, 0xF058u, 0x0u, 0x0u, 23, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb3_prim_phy_pipe_clk", GCC_KIND_REQ, 0xF05Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_video_axi0_clk", GCC_KIND_BRANCH, 0xB024u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_video_axi1_clk", GCC_KIND_BRANCH, 0xB028u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_video_xo_clk", GCC_KIND_BRANCH, 0xB03Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
 };
 const unsigned int gcc_clock_cnt = sizeof(gcc_clocks) / sizeof(gcc_clocks[0]);
 
-/* GPLL0/GPLL4 source-lock registers (read only) and APCS PLL vote. */
+/* GPLL0/GPLL4 mode registers (read only) and APCS PLL vote (Linux gcc-sm8250.c). */
 const unsigned int gcc_gpll0_mode_offset = 0x0u;
-const unsigned int gcc_gpll4_mode_offset = 0x4000u;
-const unsigned int gcc_apcs_pll_vote_offset = 0x52020u;
+const unsigned int gcc_gpll4_mode_offset = 0x76000u;
+const unsigned int gcc_apcs_pll_vote_offset = 0x52018u;
 
-/* Names requested but absent from the Molokai BSP (left unsupported): gcc_disp_xo_clk, gcc_gpu_gpll0_clk_src (no CBCR), gcc_gpu_gpll0_div_clk_src (no CBCR), gcc_pcie_0_link_down_bcr (no CBCR), gcc_pcie_0_nocsr_com_phy_bcr (no CBCR), gcc_pcie_0_phy_bcr (no CBCR), gcc_pcie_0_phy_nocsr_com_phy_bcr (no CBCR), gcc_pcie_phy_cfg_ahb_bcr (no CBCR), gcc_pcie_phy_com_bcr (no CBCR), gcc_qupv3_wrap0_core_2x_clk, gcc_qupv3_wrap0_core_clk, gcc_qupv3_wrap0_s0_clk, gcc_qupv3_wrap0_s1_clk, gcc_qupv3_wrap0_s2_clk, gcc_qupv3_wrap0_s3_clk, gcc_qupv3_wrap0_s4_clk, gcc_qupv3_wrap0_s5_clk, gcc_qupv3_wrap0_s6_clk, gcc_qupv3_wrap0_s7_clk, gcc_qupv3_wrap_0_m_ahb_clk, gcc_qupv3_wrap_0_s_ahb_clk, gcc_qupv3_wrap_1_m_ahb_clk, gcc_qusb2phy_prim_bcr (no CBCR), gcc_usb3_dp_phy_prim_bcr (no CBCR), gcc_usb3_dp_phy_sec_bcr (no CBCR), gcc_usb3_phy_prim_bcr (no CBCR), gcc_usb3_phy_sec_bcr (no CBCR), gcc_usb3phy_phy_prim_bcr (no CBCR), gcc_usb3phy_phy_sec_bcr (no CBCR) */
+/* dropped (no SM8250 GCC equivalent or non-GCC controller): gcc_aggre_noc_pcie_axi_clk, gcc_cam_bist_mclk_ahb_clk, gcc_camera_ahb_clk, gcc_camera_hf_axi_cloned_clk, gcc_cfg_noc_pcie_anoc_ahb_clk, gcc_cnoc_pcie_sf_axi_clk, gcc_ddrss_pcie_sf_qtb_clk, gcc_disp_ahb_clk, gcc_eva_ahb_clk, gcc_eva_axi0_clk, gcc_eva_axi0c_clk, gcc_eva_xo_clk, gcc_gpll0_ufs_phy_rx_symbol_0_clk, gcc_gpll0_ufs_phy_rx_symbol_1_clk, gcc_gpll0_ufs_phy_tx_symbol_0_clk, gcc_gpu_cfg_ahb_clk, gcc_gpu_gemnoc_clk_en, gcc_gpu_gemnoc_gfx_clk, gcc_gpu_smmu_vote_clk, gcc_gpu_smmu_vote_gds, gcc_hlos1_vote_aggre_noc_mmu_pcie_qtb_clk, gcc_hlos1_vote_aggre_noc_mmu_pcie_qtb_gds, gcc_hlos1_vote_aggre_noc_mmu_qtb1_clk, gcc_hlos1_vote_aggre_noc_mmu_qtb1_gds, gcc_hlos1_vote_aggre_noc_mmu_qtb2_clk, gcc_hlos1_vote_aggre_noc_mmu_qtb2_gds, gcc_hlos1_vote_all_smmu_mmu_clk, gcc_hlos1_vote_all_smmu_mmu_gds, gcc_hlos1_vote_gpu_smmu_clk, gcc_hlos1_vote_gpu_smmu_gds, gcc_hlos1_vote_lpass_qtb_clk, gcc_hlos1_vote_lpass_qtb_gds, gcc_hlos1_vote_mmnoc_mmu_qtb_hf01_clk, gcc_hlos1_vote_mmnoc_mmu_qtb_hf01_gds, gcc_hlos1_vote_mmnoc_mmu_qtb_hf23_clk, gcc_hlos1_vote_mmnoc_mmu_qtb_hf23_gds, gcc_hlos1_vote_mmnoc_mmu_qtb_sf_clk, gcc_hlos1_vote_mmnoc_mmu_qtb_sf_gds, gcc_hlos1_vote_mmu_tcu_clk, gcc_hlos1_vote_mmu_tcu_gds, gcc_hlos1_vote_turing_mmu_qtb0_clk, gcc_hlos1_vote_turing_mmu_qtb0_gds, gcc_mmu_tcu_vote_clk, gcc_mmu_tcu_vote_gds, gcc_pcie_0_phy_aux_clk, gcc_pcie_0_phy_gdsc, gcc_pcie_0_phy_rchng_clk, gcc_pcie_0_pipe_div2_clk, gcc_pcie_rscc_ahb_clk, gcc_pcie_rscc_xo_clk, gcc_qmip_camera_cmd_ahb_clk, gcc_qmip_disp_dcp_sf_ahb_clk, gcc_qmip_gpu_ahb_clk, gcc_qmip_pcie_ahb_clk, gcc_qmip_video_cv_cpu_ahb_clk, gcc_qmip_video_v_cpu_ahb_clk, gcc_qupv3_i2c_core_clk, gcc_qupv3_i2c_s0_clk, gcc_qupv3_i2c_s1_clk, gcc_qupv3_i2c_s2_clk, gcc_qupv3_i2c_s3_clk, gcc_qupv3_i2c_s4_clk, gcc_qupv3_i2c_s_ahb_clk, gcc_qupv3_wrap1_qspi_ref_clk, gcc_qupv3_wrap1_s6_clk, gcc_qupv3_wrap1_s7_clk, gcc_qupv3_wrap2_s6_clk, gcc_qupv3_wrap2_s7_clk, gcc_qupv3_wrap3_core_2x_clk, gcc_qupv3_wrap3_core_clk, gcc_qupv3_wrap3_ibi_ctrl_1_clk, gcc_qupv3_wrap3_ibi_ctrl_2_clk, gcc_qupv3_wrap3_s0_clk, gcc_qupv3_wrap3_s1_clk, gcc_qupv3_wrap3_s2_clk, gcc_qupv3_wrap3_s3_clk, gcc_qupv3_wrap3_s4_clk, gcc_qupv3_wrap3_s5_clk, gcc_qupv3_wrap_1_m_axi_clk, gcc_qupv3_wrap_3_ibi_1_ahb_clk, gcc_qupv3_wrap_3_ibi_2_ahb_clk, gcc_qupv3_wrap_3_m_ahb_clk, gcc_qupv3_wrap_3_s_ahb_clk, gcc_sdcc2_at_clk, gcc_ufs_mem_phy_gdsc, gcc_usb3_phy_gdsc, gcc_video_ahb_clk, gpu_cc_gpu_smmu_vote_clk, gpu_cc_hlos1_vote_gpu_smmu_clk, disp_cc_debug_clk, disp_cc_mdss_spdm_debug_clk, disp_cc_sleep_clk, disp_cc_esync0_clk, disp_cc_esync1_clk, disp_cc_mdss_ahb1_clk, disp_cc_mdss_ahb_clk, disp_cc_mdss_ahb_swi_clk, disp_cc_mdss_rscc_ahb_clk, disp_cc_mdss_byte0_clk, disp_cc_mdss_byte0_intf_clk, disp_cc_mdss_byte1_clk, disp_cc_mdss_byte1_intf_clk, disp_cc_mdss_dptx0_aux_clk, disp_cc_mdss_dptx0_link_clk, disp_cc_mdss_dptx1_aux_clk, disp_cc_mdss_dptx1_link_clk, disp_cc_mdss_dptx2_aux_clk, disp_cc_mdss_dptx2_link_clk, disp_cc_mdss_dptx3_aux_clk, disp_cc_mdss_dptx3_link_clk, disp_cc_mdss_esc0_clk, disp_cc_mdss_esc1_clk, disp_cc_mdss_mdp1_clk, disp_cc_mdss_mdp_clk, disp_cc_mdss_mdp_lut1_clk, disp_cc_mdss_mdp_lut_clk, disp_cc_mdss_mdp_ss_ip_clk, disp_cc_mdss_spdm_mdp_clk, disp_cc_mdss_pclk0_clk, disp_cc_mdss_spdm_pclk0_clk, disp_cc_mdss_pclk1_clk, disp_cc_mdss_spdm_pclk1_clk, disp_cc_mdss_pclk2_clk, disp_cc_mdss_spdm_pclk2_clk, disp_cc_mdss_rscc_vsync_clk, disp_cc_mdss_vsync1_clk, disp_cc_mdss_vsync_clk, disp_cc_osc_clk, disp_cc_pll_test_clk, disp_cc_mdss_accu_shift_clk, disp_cc_xo_clk, tcsr_pcie_0_clkref_en */

@@ -1,15 +1,15 @@
 #ifndef MOLOKAI_GDSC_PHYS_H
 #define MOLOKAI_GDSC_PHYS_H
-/* exact Molokai ClockBSP/HWIO/DT physical GDSCR locations. */
+/* SM8250 GDSCR locations (Linux dispcc-sm8250.c / gcc-sm8250.c). */
 
 #include <stdint.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define DISP_CC_PHYS UINT64_C(0x09BA2000)
-#define DISP_CC_BYTES 0x00020000u
-#define DISP_CORE_GDSCR_OFFSET 0x00009000u
-#define DISP_CORE_GDSCR_PHYS UINT64_C(0x09BAB000)
+#define DISP_CC_PHYS UINT64_C(0x0AF00000)
+#define DISP_CC_BYTES 0x00010000u
+#define DISP_CORE_GDSCR_OFFSET 0x00003000u
+#define DISP_CORE_GDSCR_PHYS UINT64_C(0x0AF03000)
 #define RAIL_VDD_CX 0x01u
 #define RAIL_VDD_MM 0x08u
 #define RAIL_VDD_MX 0x10u
