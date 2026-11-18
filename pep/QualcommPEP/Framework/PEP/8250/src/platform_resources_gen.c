@@ -4,6 +4,28 @@
 #include "platform_resources.h"
 
 const char* const platform_rail_names[] = {
+#if defined(PEP_TARGET_8250)
+    "PPP_RESOURCE_ID_BUCK_BOOST1_C",
+    "PPP_RESOURCE_ID_CXO_BUFFERS_BBCLK2_A",
+    "PPP_RESOURCE_ID_LDO11_C",
+    "PPP_RESOURCE_ID_LDO12_A",
+    "PPP_RESOURCE_ID_LDO17_A",
+    "PPP_RESOURCE_ID_LDO18_A",
+    "PPP_RESOURCE_ID_LDO1_A",
+    "PPP_RESOURCE_ID_LDO1_C",
+    "PPP_RESOURCE_ID_LDO2_A",
+    "PPP_RESOURCE_ID_LDO2_C",
+    "PPP_RESOURCE_ID_LDO3_C",
+    "PPP_RESOURCE_ID_LDO5_A",
+    "PPP_RESOURCE_ID_LDO6_A",
+    "PPP_RESOURCE_ID_LDO6_C",
+    "PPP_RESOURCE_ID_LDO7_A",
+    "PPP_RESOURCE_ID_LDO9_A",
+    "PPP_RESOURCE_ID_LDO9_C",
+    "PPP_RESOURCE_ID_SMPS5_A",
+    "PPP_RESOURCE_ID_SMPS6_C",
+    "PPP_RESOURCE_ID_SMPS7_C",
+#else
     "PPP_RESOURCE_ID_BUCK_BOOST1_B",
     "PPP_RESOURCE_ID_BUCK_BOOST2_B",
     "PPP_RESOURCE_ID_CLK1_A",
@@ -60,8 +82,9 @@ const char* const platform_rail_names[] = {
     "PPP_RESOURCE_ID_SMPS4_F",
     "PPP_RESOURCE_ID_SMPS4_G",
     "PPP_RESOURCE_ID_SMPS5_F",
+#endif
 };
-const unsigned int platform_rail_cnt = 56u;
+const unsigned int platform_rail_cnt = (unsigned int)(sizeof(platform_rail_names) / sizeof(platform_rail_names[0]));
 
 const dsdt_route_t platform_routes[] = {
     {"ICBID_MASTER_APPSS_PROC", "ICBID_SLAVE_DISPLAY_CFG"},

@@ -15,6 +15,10 @@ for m in re.finditer(r'static struct gdsc (\w+) = \{(.*?)\n\};',lx,re.S):
 src=open(sys.argv[1]).read()
 a=src.index('const gcc_domain_t gcc_domains[]');b=src.index('const unsigned int gcc_clock_cnt')
 old=re.findall(r'\{"(\w+)", (GCC_KIND_\w+),.*?(CLOCK_CTL_\w+)\}',src[a:b])
+import os
+_k=os.path.join(os.path.dirname(os.path.abspath(__file__)),'kona_dsdt_gcc_clocks.txt')
+_seen={n for n,_,_ in old}
+old+=[(n,'GCC_KIND_BRANCH','CLOCK_CTL_GCC') for n in open(_k).read().split() if n not in _seen]
 doms=[];dix={};out=[];drop=[]
 def bit(m):
     return 1<<int(re.match(r'BIT\((\d+)\)',m).group(1)) if m and m.startswith('BIT') else int(m,0) if m else 0

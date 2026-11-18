@@ -99,3 +99,9 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - `D0 revalidation complete admission=open` (RPMh read of a cmd-db rail works through TCS on DRV2).
 - Blocked at `runtime providers unavailable DPM=rejected`: PMIC GPIO provider (8845 pmic 5 gpio 5 IOCTL probe) unavailable.
 - Fix: on 8250, PMIC GPIO delegation no longer gates DPM; trace now prints each delegation state.
+
+## 2026-11-18 17:40 — run 3: past the delegation gate, ACPI resource graph empty
+- Driver now parses the Kona PEP0 descriptors; every device is "unsupported" -> `graph build failed status=C0000225` (no boot graph).
+- DSDT coverage (Kona names vs catalogs): clocks 155 (69 known), PMICVREGVOTE 20 (0 known), NPA 4 (3), ICB masters 23 (11) / slaves 15 (9) / 34 routes, FOOTSWITCH 17 (Kona names without gcc_ prefix).
+- Fix: GCC table regenerated from 8845 names + Kona DSDT gcc names (93 clocks, 66/71 Kona gcc covered); catalog gets the SM8250 GCC names; PPP catalog/rail list replaced with the 20 Kona names (+ CXO_BUFFERS_BBCLKn -> lnbclkan).
+- Next: ICB (SM8250 masters/slaves/routes from Linux interconnect/qcom/sm8250.c + cmd-db BCMs), FOOTSWITCH names/offsets, NPA /ipa/pc.

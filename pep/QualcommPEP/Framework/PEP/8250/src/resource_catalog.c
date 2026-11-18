@@ -665,6 +665,36 @@ const clock_entry_t clocks[] = {
     {"video_cc_mvs0c_shift_clk", "ClockDomain_VIDEOCC_VIDEOCCXO", 0u, "0x0", "0x0"},
     {"video_cc_ts_xo_clk", "ClockDomain_VIDEOCC_VIDEOCCXO", 0u, "0x0", "0x0"},
     {"video_cc_xo_clk", "ClockDomain_VIDEOCC_VIDEOCCXO", 0u, "0x0", "0x0"},
+#if defined(PEP_TARGET_8250)
+    /* SM8250 GCC clocks referenced by the Kona DSDT (data: clock/8250/clock_data.c). */
+    {"gcc_aggre_noc_pcie_tbu_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_aggre_usb3_sec_axi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_cfg_noc_usb3_sec_axi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_ddrss_gpu_axi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_disp_xo_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_gpu_memnoc_gfx_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie0_phy_refgen_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie1_phy_refgen_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_1_aux_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_1_cfg_ahb_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_1_mstr_axi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_1_pipe_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_1_slv_axi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_1_slv_q2a_axi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_pcie_phy_aux_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_qupv3_wrap0_s3_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_qupv3_wrap0_s4_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_qupv3_wrap0_s7_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_qupv3_wrap_0_m_ahb_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_qupv3_wrap_1_m_ahb_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb30_sec_master_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb30_sec_mock_utmi_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb30_sec_sleep_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb3_sec_clkref_en", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb3_sec_phy_aux_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb3_sec_phy_com_aux_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+    {"gcc_usb3_sec_phy_pipe_clk", "ClockDomain_GCC_SM8250", 1u, "0x0", "0x0"},
+#endif
 };
 const unsigned int clock_catalog_cnt = (unsigned int)(sizeof(clocks) / sizeof(clocks[0]));
 const rail_entry_t rail_catalog[] = {

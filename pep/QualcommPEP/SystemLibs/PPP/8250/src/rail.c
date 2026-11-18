@@ -55,6 +55,10 @@ int rail_cmd_db_name(const char* ppp_name, char out[RAIL_CMDDB_BYTES], uint32_t*
         kind = 'B';
         p += 10;
         type = RAIL_TYPE_NONE;
+    } else if (strncmp(p, "CXO_BUFFERS_BBCLK", 17) == 0) {
+        kind = 'C';
+        p += 17;
+        type = RAIL_TYPE_CLOCK;
     } else if (strncmp(p, "CLK", 3) == 0) {
         kind = 'C';
         p += 3;

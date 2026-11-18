@@ -15,6 +15,29 @@ static int eq(const char* a, const char* b)
 }
 
 const ppp_res_t ppp_catalog[] = {
+#if defined(PEP_TARGET_8250)
+    /* Kona DSDT PMICVREGVOTE names (PM8150 A / PM8150L C). */
+    {"PPP_RESOURCE_ID_BUCK_BOOST1_C", 0, PPP_BUCK_BOOST, 0u, 1u},
+    {"PPP_RESOURCE_ID_CXO_BUFFERS_BBCLK2_A", 0, PPP_PMIC_CLOCK, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO11_C", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO12_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO17_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO18_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO1_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO1_C", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO2_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO2_C", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO3_C", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO5_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO6_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO6_C", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO7_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO9_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO9_C", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_SMPS5_A", 0, PPP_SMPS, 0u, 1u},
+    {"PPP_RESOURCE_ID_SMPS6_C", 0, PPP_SMPS, 0u, 1u},
+    {"PPP_RESOURCE_ID_SMPS7_C", 0, PPP_SMPS, 0u, 1u},
+#else
     {"PPP_RESOURCE_ID_BUCK_BOOST1_B", 0, PPP_BUCK_BOOST, 0u, 1u},
     {"PPP_RESOURCE_ID_BUCK_BOOST2_B", 0, PPP_BUCK_BOOST, 0u, 1u},
     {"PPP_RESOURCE_ID_CLK1_A", 0, PPP_PMIC_CLOCK, 0u, 1u},
@@ -71,6 +94,7 @@ const ppp_res_t ppp_catalog[] = {
     {"PPP_RESOURCE_ID_SMPS4_F", "pm8550ve_f_s4", PPP_SMPS, 1u, 1u},
     {"PPP_RESOURCE_ID_SMPS4_G", "pm8550ve_g_s4", PPP_SMPS, 1u, 1u},
     {"PPP_RESOURCE_ID_SMPS5_F", "pm8550ve_f_s5", PPP_SMPS, 1u, 1u},
+#endif
 };
 const unsigned int ppp_name_cnt = (unsigned int)(sizeof(ppp_catalog) / sizeof(ppp_catalog[0]));
 
