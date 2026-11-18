@@ -2189,6 +2189,12 @@ static int win_io_rail_known(void* ctx, const char* ppp_name)
         return 0;
     idx = rail_ensure(&o->rails, ppp_name);
     known = idx >= 0 && o->rails.rails[idx].resolved;
+#if defined(PEP_TARGET_8250)
+    /* Kona DSDT rails absent from pipa's cmd-db (e.g. ldoa1) are not AOP-managed on this
+     * board: accept them as no-op so the owning device is not rejected. */
+    if (idx >= 0 && !known)
+        known = 1;
+#endif
     owners_unlock(o);
     return known;
 }
@@ -2206,7 +2212,11 @@ static int win_io_rail_vote(void* ctx, const char* path, const char* ppp_name,
     idx = rail_ensure(&o->rails, ppp_name);
     if (idx < 0 || !o->rails.rails[idx].resolved) {
         owners_unlock(o);
+#if defined(PEP_TARGET_8250)
+        return idx >= 0; /* absent from cmd-db: no-op (see win_io_rail_known) */
+#else
         return 0;
+#endif
     }
     had = rail_get_client_vote(&o->rails, path, ppp_name, &old);
     ok = rail_set_client_vote(&o->rails, path, ppp_name, &vote) && rail_commit(o, idx);
@@ -2297,6 +2307,12 @@ static int win_io_rail_readback(void* ctx, const char* ppp_name, uint64_t* effec
         return 0;
     idx = rail_ensure(&o->rails, ppp_name);
     ok = idx >= 0 && o->rails.rails[idx].resolved && rail_read(o, idx, effective);
+#if defined(PEP_TARGET_8250)
+    if (idx >= 0 && !o->rails.rails[idx].resolved) {
+        *effective = 0u;
+        ok = 1;
+    }
+#endif
     owners_unlock(o);
     return ok;
 }
@@ -6516,6 +6532,12 @@ static NTSTATUS hw_backend_win_try_publish_locked(_In_ WDFDEVICE dev)
     win_backend_npa_callbacks(&g_win_backend->core, &callbacks);
     npa_may_hold_clients = TRUE;
     if (!npa_activate(npa, &callbacks)) {
+        for (ULONG k = 0u; k < npa->cnt; ++k)
+            if (!callbacks.owns(callbacks.ctx, &npa->slots[k].key))
+                TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE,
+                            "npa: not owned kind=%u res=%s slave=%s dev=%s",
+                            (unsigned)npa->slots[k].key.kind, npa->slots[k].key.res,
+                            npa->slots[k].key.slave, npa->slots[k].key.dev_path);
         TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE,
                     "npa: client activation rejected created=%lu rejected=%lu",
                     g_win_backend->core.diag.npa_created, g_win_backend->core.diag.npa_refused);

@@ -112,3 +112,9 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - ICB probe routes -> APPSS->QUP_1, APPSS->UFS_MEM_CFG, UFS_MEM->EBI1, QUP_1->EBI1.
 - FOOTSWITCH: Kona names `ufs_phy_gdsc`, `pcie_0_gdsc` adopted as canonical domain names on 8250 (UFS footswitch graph, gdsc tables). Camera/video/GPU/USB GDSCs still unsupported.
 - gcc -fsyntax-only clean on the regenerated data files.
+
+## 2026-11-18 18:45 — run 4: resource graph BUILT
+- Kona descriptors now accepted: e.g. 8/8, 3/3 devices supported in several methods; UFS F/P catalog compiled; `ufs: required client bound`.
+- Still unsupported: JPGE/MPCS/VFE0 (camera clocks), APMD/PEMD/SDMD/CPMX, G0..GL MD (status=1 malformed — to inspect).
+- Stops at `npa: client activation rejected created=0` (a resource key not owned before any client creation).
+- Fix: rails absent from pipa cmd-db (ldoa1 etc.) are no-op instead of unknown; failing NPA keys are now logged individually.
