@@ -108,9 +108,15 @@ const ppp_res_t* lookup_ppp_name(const char* n)
 }
 
 const gdsc_res_t gdscs[] = {
+#if defined(PEP_TARGET_8250)
+    {"ufs_phy_gdsc", 0x0B76D452u, 0x77004u, GDSC_RAIL_CX | GDSC_RAIL_MX},
+    {"pcie_0_gdsc", 0xC1C9C0D4u, 0x6B004u, GDSC_RAIL_CX | GDSC_RAIL_MX},
+#else
     {"gcc_ufs_phy_gdsc", 0x0B76D452u, 0x67004u, GDSC_RAIL_CX | GDSC_RAIL_MX},
     {"gcc_pcie_0_gdsc", 0xC1C9C0D4u, 0x6B004u, GDSC_RAIL_CX | GDSC_RAIL_MX},
-    {"gcc_pcie_0_phy_gdsc", 0x2AE8F85Bu, 0x6C000u, GDSC_RAIL_CX | GDSC_RAIL_MX}};
+    {"gcc_pcie_0_phy_gdsc", 0x2AE8F85Bu, 0x6C000u, GDSC_RAIL_CX | GDSC_RAIL_MX},
+#endif
+};
 const unsigned int gdsc_cnt = (unsigned int)(sizeof(gdscs) / sizeof(gdscs[0]));
 /* MXA and MX share the mx.lvl resource on SM8845. */
 

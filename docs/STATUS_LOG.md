@@ -105,3 +105,10 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - DSDT coverage (Kona names vs catalogs): clocks 155 (69 known), PMICVREGVOTE 20 (0 known), NPA 4 (3), ICB masters 23 (11) / slaves 15 (9) / 34 routes, FOOTSWITCH 17 (Kona names without gcc_ prefix).
 - Fix: GCC table regenerated from 8845 names + Kona DSDT gcc names (93 clocks, 66/71 Kona gcc covered); catalog gets the SM8250 GCC names; PPP catalog/rail list replaced with the 20 Kona names (+ CXO_BUFFERS_BBCLKn -> lnbclkan).
 - Next: ICB (SM8250 masters/slaves/routes from Linux interconnect/qcom/sm8250.c + cmd-db BCMs), FOOTSWITCH names/offsets, NPA /ipa/pc.
+
+## 2026-11-18 18:30 — SM8250 ICB topology + GDSC names
+- New generator `SystemLibs/ICB/8250/tools/gen_icb_8250.py`: Linux interconnect/qcom/sm8250.c nodes+BCMs + Kona DSDT BUSARB routes -> `bcm_nodes_gen.c` (27 BCMs, ACV as vector BIT3), `icb_catalog_8250.inc`, `icb_routes_8250.inc` (30/34 Kona routes, 90 hops; BFS paths checked against Linux, e.g. QUP_1->EBI1 = qhm_qup1->qns_a1noc_snoc | qnm_aggre1_noc->qns_gemnoc_sf | qnm_snoc_sf->qns_llcc | llcc_mc->ebi).
+  Skipped: CAMNOC_*_UNCOMP (3) and IPA_CORE (no Linux node).
+- ICB probe routes -> APPSS->QUP_1, APPSS->UFS_MEM_CFG, UFS_MEM->EBI1, QUP_1->EBI1.
+- FOOTSWITCH: Kona names `ufs_phy_gdsc`, `pcie_0_gdsc` adopted as canonical domain names on 8250 (UFS footswitch graph, gdsc tables). Camera/video/GPU/USB GDSCs still unsupported.
+- gcc -fsyntax-only clean on the regenerated data files.

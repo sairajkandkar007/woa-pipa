@@ -65,6 +65,9 @@ const oem_power_domain_t oem_power_domains[OEM_POWER_DOMAIN_CNT] = {
 };
 
 static const oem_power_domain_t target_domains[] = {
+    /* SM8250 / Kona DSDT names (GCC 0x100000 + Linux gcc-sm8250.c gdscr). */
+    {"ufs_phy_gdsc", OEM_UFS_PHY_DOMAIN_ID, UINT64_C(0x00177004)},
+    {"pcie_0_gdsc", 0xC1C9C0D4u, UINT64_C(0x0016B004)},
     {"gcc_pcie_0_gdsc", 0xC1C9C0D4u, UINT64_C(0x0016B004)},
     {"gcc_pcie_0_phy_gdsc", 0x2AE8F85Bu, UINT64_C(0x0016C000)},
 };

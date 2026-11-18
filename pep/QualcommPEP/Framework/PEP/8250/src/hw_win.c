@@ -2612,10 +2612,15 @@ static void native_domains_bind(owners_t* o)
                                                {0x30u, 0x30u},
                                                RAIL_VDD_MM | RAIL_VDD_MX};
     static const domain_rail_spec_t pcie[] = {
+#if defined(PEP_TARGET_8250)
+        {"pcie_0_gdsc", "pcie_core", {"cx.lvl", "mx.lvl"},
+         {0x40u, 0x40u}, RAIL_VDD_CX | RAIL_VDD_MX},
+#else
         {"gcc_pcie_0_gdsc", "pcie_core", {"cx.lvl", "mx.lvl"},
          {0x40u, 0x40u}, RAIL_VDD_CX | RAIL_VDD_MX},
         {"gcc_pcie_0_phy_gdsc", "pcie_phy", {"cx.lvl", "mx.lvl"},
          {0x40u, 0x40u}, RAIL_VDD_CX | RAIL_VDD_MX},
+#endif
     };
     domain_rail_io_t io = {0};
     fs_gdsc_rail_provider_t rails = {0};

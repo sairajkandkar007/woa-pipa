@@ -3,9 +3,18 @@
 #include "gcc.h"
 #include <string.h>
 
+#if defined(PEP_TARGET_8250)
+/* Kona DSDT FOOTSWITCH names carry no gcc_ prefix. */
+const char clock_ufs_domain[] = "ufs_phy_gdsc";
+#else
 const char clock_ufs_domain[] = "gcc_ufs_phy_gdsc";
+#endif
 const char clock_ufs_ice[] = "gcc_ufs_phy_ice_core_clk";
+#if defined(PEP_TARGET_8250)
+const char clock_ufs_enable[] = "/fs/ufs_phy_gdsc/enable";
+#else
 const char clock_ufs_enable[] = "/fs/gcc_ufs_phy_gdsc/enable";
+#endif
 
 static const clock_window_t windows[CLOCK_CTL_COUNT] = {
     {GCC_WINDOW_PHYS, 0u, GCC_WINDOW_BYTES},

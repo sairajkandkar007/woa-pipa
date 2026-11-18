@@ -87,6 +87,12 @@ const char* const platform_rail_names[] = {
 const unsigned int platform_rail_cnt = (unsigned int)(sizeof(platform_rail_names) / sizeof(platform_rail_names[0]));
 
 const dsdt_route_t platform_routes[] = {
+#if defined(PEP_TARGET_8250)
+    {"ICBID_MASTER_APPSS_PROC", "ICBID_SLAVE_QUP_1"},
+    {"ICBID_MASTER_APPSS_PROC", "ICBID_SLAVE_UFS_MEM_CFG"},
+    {"ICBID_MASTER_UFS_MEM", "ICBID_SLAVE_EBI1"},
+    {"ICBID_MASTER_QUP_1", "ICBID_SLAVE_EBI1"},
+#else
     {"ICBID_MASTER_APPSS_PROC", "ICBID_SLAVE_DISPLAY_CFG"},
     {"ICBID_MASTER_APPSS_PROC", "ICBID_SLAVE_PRNG"},
     {"ICBID_MASTER_APPSS_PROC", "ICBID_SLAVE_QUP_3"},
@@ -97,8 +103,9 @@ const dsdt_route_t platform_routes[] = {
     {"ICBID_MASTER_QUP_3", "ICBID_SLAVE_EBI1"},
     {"ICBID_MASTER_QUP_CORE_3", "ICBID_SLAVE_QUP_CORE_3"},
     {"ICBID_MASTER_UFS_MEM", "ICBID_SLAVE_EBI1"},
+#endif
 };
-const unsigned int platform_route_cnt = 10u;
+const unsigned int platform_route_cnt = (unsigned int)(sizeof(platform_routes) / sizeof(platform_routes[0]));
 
 const char* const platform_clock_names[] = {
     "disp_cc_mdss_ahb_clk",
