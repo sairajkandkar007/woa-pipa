@@ -33,7 +33,7 @@ def bit(m):
 for name,kind,ctl in old:
     if kind=='GCC_KIND_GDSC':
         key=re.sub(r'_gdsc?$','',name[4:] if name.startswith('gcc_') else name);cand=[k for k in gd if re.sub(r'_gdsc$','',k)==key]
-        if cand: out.append(f'    {{"{name}", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, {gd[cand[0]]}u, 0x0u, CLOCK_CTL_GCC}},')
+        if cand: out.append(f'    {{"{cand[0]}", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, {gd[cand[0]]}u, 0x0u, CLOCK_CTL_GCC}},')
         else: drop.append(name)
         continue
     if ctl!='CLOCK_CTL_GCC' or name not in br: drop.append(name); continue
