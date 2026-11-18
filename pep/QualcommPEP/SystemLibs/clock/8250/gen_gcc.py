@@ -7,8 +7,16 @@ for m in re.finditer(r'static struct clk_branch (\w+) = \{(.*?)\n\};',lx,re.S):
     par=re.search(r'parent_hws.*?&(\w+)\.clkr\.hw',b,re.S)
     br[n]=dict(halt=g(r'\.halt_reg'),chk=g(r'\.halt_check'),en=g(r'\.enable_reg'),mask=g(r'\.enable_mask'),par=par.group(1) if par else None)
 rcg={}
+pmaps={m.group(1):dict((a,int(b)) for a,b in re.findall(r'\{\s*(P_\w+),\s*(\d+)\s*\}',m.group(2))) for m in re.finditer(r'static const struct parent_map (\w+)\[\] = \{(.*?)\};',lx,re.S)}
+ftbls={m.group(1):re.findall(r'F\((\d+),\s*(P_\w+),\s*([\d.]+),\s*(\d+),\s*(\d+)\)',m.group(2)) for m in re.finditer(r'static const struct freq_tbl (\w+)\[\] = \{(.*?)\};',lx,re.S)}
 for m in re.finditer(r'static struct clk_rcg2 (\w+) = \{(.*?)\n\};',lx,re.S):
-    n,b=m.groups();rcg[n]=(re.search(r'cmd_rcgr = (0x\w+)',b).group(1),int((re.search(r'mnd_width = (\d+)',b) or [0,0])[1]))
+    n,b=m.groups();rcg[n]=(re.search(r'cmd_rcgr = (0x\w+)',b).group(1),int((re.search(r'mnd_width = (\d+)',b) or [0,0])[1]),
+        (re.search(r'parent_map = (\w+)',b) or [0,None])[1],(re.search(r'freq_tbl = (\w+)',b) or [0,None])[1])
+# domains whose rate the PEP may program (no DFS, GPLL0/XO sources only)
+WRITABLE=('ufs_phy_axi','ufs_phy_unipro_core','ufs_phy_ice_core','ufs_phy_phy_aux','usb30_prim_master','usb30_sec_master',
+          'usb30_prim_mock_utmi','usb30_sec_mock_utmi','usb3_prim_phy_aux','usb3_sec_phy_aux','pcie_0_aux','pcie_1_aux','sdcc2_apps')
+SRC={'P_BI_TCXO':0,'P_GPLL0_OUT_MAIN':1,'P_GPLL0_OUT_EVEN':1}
+freqs=[]
 gd={}
 for m in re.finditer(r'static struct gdsc (\w+) = \{(.*?)\n\};',lx,re.S):
     gd[m.group(1)]=re.search(r'gdscr = (0x\w+)',m.group(2)).group(1)
@@ -33,7 +41,14 @@ for name,kind,ctl in old:
     if c['par'] in rcg:
         if c['par'] not in dix:
             dix[c['par']]=len(doms);r=rcg[c['par']]
-            doms.append(f'    {{"{c["par"]}", {r[0]}u, {r[1]}u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u}},')
+            first=len(freqs); ok=any(w in c['par'] for w in WRITABLE) and r[3] in ftbls and r[2] in pmaps
+            if ok:
+                for f,src,h,mm,nn in ftbls[r[3]]:
+                    if src not in SRC or src not in pmaps[r[2]]: ok=False; break
+                    freqs.append(f'    {{{f}u, {pmaps[r[2]][src]}u, {int(round(float(h)*2))}u, {mm}u, {nn}u, 255u, {SRC[src]}u}}, /* {c["par"]} {src} */')
+            if not ok: del freqs[first:]
+            cnt=len(freqs)-first
+            doms.append(f'    {{"{c["par"]}", {r[0]}u, {r[1]}u, {first if cnt else 0}u, {cnt}u, {"0u" if cnt else "GCC_DOMAIN_READ_ONLY"}, 0u}},')
         di=dix[c['par']]
     voted=c['chk']=='BRANCH_HALT_VOTED'
     halt=int(c['halt'],0) if c['halt'] else 0
@@ -44,8 +59,8 @@ for name,kind,ctl in old:
         k='GCC_KIND_REQ' if c['chk'] in ('BRANCH_HALT_SKIP','BRANCH_HALT_DELAY') else 'GCC_KIND_BRANCH'
         out.append(f'    {{"{name}", {k}, 0x{halt:X}u, 0x0u, 0x0u, {di}, 0x0u, 0x0u, CLOCK_CTL_GCC}},')
 body=('/* SM8250 GCC data generated from Linux drivers/clk/qcom/gcc-sm8250.c (tools gen_gcc.py).\n'
- ' * All RCG domains are READ_ONLY: rates stay as UEFI left them; only branch enable/vote is used. */\n'
- '#include "gcc.h"\n\nconst gcc_freq_t gcc_freqs[] = {\n    {19200000u, 0u, 1u, 0u, 0u, 255u, 0u},\n};\nconst unsigned int gcc_freq_cnt = 1u;\n\n'
+ ' * RCG domains are READ_ONLY (rate left as UEFI set it) except the non-DFS UFS/USB/PCIe-aux/SDCC2 domains in WRITABLE. */\n'
+ '#include "gcc.h"\n\nconst gcc_freq_t gcc_freqs[] = {\n'+('\n'.join(freqs) or '    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u},')+('\n};\nconst unsigned int gcc_freq_cnt = %du;\n\n' % max(len(freqs),1))+
  'const gcc_domain_t gcc_domains[] = {\n'+'\n'.join(doms)+f'\n}};\nconst unsigned int gcc_domain_cnt = {len(doms)}u;\n\n'
  'const gcc_clock_t gcc_clocks[] = {\n'+'\n'.join(out)+'\n};\nconst unsigned int gcc_clock_cnt = sizeof(gcc_clocks) / sizeof(gcc_clocks[0]);\n\n'
  '/* GPLL0/GPLL4 mode registers (read only) and APCS PLL vote (Linux gcc-sm8250.c). */\n'

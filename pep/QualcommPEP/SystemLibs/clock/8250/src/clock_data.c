@@ -1,19 +1,49 @@
 /* SM8250 GCC data generated from Linux drivers/clk/qcom/gcc-sm8250.c (tools gen_gcc.py).
- * All RCG domains are READ_ONLY: rates stay as UEFI left them; only branch enable/vote is used. */
+ * RCG domains are READ_ONLY (rate left as UEFI set it) except the non-DFS UFS/USB/PCIe-aux/SDCC2 domains in WRITABLE. */
 #include "gcc.h"
 
 const gcc_freq_t gcc_freqs[] = {
-    {19200000u, 0u, 1u, 0u, 0u, 255u, 0u},
+    {25000000u, 6u, 24u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_axi_clk_src P_GPLL0_OUT_EVEN */
+    {37500000u, 6u, 16u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_axi_clk_src P_GPLL0_OUT_EVEN */
+    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_axi_clk_src P_GPLL0_OUT_EVEN */
+    {150000000u, 1u, 8u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_axi_clk_src P_GPLL0_OUT_MAIN */
+    {300000000u, 1u, 4u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_axi_clk_src P_GPLL0_OUT_MAIN */
+    {33333333u, 6u, 18u, 0u, 0u, 255u, 1u}, /* gcc_usb30_prim_master_clk_src P_GPLL0_OUT_EVEN */
+    {66666667u, 6u, 9u, 0u, 0u, 255u, 1u}, /* gcc_usb30_prim_master_clk_src P_GPLL0_OUT_EVEN */
+    {133333333u, 1u, 9u, 0u, 0u, 255u, 1u}, /* gcc_usb30_prim_master_clk_src P_GPLL0_OUT_MAIN */
+    {200000000u, 1u, 6u, 0u, 0u, 255u, 1u}, /* gcc_usb30_prim_master_clk_src P_GPLL0_OUT_MAIN */
+    {240000000u, 1u, 5u, 0u, 0u, 255u, 1u}, /* gcc_usb30_prim_master_clk_src P_GPLL0_OUT_MAIN */
+    {9600000u, 0u, 4u, 0u, 0u, 255u, 0u}, /* gcc_pcie_0_aux_clk_src P_BI_TCXO */
+    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* gcc_pcie_0_aux_clk_src P_BI_TCXO */
+    {37500000u, 6u, 16u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_ice_core_clk_src P_GPLL0_OUT_EVEN */
+    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_ice_core_clk_src P_GPLL0_OUT_EVEN */
+    {150000000u, 1u, 8u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_ice_core_clk_src P_GPLL0_OUT_MAIN */
+    {300000000u, 1u, 4u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_ice_core_clk_src P_GPLL0_OUT_MAIN */
+    {9600000u, 0u, 4u, 0u, 0u, 255u, 0u}, /* gcc_ufs_phy_phy_aux_clk_src P_BI_TCXO */
+    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* gcc_ufs_phy_phy_aux_clk_src P_BI_TCXO */
+    {37500000u, 6u, 16u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_unipro_core_clk_src P_GPLL0_OUT_EVEN */
+    {75000000u, 6u, 8u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_unipro_core_clk_src P_GPLL0_OUT_EVEN */
+    {150000000u, 1u, 8u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_unipro_core_clk_src P_GPLL0_OUT_MAIN */
+    {300000000u, 1u, 4u, 0u, 0u, 255u, 1u}, /* gcc_ufs_phy_unipro_core_clk_src P_GPLL0_OUT_MAIN */
+    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* gcc_usb3_prim_phy_aux_clk_src P_BI_TCXO */
+    {33333333u, 6u, 18u, 0u, 0u, 255u, 1u}, /* gcc_usb30_sec_master_clk_src P_GPLL0_OUT_EVEN */
+    {66666667u, 6u, 9u, 0u, 0u, 255u, 1u}, /* gcc_usb30_sec_master_clk_src P_GPLL0_OUT_EVEN */
+    {133333333u, 1u, 9u, 0u, 0u, 255u, 1u}, /* gcc_usb30_sec_master_clk_src P_GPLL0_OUT_MAIN */
+    {200000000u, 1u, 6u, 0u, 0u, 255u, 1u}, /* gcc_usb30_sec_master_clk_src P_GPLL0_OUT_MAIN */
+    {240000000u, 1u, 5u, 0u, 0u, 255u, 1u}, /* gcc_usb30_sec_master_clk_src P_GPLL0_OUT_MAIN */
+    {9600000u, 0u, 4u, 0u, 0u, 255u, 0u}, /* gcc_pcie_1_aux_clk_src P_BI_TCXO */
+    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* gcc_pcie_1_aux_clk_src P_BI_TCXO */
+    {19200000u, 0u, 2u, 0u, 0u, 255u, 0u}, /* gcc_usb3_sec_phy_aux_clk_src P_BI_TCXO */
 };
-const unsigned int gcc_freq_cnt = 1u;
+const unsigned int gcc_freq_cnt = 31u;
 
 const gcc_domain_t gcc_domains[] = {
-    {"gcc_ufs_phy_axi_clk_src", 0x77024u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_usb30_prim_master_clk_src", 0xf020u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_ufs_phy_axi_clk_src", 0x77024u, 8u, 0u, 5u, 0u, 0u},
+    {"gcc_usb30_prim_master_clk_src", 0xf020u, 8u, 5u, 5u, 0u, 0u},
     {"gcc_gp1_clk_src", 0x64004u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_gp2_clk_src", 0x65004u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_gp3_clk_src", 0x66004u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_pcie_0_aux_clk_src", 0x6b038u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_pcie_0_aux_clk_src", 0x6b038u, 16u, 10u, 2u, 0u, 0u},
     {"gcc_pdm2_clk_src", 0x33010u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_qupv3_wrap1_s0_clk_src", 0x18010u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_qupv3_wrap1_s1_clk_src", 0x18140u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
@@ -28,17 +58,17 @@ const gcc_domain_t gcc_domains[] = {
     {"gcc_qupv3_wrap2_s4_clk_src", 0x1e4d0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_qupv3_wrap2_s5_clk_src", 0x1e600u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_sdcc2_apps_clk_src", 0x1400cu, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_ufs_phy_ice_core_clk_src", 0x7706cu, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_ufs_phy_phy_aux_clk_src", 0x770a0u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_ufs_phy_unipro_core_clk_src", 0x77084u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_usb3_prim_phy_aux_clk_src", 0xf064u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_usb30_sec_master_clk_src", 0x10020u, 8u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_ufs_phy_ice_core_clk_src", 0x7706cu, 0u, 12u, 4u, 0u, 0u},
+    {"gcc_ufs_phy_phy_aux_clk_src", 0x770a0u, 0u, 16u, 2u, 0u, 0u},
+    {"gcc_ufs_phy_unipro_core_clk_src", 0x77084u, 0u, 18u, 4u, 0u, 0u},
+    {"gcc_usb3_prim_phy_aux_clk_src", 0xf064u, 0u, 22u, 1u, 0u, 0u},
+    {"gcc_usb30_sec_master_clk_src", 0x10020u, 8u, 23u, 5u, 0u, 0u},
     {"gcc_pcie_phy_refgen_clk_src", 0x6f014u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_pcie_1_aux_clk_src", 0x8d038u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_pcie_1_aux_clk_src", 0x8d038u, 16u, 28u, 2u, 0u, 0u},
     {"gcc_qupv3_wrap0_s3_clk_src", 0x173a0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_qupv3_wrap0_s4_clk_src", 0x174d0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_qupv3_wrap0_s7_clk_src", 0x17860u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
-    {"gcc_usb3_sec_phy_aux_clk_src", 0x10064u, 0u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_usb3_sec_phy_aux_clk_src", 0x10064u, 0u, 30u, 1u, 0u, 0u},
 };
 const unsigned int gcc_domain_cnt = 31u;
 
@@ -57,7 +87,7 @@ const gcc_clock_t gcc_clocks[] = {
     {"gcc_gp3_clk", GCC_KIND_BRANCH, 0x66000u, 0x0u, 0x0u, 4, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_pcie_0_aux_clk", GCC_KIND_VOTE, 0x6B028u, 0x52008u, 0x8u, 5, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_pcie_0_cfg_ahb_clk", GCC_KIND_VOTE, 0x6B024u, 0x52008u, 0x4u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"pcie_0_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x6b004u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_pcie_0_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x6b004u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_pcie_0_mstr_axi_clk", GCC_KIND_VOTE, 0x6B01Cu, 0x52008u, 0x2u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_pcie_0_pipe_clk", GCC_KIND_REQ, 0x6B02Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_pcie_0_slv_axi_clk", GCC_KIND_VOTE, 0x6B014u, 0x52008u, 0x1u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
@@ -92,14 +122,14 @@ const gcc_clock_t gcc_clocks[] = {
     {"gcc_sdcc2_apps_clk", GCC_KIND_BRANCH, 0x14004u, 0x0u, 0x0u, 19, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_ahb_clk", GCC_KIND_BRANCH, 0x77018u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_axi_clk", GCC_KIND_BRANCH, 0x77010u, 0x0u, 0x0u, 0, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"ufs_phy_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x77004u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_ufs_phy_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0x77004u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_ice_core_clk", GCC_KIND_BRANCH, 0x77064u, 0x0u, 0x0u, 20, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_phy_aux_clk", GCC_KIND_BRANCH, 0x7709Cu, 0x0u, 0x0u, 21, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_rx_symbol_0_clk", GCC_KIND_REQ, 0x77020u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_rx_symbol_1_clk", GCC_KIND_REQ, 0x770B8u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_tx_symbol_0_clk", GCC_KIND_REQ, 0x7701Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_ufs_phy_unipro_core_clk", GCC_KIND_BRANCH, 0x7705Cu, 0x0u, 0x0u, 22, 0x0u, 0x0u, CLOCK_CTL_GCC},
-    {"usb30_prim_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0xf004u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_usb30_prim_gdsc", GCC_KIND_GDSC, 0x0u, 0x0u, 0x0u, -1, 0xf004u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_usb30_prim_master_clk", GCC_KIND_BRANCH, 0xF010u, 0x0u, 0x0u, 1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_usb30_prim_mock_utmi_clk", GCC_KIND_BRANCH, 0xF01Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_usb30_prim_sleep_clk", GCC_KIND_BRANCH, 0xF018u, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},

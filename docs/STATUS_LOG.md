@@ -118,3 +118,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Still unsupported: JPGE/MPCS/VFE0 (camera clocks), APMD/PEMD/SDMD/CPMX, G0..GL MD (status=1 malformed — to inspect).
 - Stops at `npa: client activation rejected created=0` (a resource key not owned before any client creation).
 - Fix: rails absent from pipa cmd-db (ldoa1 etc.) are no-op instead of unknown; failing NPA keys are now logged individually.
+
+## 2026-11-18 19:40 — run 6: per-device claim reasons
+- I2C5/SPI4/I2C8/IC10/QWLN/BTH0: why=1 — QualcommPEP only admits devices with component F-states from a reviewed whitelist (8845: IC17/18/21 empty-F0, UFS0). Needs real F-state support later.
+- UFS0: contract OK, why=1008 kind=CLOCK — D0 P-state set requests gcc_ufs_phy_axi/unipro/ice at 300 MHz; all GCC domains were READ_ONLY.
+- Fix: gen_gcc.py now emits Linux freq tables + parent mux for non-DFS UFS/USB/PCIe-aux domains (writable); QUP (DFS) stays read-only.
