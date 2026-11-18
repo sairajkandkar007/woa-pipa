@@ -470,6 +470,11 @@ int graph_can_claim(res_graph_t* g, const char* path)
     return ok;
 }
 
+int graph_dev_comp_contract_complete(const res_graph_t* g, const graph_dev_t* d)
+{
+    return g && d && complete_comp_contract(g, d);
+}
+
 int graph_audit_dstate_scopes_held(res_graph_t* g, void* ctx, scope_client_ready_t ready,
                                    uint32_t* eligible)
 {

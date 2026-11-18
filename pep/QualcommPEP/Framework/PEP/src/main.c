@@ -1090,9 +1090,10 @@ NTSTATUS pep_publish_verified_molokai_graph(_Inout_ res_graph_t* graph,
             TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER, "fstate: path=%s empty-F0 profile=%u",
                         d->path, (unsigned)d->verified_ic_empty_f0);
             TraceEvents(
-                TRACE_LEVEL_VERBOSE, TRACE_RESOURCE,
-                "resources: path=%s D-states=%02X components=%u graph=%u clients=%u eligible=%u",
+                TRACE_LEVEL_WARNING, TRACE_RESOURCE,
+                "resources: path=%s D-states=%02X components=%u contract=%u graph=%u clients=%u eligible=%u",
                 d->path, (unsigned)d->d_state_mask, (unsigned)d->requires_comp_runtime,
+                (unsigned)graph_dev_comp_contract_complete(graph, d),
                 (unsigned)graph_claim, (unsigned)client_ready,
                 (unsigned)(graph_claim && client_ready));
         }
