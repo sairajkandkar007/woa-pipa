@@ -470,6 +470,42 @@ int graph_can_claim(res_graph_t* g, const char* path)
     return ok;
 }
 
+
+/* diagnostic: why graph_can_claim_held() declines a device. 0 = claimable.
+ * 1 contract, 2 sequences, 3 state flags, 0x100|state<<4|kind... for an unsupported action:
+ * 0x1000 + (state << 8) + (action index << 0) with *kind = power_action_kind. */
+uint32_t graph_claim_reason_held(res_graph_t* g, const char* path, uint32_t* kind)
+{
+    graph_dev_t* d = find_dev(g, path);
+    uint32_t state, i;
+    if (kind)
+        *kind = 0u;
+    if (!g || !d)
+        return 0xFFFFu;
+    if (!complete_comp_contract(g, d))
+        return 1u;
+    if (!valid_dstate_sequences(d))
+        return 2u;
+    if (d->prepared || d->provider_transaction_entered || d->state.quarantined ||
+        (d->state.state_known && d->state.current_d_state != 3u))
+        return 3u;
+    for (state = 0u; state < POWER_DSTATE_COUNT; ++state) {
+        const power_sequence_t* s = &d->d_states[state];
+        if (!graph_has_d_state(d, state))
+            continue;
+        for (i = 0; i < s->action_cnt; ++i) {
+            const power_action_t* a = &s->actions[i];
+            graph_provider_t* p = provider(g, a);
+            if (!p || !p->supports(p->ctx, d->path, s->target_d_state, a)) {
+                if (kind)
+                    *kind = (uint32_t)a->kind | (p ? 0u : 0x80u);
+                return 0x1000u + (state << 8) + i;
+            }
+        }
+    }
+    return 0u;
+}
+
 int graph_dev_comp_contract_complete(const res_graph_t* g, const graph_dev_t* d)
 {
     return g && d && complete_comp_contract(g, d);

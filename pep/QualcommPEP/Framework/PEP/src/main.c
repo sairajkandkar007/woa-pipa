@@ -1087,15 +1087,17 @@ NTSTATUS pep_publish_verified_molokai_graph(_Inout_ res_graph_t* graph,
             const graph_dev_t* d = &graph->devices[i];
             int graph_claim = graph_can_claim_held(graph, d->path);
             int client_ready = graph_claim && pep_npa_scope_ready_held(&scope_ctx, d->path);
+            uint32_t why_kind = 0u;
+            uint32_t why = graph_claim_reason_held(graph, d->path, &why_kind);
             TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER, "fstate: path=%s empty-F0 profile=%u",
                         d->path, (unsigned)d->verified_ic_empty_f0);
             TraceEvents(
                 TRACE_LEVEL_WARNING, TRACE_RESOURCE,
-                "resources: path=%s D-states=%02X components=%u contract=%u graph=%u clients=%u eligible=%u",
+                "resources: path=%s D-states=%02X components=%u contract=%u graph=%u clients=%u eligible=%u why=%04X kind=%02X",
                 d->path, (unsigned)d->d_state_mask, (unsigned)d->requires_comp_runtime,
                 (unsigned)graph_dev_comp_contract_complete(graph, d),
                 (unsigned)graph_claim, (unsigned)client_ready,
-                (unsigned)(graph_claim && client_ready));
+                (unsigned)(graph_claim && client_ready), (unsigned)why, (unsigned)why_kind);
         }
     }
     if (NT_SUCCESS(admission)) {

@@ -158,6 +158,7 @@ int graph_can_claim(res_graph_t*, const char*);
  * independently; COMPONENT/F/P/crashdump scopes are not yet PEP-owned. */
 
 typedef int (*scope_client_ready_t)(void*, const char*);
+uint32_t graph_claim_reason_held(res_graph_t*, const char*, uint32_t*);
 int graph_dev_comp_contract_complete(const res_graph_t*, const graph_dev_t*);
 int graph_audit_dstate_scopes_held(res_graph_t*, void*, scope_client_ready_t,
                                    uint32_t* eligible_scopes);
