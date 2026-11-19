@@ -4526,6 +4526,49 @@ static NTSTATUS win_owner_attach_fence(_In_ WDFDEVICE dev)
 
 static VOID hw_backend_win_detach_locked(_In_ WDFDEVICE dev);
 
+
+/* ---- 8250 bring-up: trace every applied hardware action (UFS hang investigation) ---- */
+static int traced_bus_vote(void* ctx, const char* path, const power_action_t* a)
+{
+    int ok = win_io_bus_vote(ctx, path, a);
+    TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE, "act: ICB %s %s->%s ab=%llu ib=%llu ok=%d",
+                path ? path : "?", a ? a->u.icb.master : "?", a ? a->u.icb.slave : "?",
+                a ? (unsigned long long)a->u.icb.average : 0ull,
+                a ? (unsigned long long)a->u.icb.peak : 0ull, ok);
+    return ok;
+}
+static int traced_clock_apply(void* ctx, const char* path, const power_action_t* a)
+{
+    int ok = win_io_clock_apply(ctx, path, a);
+    TraceEvents(TRACE_LEVEL_WARNING, TRACE_CLOCK, "act: CLK %s %s vote=%lu hz=%lu ok=%d",
+                path ? path : "?", a ? a->u.clock.name : "?", a ? (ULONG)a->u.clock.vote : 0ul,
+                (a && a->u.clock.extra_cnt) ? (ULONG)a->u.clock.extra[0] : 0ul, ok);
+    return ok;
+}
+static int traced_domain_apply(void* ctx, const char* path, const power_action_t* a)
+{
+    int ok = win_io_domain_apply(ctx, path, a);
+    TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE, "act: GDSC %s %s action=%lu ok=%d",
+                path ? path : "?", a ? a->u.footswitch.name : "?",
+                a ? (ULONG)a->u.footswitch.action : 0ul, ok);
+    return ok;
+}
+static int traced_rail_vote(void* ctx, const char* path, const char* ppp, const uint32_t f[5])
+{
+    int ok = win_io_rail_vote(ctx, path, ppp, f);
+    TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE, "act: VREG %s %s %lu/%lu/%lu/%lu ok=%d",
+                path ? path : "?", ppp ? ppp : "?", f ? (ULONG)f[0] : 0ul, f ? (ULONG)f[1] : 0ul,
+                f ? (ULONG)f[2] : 0ul, f ? (ULONG)f[3] : 0ul, ok);
+    return ok;
+}
+static int traced_arc_vote(void* ctx, const char* client, const char* path, uint32_t level)
+{
+    int ok = win_io_arc_vote(ctx, client, path, level);
+    TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE, "act: ARC %s %s level=%lu ok=%d",
+                client ? client : "?", path ? path : "?", (ULONG)level, ok);
+    return ok;
+}
+
 static NTSTATUS hw_backend_win_attach_locked(_In_ WDFDEVICE dev)
 {
     win_backend_instance_t* inst;
@@ -4609,11 +4652,11 @@ static NTSTATUS hw_backend_win_attach_locked(_In_ WDFDEVICE dev)
         io.tlmm_readback = win_io_tlmm_readback;
         io.clock_execution_ready = win_io_clock_execution_ready;
         io.domain_known = win_io_domain_known;
-        io.domain_apply = win_io_domain_apply;
+        io.domain_apply = traced_domain_apply;
         io.domain_readback = win_io_domain_read;
         io.domain_client = win_io_domain_client;
         io.domain_withdraw = win_io_domain_withdraw;
-        io.clock_apply = win_io_clock_apply;
+        io.clock_apply = traced_clock_apply;
         io.clock_withdraw = win_io_clock_withdraw;
         io.clock_readback = win_io_clock_readback;
         io.clock_known = win_io_clock_known;
@@ -4632,20 +4675,20 @@ static NTSTATUS hw_backend_win_attach_locked(_In_ WDFDEVICE dev)
 
     if (owners) {
         io.rpmh_execution_ready = win_io_rpmh_execution_ready;
-        io.bus_vote = win_io_bus_vote;
+        io.bus_vote = traced_bus_vote;
         io.bus_withdraw = win_io_bus_withdraw;
         io.bus_readback = win_io_bus_readback;
         io.bus_route_known = win_io_bus_route_known;
         io.bus_has_vote = win_io_bus_has_vote;
         io.bus_probe_route = win_io_bus_probe_route;
-        io.pmic_regulator_vote = win_io_rail_vote;
+        io.pmic_regulator_vote = traced_rail_vote;
         io.pmic_regulator_withdraw = win_io_rail_withdraw;
         io.pmic_regulator_readback = win_io_rail_readback;
         io.pmic_regulator_known = win_io_rail_known;
         io.pmic_regulator_has_vote = win_io_rail_has_vote;
         io.pmic_regulator_probe_name = win_io_rail_probe_name;
         io.arc_known = win_io_arc_known;
-        io.arc_vote = win_io_arc_vote;
+        io.arc_vote = traced_arc_vote;
         io.arc_withdraw = win_io_arc_withdraw;
         io.arc_readback = win_io_arc_readback;
         io.arc_client = win_io_arc_client;

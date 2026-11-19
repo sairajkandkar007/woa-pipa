@@ -966,6 +966,24 @@ static BOOLEAN __fastcall pep_dev_notify(_In_ ULONG notify, _Inout_opt_ PVOID da
     }
 
     rc = fn(data);
+    /* bring-up trace of DPM traffic (8250 UFS hang investigation). */
+    if (notify == PEP_DPM_PREPARE_DEVICE || notify == PEP_DPM_DEVICE_POWER_STATE ||
+        notify == PEP_DPM_NOTIFY_COMPONENT_IDLE_STATE || notify == PEP_DPM_REQUEST_COMPONENT_PERF_STATE ||
+        notify == PEP_DPM_POWER_CONTROL_REQUEST) {
+        if (notify == PEP_DPM_DEVICE_POWER_STATE && data) {
+            PPEP_DEVICE_POWER_STATE d = (PPEP_DEVICE_POWER_STATE)data;
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: notify=%lu dev=%p D%d complete=%u rc=%lu",
+                        notify, d->DeviceHandle, (int)d->PowerState - 1, (unsigned)d->Complete, (ULONG)rc);
+        } else if (notify == PEP_DPM_NOTIFY_COMPONENT_IDLE_STATE && data) {
+            PPEP_NOTIFY_COMPONENT_IDLE_STATE c = (PPEP_NOTIFY_COMPONENT_IDLE_STATE)data;
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER,
+                        "dpm: notify=%lu dev=%p comp=%lu F%lu accepts=%u completed=%u rc=%lu", notify,
+                        c->DeviceHandle, c->Component, c->IdleState, (unsigned)c->DriverAccepts,
+                        (unsigned)c->Completed, (ULONG)rc);
+        } else {
+            TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: notify=%lu rc=%lu", notify, (ULONG)rc);
+        }
+    }
     {
         ULONG lo = (ULONG)(ULONG_PTR)data;
         ULONG hi = (ULONG)((ULONG_PTR)data >> 32);
