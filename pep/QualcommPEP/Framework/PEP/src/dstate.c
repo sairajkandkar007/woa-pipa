@@ -831,6 +831,24 @@ static VOID pep_dpm_record_notify(pep_devnode_t* n, const pep_dev_power_state_t*
                     (unsigned)p->system_transition);
 }
 
+#if defined(PEP_TARGET_8250)
+static BOOLEAN pep_8250_is_ufs_d(_In_ const UNICODE_STRING* p)
+{
+    static const WCHAR id[] = L"\\_SB.UFS0";
+    USHORT i, j, n = (USHORT)(sizeof(id) / sizeof(id[0]) - 1u), len;
+    if (!p || !p->Buffer)
+        return FALSE;
+    len = p->Length / sizeof(WCHAR);
+    for (i = 0; i + n <= len; ++i) {
+        for (j = 0; j < n && p->Buffer[i + j] == id[j]; ++j)
+            ;
+        if (j == n)
+            return TRUE;
+    }
+    return FALSE;
+}
+#endif
+
 ULONG_PTR pep_dev_power_state(_Inout_opt_ PVOID data)
 {
     pep_dev_power_state_t* p = (pep_dev_power_state_t*)data;
@@ -848,6 +866,16 @@ ULONG_PTR pep_dev_power_state(_Inout_opt_ PVOID data)
     /* from this point, unregister must wait for the synchronous callback. */
 
     pep_dpm_record_notify(n, p);
+#if defined(PEP_TARGET_8250)
+    /* SM8250 bring-up: a UFS D3->D0 cycle (LDO6_A/LDO17_A to 0 V per the Kona descriptor) leaves
+     * the boot disk's host controller in UPMCRS fatal error -> I/O hang. Keep UFS powered:
+     * acknowledge its D-states without hardware actions (registry UfsDStateControl=1 opts in). */
+    if (!p->system_transition && pep_8250_is_ufs_d(&n->instance_path) &&
+        registry_query_u_long(L"UfsDStateControl", 0u) == 0u) {
+        pep_sync_dpm_end(n);
+        return 1;
+    }
+#endif
     pep_handle_dev_power_system_transition(p, n);
     /* the transaction engine re-verifies an unchanged state under its res lock without
      * replaying its sequence. Node cache alone cannot bypass a concurrent clock request, revoked

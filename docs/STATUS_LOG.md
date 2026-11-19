@@ -134,3 +134,11 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - At the hang: UFS GDSC on (0xF822F000), clocks on (CBCR 0x221/0x1), rx_symbol_0 CLK_OFF (0x80000001), axi RCG 300 MHz (CFG 0x00100103).
   UFSHCI: IS=0, **IE=0**, **HCS=0x50F -> UPMCRS=5 (fatal power-mode error)**, HCE=3. Host controller lost its link/interrupt state after a PEP F1/F0 cycle -> I/O never completes.
 - Mitigation: on 8250 UFS F-states are acknowledged without gating (registry UfsFStateGating=1 to re-enable). D-state control kept.
+
+## 2026-11-19 17:00 — F-state bypass works; UFS D3->D0 cycle is the second killer
+- With F-state bypass: UFS F1/F0 acknowledged with no hardware actions (confirmed in trace).
+- But early in boot Windows cycled UFS0 D3 -> D0 (~200 ms): D3 applied clocks off, LDO5/9 low-power, **LDO6_A and LDO17_A to 0 V**, ICB 0; D0 restored everything (all ok=1).
+  Afterwards UFSHCI HCS=0x507 (UPMCRS=5 fatal), IE=0 -> same I/O hang.
+- Fix: on 8250 UFS D-states are acknowledged without hardware actions too (registry UfsDStateControl=1 opts in).
+  Net effect: UFS stays as firmware left it, PEP graph still published (UFS admitted), boot should complete.
+- Proper fix later: UFS D3/F1 must only happen after storufs puts the link into hibern8 / the Kona storufs <-> PEP handshake (likely needs storufs-side notifications QualcommPEP's 8845 UFS model doesn't expect).
