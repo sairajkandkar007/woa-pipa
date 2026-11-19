@@ -221,7 +221,7 @@ static BOOLEAN pep_execute_verified_comp_f_state(_Inout_ pep_devnode_t* n, _In_ 
 #if defined(PEP_TARGET_8250)
 static BOOLEAN pep_8250_is_ufs(_In_ const UNICODE_STRING* p)
 {
-    static const WCHAR id[] = L"QCOM24A5";
+    static const WCHAR id[] = L"\\_SB.UFS0"; /* instance_path is the ACPI path */
     USHORT i, j, n = (USHORT)(sizeof(id) / sizeof(id[0]) - 1u), len;
     if (!p || !p->Buffer)
         return FALSE;
