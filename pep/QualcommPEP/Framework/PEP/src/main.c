@@ -968,7 +968,7 @@ static BOOLEAN __fastcall pep_dev_notify(_In_ ULONG notify, _Inout_opt_ PVOID da
     rc = fn(data);
     /* bring-up trace of DPM traffic (8250 UFS hang investigation). */
     if (notify == PEP_DPM_PREPARE_DEVICE || notify == PEP_DPM_DEVICE_POWER_STATE ||
-        notify == PEP_DPM_NOTIFY_COMPONENT_IDLE_STATE || notify == PEP_DPM_REQUEST_COMPONENT_PERF_STATE ||
+        notify == PEP_DPM_REQUEST_COMPONENT_PERF_STATE ||
         notify == PEP_DPM_POWER_CONTROL_REQUEST) {
         if (notify == PEP_DPM_DEVICE_POWER_STATE && data) {
             PPEP_DEVICE_POWER_STATE d = (PPEP_DEVICE_POWER_STATE)data;
