@@ -977,8 +977,8 @@ static BOOLEAN __fastcall pep_dev_notify(_In_ ULONG notify, _Inout_opt_ PVOID da
         } else if (notify == PEP_DPM_NOTIFY_COMPONENT_IDLE_STATE && data) {
             PPEP_NOTIFY_COMPONENT_IDLE_STATE c = (PPEP_NOTIFY_COMPONENT_IDLE_STATE)data;
             TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER,
-                        "dpm: notify=%lu dev=%p comp=%lu F%lu accepts=%u completed=%u rc=%lu", notify,
-                        c->DeviceHandle, c->Component, c->IdleState, (unsigned)c->DriverAccept,
+                        "dpm: notify=%lu dev=%p comp=%lu F%lu completed=%u rc=%lu", notify,
+                        c->DeviceHandle, c->Component, c->IdleState,
                         (unsigned)c->Completed, (ULONG)rc);
         } else {
             TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: notify=%lu rc=%lu", notify, (ULONG)rc);
