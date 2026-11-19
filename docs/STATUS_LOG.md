@@ -159,3 +159,6 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Fix: on first use of a QUP wrapper, PEP votes its core, core_2x and s_ahb clocks on (kept on). Added those clocks to the GCC table.
 - 18:15 re-run: still 0x101. GCC 0x52008 = 0x06BE4040 (wrap0 s_ahb/core/core_2x votes NOT set), wrap0 s_ahb CBCR 0x117008 = 0x80000002 (CLK_OFF). The PEP-client keep-on did not take effect.
   Fix: at D0 peripheral mapping PEP sets the QUP wrapper common-clock vote bits directly (0x52008 bits 6-9,18-21; 0x52010 bits 0-3).
+- 18:25: same 0x101 with KD OFF -> real hang, not the debug link. QUP wrapper clocks confirmed on (0x52008 bits 6-9/17-21 set, core CBCRs running; s_ahb CLK_OFF is HW gating).
+  Root cause (likely): mainline sm8250-xiaomi-pipa.dts enables only **i2c11** (KTZ8866 backlight) among QUP SEs. The Kona MTP buses I2C5 (wrap0 s4), I2C8 (wrap0 s7), IC10 (wrap1 s1), SPI4 (wrap0 s3) are not used/owned by HLOS on pipa -> touching their SE registers hangs a CPU.
+  Action: Kona qci2c/qcspi removed again; next: pipa-specific DSDT for QUP (i2c11 + the touch SPI from the downstream DT), not the Kona MTP set.
