@@ -147,3 +147,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - PEP graph published (7 devices, 74 NPA clients), UFS0 admitted; UFS D/F-states acknowledged without hardware actions.
 - Boot completes; no in-memory patching (old Kona qcpep path retired).
 - Next: real F-state support so I2C/SPI/QUP, WLAN, BT get admitted; UFS hibern8 handshake; USB.
+
+## 2026-11-19 17:40 — admit Kona QUP serial engines
+- I2C5/SPI4/I2C8/IC10 have COMPONENT0 with an empty F0 only (same shape as 8845 IC17/18/21) -> added to the reviewed empty-F0 list on 8250.
+- Their D0 rate votes (QUP SE 19.2 MHz) target DFS/firmware-owned RCGs -> executed as plain enables on 8250 (rate left as firmware set it).
+- USB: CM_PROB_USED_BY_DEBUGGER on URS0 when KDNET-over-USB is on; with KD off USB host (mouse/keyboard) works.

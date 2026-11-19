@@ -1,4 +1,7 @@
 #include "state_txn.h"
+#if defined(PEP_TARGET_8250)
+#include "gcc.h"
+#endif
 #include <string.h>
 #include <limits.h>
 
@@ -85,6 +88,19 @@ static int compile_action(const aeob_action_t* a, void* ctx)
             out->u.clock.extra[out->u.clock.extra_cnt++] = (uint32_t)n;
         }
 
+#if defined(PEP_TARGET_8250)
+        /* SM8250: QUP serial-engine RCGs are DFS/firmware-owned (READ_ONLY in clock_data.c).
+         * A D-state rate vote on such a domain is executed as a plain enable; the rate stays
+         * where firmware left it. */
+        if (out->u.clock.vote == 8u && out->u.clock.extra_cnt == 2u) {
+            const gcc_clock_t* gc = gcc_find_clock(out->u.clock.name);
+            const gcc_domain_t* gd = gc ? gcc_clock_domain(gc) : 0;
+            if (gd && (gd->flags & GCC_DOMAIN_READ_ONLY)) {
+                out->u.clock.vote = 1u;
+                out->u.clock.extra_cnt = 0u;
+            }
+        }
+#endif
         /* preserve bytes; a provider must independently establish each opcode and preflight MUST
          * reject unsupported (currently #9). Parsing is never an authorization for hardware
          * execution. */

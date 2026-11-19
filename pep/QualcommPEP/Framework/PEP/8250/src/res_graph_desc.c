@@ -227,7 +227,13 @@ int graph_build_from_descriptors(res_graph_t* graph, const graph_desc_t* descrip
     for (i = 0; i < graph->dev_cnt; ++i) {
         graph_dev_t* dev = &graph->devices[i];
         int is_ic = !strcmp(dev->path, "\\_SB.IC17") || !strcmp(dev->path, "\\_SB.IC18") ||
-                    !strcmp(dev->path, "\\_SB.IC21");
+                    !strcmp(dev->path, "\\_SB.IC21")
+#if defined(PEP_TARGET_8250)
+                    /* Kona QUP serial engines: COMPONENT0 with an empty F0 only (checked below). */
+                    || !strcmp(dev->path, "\\_SB.I2C5") || !strcmp(dev->path, "\\_SB.SPI4") ||
+                    !strcmp(dev->path, "\\_SB.I2C8") || !strcmp(dev->path, "\\_SB.IC10")
+#endif
+            ;
         int is_ufs = !strcmp(dev->path, "\\_SB.UFS0");
         uint32_t required = is_ufs ? 2u : is_ic ? 1u : 0u;
         uint32_t seen_components = 0u, seen_fstates[32] = {0}, seen_psets[32] = {0};

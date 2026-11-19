@@ -420,9 +420,17 @@ int graph_finish_drain(res_graph_t* g)
 
 static int reviewed_ic_f0(const graph_dev_t* d)
 {
-    return d && d->requires_comp_runtime && d->verified_ic_empty_f0 &&
-           (!strcmp(d->path, "\\_SB.IC17") || !strcmp(d->path, "\\_SB.IC18") ||
-            !strcmp(d->path, "\\_SB.IC21"));
+    if (!d || !d->requires_comp_runtime || !d->verified_ic_empty_f0)
+        return 0;
+    if (!strcmp(d->path, "\\_SB.IC17") || !strcmp(d->path, "\\_SB.IC18") ||
+        !strcmp(d->path, "\\_SB.IC21"))
+        return 1;
+#if defined(PEP_TARGET_8250)
+    if (!strcmp(d->path, "\\_SB.I2C5") || !strcmp(d->path, "\\_SB.SPI4") ||
+        !strcmp(d->path, "\\_SB.I2C8") || !strcmp(d->path, "\\_SB.IC10"))
+        return 1;
+#endif
+    return 0;
 }
 
 static int complete_comp_contract(const res_graph_t* g, const graph_dev_t* d)
