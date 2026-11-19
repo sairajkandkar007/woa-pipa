@@ -123,3 +123,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - I2C5/SPI4/I2C8/IC10/QWLN/BTH0: why=1 — QualcommPEP only admits devices with component F-states from a reviewed whitelist (8845: IC17/18/21 empty-F0, UFS0). Needs real F-state support later.
 - UFS0: contract OK, why=1008 kind=CLOCK — D0 P-state set requests gcc_ufs_phy_axi/unipro/ice at 300 MHz; all GCC domains were READ_ONLY.
 - Fix: gen_gcc.py now emits Linux freq tables + parent mux for non-DFS UFS/USB/PCIe-aux domains (writable); QUP (DFS) stays read-only.
+
+## 2026-11-19 15:10 — run 8: FIRST PUBLISHED GRAPH (UFS0 admitted) -> boot I/O hang
+- `UFS0 ... contract=1 graph=1 clients=1 eligible=1`, `resources: graph published devices=7 clients=74`.
+- Then boot hangs ~2.5 min in: worker thread in fastfat!FatNonCachedIo waiting on a disk write (autochk / EFI FAT volume) -> UFS I/O no longer completing after PEP took over UFS0 power.
+- Suspects: Kona UFS D3/F-state votes switching off LDO6_A/LDO17_A (Kona MTP rails, may not match pipa UFS supplies), or GDSC/clock action. Collecting !irp / !fxdevice next.
