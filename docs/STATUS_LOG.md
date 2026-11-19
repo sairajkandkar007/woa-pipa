@@ -142,3 +142,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Fix: on 8250 UFS D-states are acknowledged without hardware actions too (registry UfsDStateControl=1 opts in).
   Net effect: UFS stays as firmware left it, PEP graph still published (UFS admitted), boot should complete.
 - Proper fix later: UFS D3/F1 must only happen after storufs puts the link into hibern8 / the Kona storufs <-> PEP handshake (likely needs storufs-side notifications QualcommPEP's 8845 UFS model doesn't expect).
+
+## 2026-11-19 17:05 — MILESTONE: Windows boots to desktop with QualcommPEP (SM8250 build) published
+- PEP graph published (7 devices, 74 NPA clients), UFS0 admitted; UFS D/F-states acknowledged without hardware actions.
+- Boot completes; no in-memory patching (old Kona qcpep path retired).
+- Next: real F-state support so I2C/SPI/QUP, WLAN, BT get admitted; UFS hibern8 handshake; USB.
