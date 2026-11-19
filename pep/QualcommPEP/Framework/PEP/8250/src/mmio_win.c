@@ -139,6 +139,26 @@ NTSTATUS mmio_d0_map_peripherals(_Inout_ mmio_t* mmio)
     TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_RESOURCE,
                 "mmio: GCC/TLMM mapped GPLL0=%08lX GPIO52=%08lX attestation=pending", gcc_a, pin_a);
     map_gpucc_vote(mmio);
+#if defined(PEP_TARGET_8250)
+    /* SM8250: QUP wrapper common clocks (m_ahb, s_ahb, core, core_2x for wrap0/1/2) are never
+     * voted by the Kona descriptors; firmware leaves wrap0 s_ahb off (0x117008 = 0x80000002) and
+     * the first SE register access hangs a CPU (0x101). Vote them on in GCC_APCS_CLOCK_BRANCH_ENA
+     * (Linux gcc-sm8250.c enable bits) before any QUP client can start. */
+    {
+        ULONG v8 = 0, v10 = 0;
+        const ULONG m8 = (1u << 6) | (1u << 7) | (1u << 8) | (1u << 9) |       /* wrap0 */
+                         (1u << 18) | (1u << 19) | (1u << 20) | (1u << 21);     /* wrap1 */
+        const ULONG m10 = (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3);        /* wrap2 */
+        if (mmio_read32(&mmio->gcc, 0x52008u, &v8) && mmio_read32(&mmio->gcc, 0x52010u, &v10)) {
+            (void)mmio_write32(&mmio->gcc, 0x52008u, v8 | m8);
+            (void)mmio_write32(&mmio->gcc, 0x52010u, v10 | m10);
+            (void)mmio_read32(&mmio->gcc, 0x52008u, &v8);
+            (void)mmio_read32(&mmio->gcc, 0x52010u, &v10);
+        }
+        TraceEvents(TRACE_LEVEL_WARNING, TRACE_CLOCK, "clock: QUP wrapper votes 52008=%08lX 52010=%08lX",
+                    v8, v10);
+    }
+#endif
     {
         const clock_window_t* window = clock_window_get(CLOCK_CTL_TCSR);
         NTSTATUS status = window ? map_one(&mmio->tcsr, window->physical, window->bytes,
