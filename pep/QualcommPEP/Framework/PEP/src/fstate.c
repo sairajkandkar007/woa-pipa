@@ -218,6 +218,24 @@ static BOOLEAN pep_execute_verified_comp_f_state(_Inout_ pep_devnode_t* n, _In_ 
     return TRUE;
 }
 
+#if defined(PEP_TARGET_8250)
+static BOOLEAN pep_8250_is_ufs(_In_ const UNICODE_STRING* p)
+{
+    static const WCHAR id[] = L"QCOM24A5";
+    USHORT i, j, n = (USHORT)(sizeof(id) / sizeof(id[0]) - 1u), len;
+    if (!p || !p->Buffer)
+        return FALSE;
+    len = p->Length / sizeof(WCHAR);
+    for (i = 0; i + n <= len; ++i) {
+        for (j = 0; j < n && p->Buffer[i + j] == id[j]; ++j)
+            ;
+        if (j == n)
+            return TRUE;
+    }
+    return FALSE;
+}
+#endif
+
 VOID pep_notify_comp_idle_state_work(_Inout_ pep_notify_comp_idle_state_t* s,
                                      _In_opt_ pep_work_information_t* wi)
 {
@@ -231,6 +249,17 @@ VOID pep_notify_comp_idle_state_work(_Inout_ pep_notify_comp_idle_state_t* s,
                       s->driver_notified, s->idle_state);
         return;
     }
+#if defined(PEP_TARGET_8250)
+    /* SM8250 bring-up: gating the UFS clocks/bandwidth on F1 leaves the Kona storufs host
+     * controller in a fatal power-mode error (HCS.UPMCRS=5, IE=0) after the next F0 -> boot disk
+     * I/O hangs. Until the UFS hibern8/F1 handshake is understood, keep UFS resources on and
+     * acknowledge its F-states without touching hardware (registry UfsFStateGating=1 re-enables). */
+    if (pep_8250_is_ufs(&n->instance_path) &&
+        registry_query_u_long(L"UfsFStateGating", 0u) == 0u) {
+        n->current_f_state[s->comp] = s->idle_state;
+        goto complete;
+    }
+#endif
     /* Restore resources before F0; release them after the driver enters an idle state. */
     if ((s->idle_state == 0u && s->driver_notified) ||
         (s->idle_state != 0u && !s->driver_notified))

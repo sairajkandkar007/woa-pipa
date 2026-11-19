@@ -128,3 +128,9 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - `UFS0 ... contract=1 graph=1 clients=1 eligible=1`, `resources: graph published devices=7 clients=74`.
 - Then boot hangs ~2.5 min in: worker thread in fastfat!FatNonCachedIo waiting on a disk write (autochk / EFI FAT volume) -> UFS I/O no longer completing after PEP took over UFS0 power.
 - Suspects: Kona UFS D3/F-state votes switching off LDO6_A/LDO17_A (Kona MTP rails, may not match pipa UFS supplies), or GDSC/clock action. Collecting !irp / !fxdevice next.
+
+## 2026-11-19 16:00 — UFS F1/F0 trace + hardware state at the hang
+- Trace: repeated UFS F1 (ICB 0, 9 clocks off) / F0 (axi/unipro/ice 300 MHz, clocks on, ICB 2.4 GB/s) cycles, every action ok=1. One F1 request took 20 s to be applied.
+- At the hang: UFS GDSC on (0xF822F000), clocks on (CBCR 0x221/0x1), rx_symbol_0 CLK_OFF (0x80000001), axi RCG 300 MHz (CFG 0x00100103).
+  UFSHCI: IS=0, **IE=0**, **HCS=0x50F -> UPMCRS=5 (fatal power-mode error)**, HCE=3. Host controller lost its link/interrupt state after a PEP F1/F0 cycle -> I/O never completes.
+- Mitigation: on 8250 UFS F-states are acknowledged without gating (registry UfsFStateGating=1 to re-enable). D-state control kept.
