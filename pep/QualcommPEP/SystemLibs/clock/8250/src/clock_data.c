@@ -166,6 +166,9 @@ const gcc_clock_t gcc_clocks[] = {
     {"gcc_usb3_sec_phy_aux_clk", GCC_KIND_BRANCH, 0x10054u, 0x0u, 0x0u, 30, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_usb3_sec_phy_com_aux_clk", GCC_KIND_BRANCH, 0x10058u, 0x0u, 0x0u, 30, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_usb3_sec_phy_pipe_clk", GCC_KIND_REQ, 0x1005Cu, 0x0u, 0x0u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_core_clk", GCC_KIND_VOTE, 0x23000u, 0x52008u, 0x100u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_core_2x_clk", GCC_KIND_VOTE, 0x23008u, 0x52008u, 0x200u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap_0_s_ahb_clk", GCC_KIND_VOTE, 0x17008u, 0x52008u, 0x80u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
 };
 const unsigned int gcc_clock_cnt = sizeof(gcc_clocks) / sizeof(gcc_clocks[0]);
 

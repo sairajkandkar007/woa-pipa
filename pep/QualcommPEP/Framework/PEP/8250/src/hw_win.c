@@ -4537,9 +4537,43 @@ static int traced_bus_vote(void* ctx, const char* path, const power_action_t* a)
                 a ? (unsigned long long)a->u.icb.peak : 0ull, ok);
     return ok;
 }
+/* SM8250: the Kona DSDT votes only a QUP SE clock + wrapper m_ahb. Register access also needs
+ * the wrapper core/core_2x and s_ahb clocks; if firmware left a wrapper off, the first access
+ * hangs a CPU (CLOCK_WATCHDOG_TIMEOUT). Keep each wrapper's common clocks on once used. */
+static void qup_wrapper_keep_on(void* ctx, const char* name)
+{
+    static const char* const common[3][3] = {
+        {"gcc_qupv3_wrap0_core_clk", "gcc_qupv3_wrap0_core_2x_clk", "gcc_qupv3_wrap_0_s_ahb_clk"},
+        {"gcc_qupv3_wrap1_core_clk", "gcc_qupv3_wrap1_core_2x_clk", "gcc_qupv3_wrap_1_s_ahb_clk"},
+        {"gcc_qupv3_wrap2_core_clk", "gcc_qupv3_wrap2_core_2x_clk", "gcc_qupv3_wrap_2_s_ahb_clk"}};
+    static LONG done[3];
+    int w = -1, i;
+    if (!name || strncmp(name, "gcc_qupv3_wrap", 14) != 0)
+        return;
+    if (name[14] == '_')
+        w = name[15] - '0';
+    else
+        w = name[14] - '0';
+    if (w < 0 || w > 2 || InterlockedCompareExchange(&done[w], 1, 0) != 0)
+        return;
+    for (i = 0; i < 3; ++i) {
+        power_action_t on;
+        int ok;
+        RtlZeroMemory(&on, sizeof(on));
+        on.kind = POWER_CLOCK;
+        (void)RtlStringCbCopyA(on.u.clock.name, sizeof(on.u.clock.name), common[w][i]);
+        on.u.clock.vote = 1u;
+        ok = win_io_clock_apply(ctx, "\\_SB.PEP0.QUPW", &on);
+        TraceEvents(TRACE_LEVEL_WARNING, TRACE_CLOCK, "act: CLK qup-wrapper %s on ok=%d", common[w][i], ok);
+    }
+}
+
 static int traced_clock_apply(void* ctx, const char* path, const power_action_t* a)
 {
-    int ok = win_io_clock_apply(ctx, path, a);
+    int ok;
+    if (a && (a->u.clock.vote == 1u || a->u.clock.vote == 8u))
+        qup_wrapper_keep_on(ctx, a->u.clock.name);
+    ok = win_io_clock_apply(ctx, path, a);
     TraceEvents(TRACE_LEVEL_WARNING, TRACE_CLOCK, "act: CLK %s %s vote=%lu hz=%lu ok=%d",
                 path ? path : "?", a ? a->u.clock.name : "?", a ? (ULONG)a->u.clock.vote : 0ul,
                 (a && a->u.clock.extra_cnt) ? (ULONG)a->u.clock.extra[0] : 0ul, ok);

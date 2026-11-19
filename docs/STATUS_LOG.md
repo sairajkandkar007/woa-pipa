@@ -152,3 +152,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - I2C5/SPI4/I2C8/IC10 have COMPONENT0 with an empty F0 only (same shape as 8845 IC17/18/21) -> added to the reviewed empty-F0 list on 8250.
 - Their D0 rate votes (QUP SE 19.2 MHz) target DFS/firmware-owned RCGs -> executed as plain enables on 8250 (rate left as firmware set it).
 - USB: CM_PROB_USED_BY_DEBUGGER on URS0 when KDNET-over-USB is on; with KD off USB host (mouse/keyboard) works.
+
+## 2026-11-19 18:15 — QUP I2C admitted -> CLOCK_WATCHDOG_TIMEOUT (0x101)
+- With Kona qci2c8250/qcspi8250 installed: PEP accepted I2C5, I2C8, IC10 and applied D0 (ICB QUP_x paths, wrap_N_m_ahb + SE clock; all ok=1). ~7 s later bugcheck 0x101 (CPU 1 stopped responding).
+- Likely: QUP wrapper core/core_2x/s_ahb clocks not voted by the Kona descriptor (APMD/PEMD rejected) and left off by firmware for wrap0 -> SE register access hangs a CPU.
+- Fix: on first use of a QUP wrapper, PEP votes its core, core_2x and s_ahb clocks on (kept on). Added those clocks to the GCC table.
