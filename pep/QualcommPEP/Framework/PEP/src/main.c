@@ -971,17 +971,22 @@ static BOOLEAN __fastcall pep_dev_notify(_In_ ULONG notify, _Inout_opt_ PVOID da
         notify == PEP_DPM_REQUEST_COMPONENT_PERF_STATE ||
         notify == PEP_DPM_POWER_CONTROL_REQUEST) {
         if (notify == PEP_DPM_DEVICE_POWER_STATE && data) {
+            static LONG g_dpm_dx_logged;
             PPEP_DEVICE_POWER_STATE d = (PPEP_DEVICE_POWER_STATE)data;
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: notify=%lu dev=%p D%d complete=%u rc=%lu",
-                        notify, d->DeviceHandle, (int)d->PowerState - 1, (unsigned)d->Complete, (ULONG)rc);
+            const pep_devnode_t* dn = (const pep_devnode_t*)d->DeviceHandle;
+            if (!d->Complete && InterlockedIncrement(&g_dpm_dx_logged) <= 24)
+                TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: %wZ D%d rc=%lu",
+                            dn ? &dn->instance_path : NULL, (int)d->PowerState - 1, (ULONG)rc);
         } else if (notify == PEP_DPM_NOTIFY_COMPONENT_IDLE_STATE && data) {
             PPEP_NOTIFY_COMPONENT_IDLE_STATE c = (PPEP_NOTIFY_COMPONENT_IDLE_STATE)data;
             TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER,
                         "dpm: notify=%lu dev=%p comp=%lu F%lu completed=%u rc=%lu", notify,
                         c->DeviceHandle, c->Component, c->IdleState,
                         (unsigned)c->Completed, (ULONG)rc);
-        } else {
-            TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: notify=%lu rc=%lu", notify, (ULONG)rc);
+        } else if (notify == PEP_DPM_PREPARE_DEVICE && data) {
+            PPEP_PREPARE_DEVICE pd = (PPEP_PREPARE_DEVICE)data;
+            if (pd->DeviceAccepted)
+                TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: accepted %wZ", pd->DeviceId);
         }
     }
     {
