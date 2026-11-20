@@ -1,0 +1,54 @@
+;
+; nt36532spi.inf - pipa touch SPI (NT36532 on QUP0 SE4), test driver
+;
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %Mfg%
+CatalogFile = nt36532spi.cat
+DriverVer   = 11/20/2026,1.0.0.1
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %Disk%,,,""
+
+[SourceDisksFiles]
+nt36532spi.sys = 1,,
+
+[Manufacturer]
+%Mfg% = Std,NTARM64.10.0...16299
+
+[Std.NTARM64.10.0...16299]
+%Desc% = Nt_Inst, ACPI\QCOM250F
+
+[Nt_Inst.NT]
+CopyFiles = Nt_Files
+
+[Nt_Files]
+nt36532spi.sys
+
+
+[Nt_Inst.NT.Services]
+AddService = nt36532spi, 0x00000002, Nt_Svc
+
+[Nt_Svc]
+DisplayName   = %Desc%
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %13%\nt36532spi.sys
+
+[Nt_Inst.NT.Wdf]
+KmdfService = nt36532spi, Nt_Wdf
+
+[Nt_Wdf]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+Mfg  = "woa-pipa"
+Disk = "nt36532spi install disk"
+Desc = "pipa touch SPI (NT36532)"

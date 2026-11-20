@@ -193,6 +193,6 @@ NTSTATUS KtzD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
         }
         WdfRegistryClose(k);
     }
-    QupClockDiag();
+    /* QupClockDiag(); -- done, see STATUS_LOG 13:34 */
     return STATUS_SUCCESS;  /* never fail start: a dead I2C read must not take the device down */
 }
