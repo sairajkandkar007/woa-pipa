@@ -229,3 +229,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - TODO BT: raise baud to 3M (download is ~25 s at 115200), host-side IBS sleep, D3/S3 handling,
   drop debug tracing, real BD_ADDR from persist (optional).
 - Next: Wi-Fi (QCA6390 over PCIe0: link bring-up, gpio36 remap in PCI0, MHI/QCMS stack).
+- 01:25: BT at 3 Mbaud (fw download 1.2 s), debug tracing removed. BT mouse works.
+  KNOWN ISSUE: connecting a phone (larger ACL traffic / pairing) froze BT and touch (RIM reads
+  c000009d). To investigate: system alive? !analyze / !pnptriage, RX overrun at 3M, TX at passive.
+- Backlight: Settings slider needs a brightness-capable display driver (BasicDisplay has none);
+  screen-off can be done in ktz8866 via PoRegisterPowerSettingCallback(GUID_CONSOLE_DISPLAY_STATE).
