@@ -683,7 +683,8 @@ static VOID GetBdAddr(PFDO_CTX c)
         if (!have) {   /* first boot: make one up and keep it (Xiaomi-style OUI-less, but stable per install) */
             LARGE_INTEGER t; ULONG seed;
             KeQuerySystemTimePrecise(&t); seed = t.LowPart ^ (ULONG)(t.QuadPart >> 32) ^ (ULONG)(ULONG_PTR)c;
-            lo = RtlRandomEx(&seed); hi = 0x2200 | (RtlRandomEx(&seed) & 0xFF);   /* 22:xx:... */
+            seed = seed * 1103515245u + 12345u; lo = seed ^ (seed >> 13);
+            seed = seed * 1103515245u + 12345u; hi = 0x2200 | ((seed >> 16) & 0xFF);   /* 22:xx:... */
             WdfRegistryAssignULong(k, &n, lo); WdfRegistryAssignULong(k, &n2, hi);
             LOG("bt: generated bd_addr");
         }
