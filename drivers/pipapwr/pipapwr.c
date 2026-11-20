@@ -443,7 +443,9 @@ typedef struct _FDO_CTX {
     LIST_ENTRY evtList, aclList; ULONG evtCount, aclCount;
     WDFWAITLOCK txLock;
     BTHX_CAPABILITIES caps;
-    ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged;
+    ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged, polls;
+    WDFSPINLOCK parseLock;
+    WDFTIMER poll;
 } FDO_CTX, *PFDO_CTX;
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(FDO_CTX, FdoCtx)
 
@@ -458,22 +460,10 @@ EVT_WDF_IO_QUEUE_IO_INTERNAL_DEVICE_CONTROL PdoInternalIoctl;
 
 #define RXBITS ((1u << 26) | (1u << 27))       /* RX_FIFO_WATERMARK | RX_FIFO_LAST */
 
-BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
+/* move RX FIFO bytes into the ring; caller holds the interrupt lock (or is the ISR) */
+static VOID DrainFifo(PFDO_CTX c)
 {
-    PFDO_CTX c = FdoCtx(WdfInterruptGetDevice(irq));
-    PUCHAR se = c->se; ULONG m, s, st, wc, i, k, nb, w;
-    UNREFERENCED_PARAMETER(msgId);
-    if (!se) {      /* not ours yet: make sure the (level) line drops, or a single CPU livelocks */
-        se = c->seMask;
-        if (!se) return FALSE;
-        W(SE_IRQ_EN, 0); W(SE_GENI_M_IRQ_EN, 0); W(SE_GENI_S_IRQ_EN, 0);
-        W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF); W(SE_GENI_S_IRQ_CLEAR, 0xFFFFFFFF);
-        c->rdrop++;
-        return TRUE;
-    }
-    m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
-    c->isrCount++;
-    if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
+    PUCHAR se = c->se; ULONG st, wc, i, k, nb, w;
     for (;;) {
         st = R(SE_GENI_RX_FIFO_STATUS); wc = st & 0x1FFFFFF;
         if (!wc) break;
@@ -488,6 +478,25 @@ BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
             }
         }
     }
+}
+
+BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
+{
+    PFDO_CTX c = FdoCtx(WdfInterruptGetDevice(irq));
+    PUCHAR se = c->se; ULONG m, s;
+    UNREFERENCED_PARAMETER(msgId);
+    if (!se) {      /* not ours yet: make sure the (level) line drops, or a single CPU livelocks */
+        se = c->seMask;
+        if (!se) return FALSE;
+        W(SE_IRQ_EN, 0); W(SE_GENI_M_IRQ_EN, 0); W(SE_GENI_S_IRQ_EN, 0);
+        W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF); W(SE_GENI_S_IRQ_CLEAR, 0xFFFFFFFF);
+        c->rdrop++;
+        return TRUE;
+    }
+    m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
+    c->isrCount++;
+    if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
+    DrainFifo(c);
     W(SE_GENI_S_IRQ_CLEAR, s);
     W(SE_GENI_M_IRQ_CLEAR, m & ~1u);           /* leave M_CMD_DONE for the TX poller */
     WdfInterruptQueueDpcForIsr(irq);
@@ -551,11 +560,10 @@ static VOID ParseByte(PFDO_CTX c, UCHAR b)
     c->pkn = 0;
 }
 
-VOID BtDpc(WDFINTERRUPT irq, WDFOBJECT obj)
+static VOID ProcessRing(PFDO_CTX c, WDFINTERRUPT irq)
 {
-    PFDO_CTX c = FdoCtx(WdfInterruptGetDevice(irq));
     UCHAR tmp[256]; ULONG n, i;
-    UNREFERENCED_PARAMETER(obj);
+    WdfSpinLockAcquire(c->parseLock);
     for (;;) {
         n = 0;
         WdfInterruptAcquireLock(irq);
@@ -564,6 +572,27 @@ VOID BtDpc(WDFINTERRUPT irq, WDFOBJECT obj)
         if (!n) break;
         for (i = 0; i < n; i++) ParseByte(c, tmp[i]);
     }
+    WdfSpinLockRelease(c->parseLock);
+}
+
+VOID BtDpc(WDFINTERRUPT irq, WDFOBJECT obj)
+{
+    UNREFERENCED_PARAMETER(obj);
+    ProcessRing(FdoCtx(WdfInterruptGetDevice(irq)), irq);
+}
+
+/* fallback RX poll (1 ms): the uart6 GIC interrupt has not been seen firing yet */
+EVT_WDF_TIMER RxPoll;
+VOID RxPoll(WDFTIMER t)
+{
+    PFDO_CTX c = FdoCtx((WDFDEVICE)WdfTimerGetParentObject(t));
+    if (!c->ready) return;
+    WdfInterruptAcquireLock(c->irq);
+    DrainFifo(c);
+    { PUCHAR se = c->se; W(SE_GENI_S_IRQ_CLEAR, R(SE_GENI_S_IRQ_STATUS) & RXBITS); }
+    WdfInterruptReleaseLock(c->irq);
+    ProcessRing(c, c->irq);
+    if (++c->polls % 5000 == 0) LOG("bthx: poll %lu isr %lu tx %lu evt %lu acl %lu drop %lu", c->polls, c->isrCount, c->cntTx, c->cntEvt, c->cntAcl, c->rdrop);
 }
 
 static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
@@ -725,6 +754,8 @@ static VOID BtThread(PVOID ctx)
         W(SE_GENI_M_IRQ_EN, RXBITS);
         c->ready = TRUE;
         g_verbose = FALSE;
+        ExSetTimerResolution(10000, TRUE);
+        WdfTimerStart(c->poll, WDF_REL_TIMEOUT_IN_MS(1));
         st = AddChild(c);
         c->childAdded = NT_SUCCESS(st);
         LOG("bt: HCI transport up, child PDO st=%08X (stray irqs before ready: %lu)", st, c->rdrop);
@@ -760,6 +791,14 @@ NTSTATUS PwrDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     WDF_OBJECT_ATTRIBUTES_INIT(&a); a.ParentObject = dev;
     st = WdfSpinLockCreate(&a, &c->pktLock); if (!NT_SUCCESS(st)) return st;
     st = WdfWaitLockCreate(&a, &c->txLock); if (!NT_SUCCESS(st)) return st;
+    st = WdfSpinLockCreate(&a, &c->parseLock); if (!NT_SUCCESS(st)) return st;
+    {
+        WDF_TIMER_CONFIG tc; WDF_OBJECT_ATTRIBUTES ta;
+        WDF_TIMER_CONFIG_INIT_PERIODIC(&tc, RxPoll, 1);
+        tc.AutomaticSerialization = FALSE;
+        WDF_OBJECT_ATTRIBUTES_INIT(&ta); ta.ParentObject = dev;
+        st = WdfTimerCreate(&tc, &ta, &c->poll); if (!NT_SUCCESS(st)) return st;
+    }
     WDF_INTERRUPT_CONFIG_INIT(&ic, BtIsr, BtDpc);
     st = WdfInterruptCreate(dev, &ic, WDF_NO_OBJECT_ATTRIBUTES, &c->irq);
     LOG("interrupt create st=%08X", st);
