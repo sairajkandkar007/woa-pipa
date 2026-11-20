@@ -192,8 +192,8 @@ static NTSTATUS NvtRead(PDEV_CTX c, ULONG addr, UCHAR *out, ULONG n)
     if (!NT_SUCCESS(st)) return st;
     RtlZeroMemory(tx, sizeof(tx));
     tx[0] = (UCHAR)(addr & 0x7F);
-    st = GeniXfer(c, tx, rx, n + 2);           /* cmd, then data (mainline: no dummy; vendor: 1 dummy) */
-    if (NT_SUCCESS(st)) RtlCopyMemory(out, rx + 1, n);   /* out[0] = first byte after cmd */
+    st = GeniXfer(c, tx, rx, n + 2);           /* cmd, dummy, data (pipa-mainline nt36xxx: memcpy from rbuf+2) */
+    if (NT_SUCCESS(st)) RtlCopyMemory(out, rx + 1, n);   /* out[0] = dummy slot, out[1..] = data */
     return st;
 }
 
@@ -311,19 +311,20 @@ NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
     }
     /* 2b) pin levels (read only) */
     TlmmShow("miso", TLMM_NORTH, 8); TlmmShow("cs", TLMM_NORTH, 11); TlmmShow("ts-irq", TLMM_SOUTH, 39);
-    /* 3) mainline nt36xxx: bootloader reset (0x69 -> SWRST_N8 0x3F0FE), 35 ms, SPI_RD_FAST (0x3F310) = 0,
-     *    then chip id from 0x1F64E (7 bytes) and trim 0x3F004 */
-    for (i = 0; i < 3; i++) {
+    /* 3) NT36532 uses the new TDDI register map (pipa-mainline nt36xxx_mem_map.h):
+     *    chip_ver_trim 0x1FB104, swrst_sif 0x1FB43E, event buffer 0x125800 (cascade map).
+     *    Old-map addresses (0x3F004, 0x21C00) may simply not exist -> 0xFF. Read the new ones,
+     *    then bootloader reset via SWRST_N8 0x3F0FE (as pipa DT) and read again. */
+    {
+        static const ULONG na[] = { 0x1FB104, 0x1FB100, 0x125800, 0x1FB43C };
+        for (i = 0; i < RTL_NUMBER_OF(na); i++) {
+            RtlZeroMemory(b, sizeof(b)); st = NvtRead(c, na[i], b, 15); Dump("new-map", na[i], b, 16, st);
+        }
         st = NvtWrite1(c, 0x3F0FE, 0x69);
-        KeStallExecutionProcessor(35000);
-        if (NT_SUCCESS(st)) st = NvtWrite1(c, 0x3F310, 0x00);
-        RtlZeroMemory(b, sizeof(b));
-        if (NT_SUCCESS(st)) st = NvtRead(c, 0x1F64E, b, 15);
-        Dump("id@1F64E", 0x1F64E, b, 16, st);
-        RtlZeroMemory(b, sizeof(b));
-        if (NT_SUCCESS(st)) st = NvtRead(c, 0x3F004, b, 15);
-        Dump("trim@3F004", 0x3F004, b, 16, st);
         KeStallExecutionProcessor(10000);
+        for (i = 0; i < RTL_NUMBER_OF(na); i++) {
+            RtlZeroMemory(b, sizeof(b)); st = NvtRead(c, na[i], b, 15); Dump("after-0x69", na[i], b, 16, st);
+        }
     }
     return STATUS_SUCCESS;
 }
