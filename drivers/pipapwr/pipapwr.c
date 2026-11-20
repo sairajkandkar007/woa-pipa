@@ -495,6 +495,7 @@ BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
     }
     m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
     c->isrCount++;
+    if (c->isrCount <= 4) LOG("isr#%lu m=%08X s=%08X rxfifo=%08X status=%08X", c->isrCount, m, s, R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_STATUS));
     if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
     DrainFifo(c);
     W(SE_GENI_S_IRQ_CLEAR, s);
@@ -592,7 +593,11 @@ VOID RxPoll(WDFTIMER t)
     { PUCHAR se = c->se; W(SE_GENI_S_IRQ_CLEAR, R(SE_GENI_S_IRQ_STATUS) & RXBITS); }
     WdfInterruptReleaseLock(c->irq);
     ProcessRing(c, c->irq);
-    if (++c->polls % 5000 == 0) LOG("bthx: poll %lu isr %lu tx %lu evt %lu acl %lu drop %lu", c->polls, c->isrCount, c->cntTx, c->cntEvt, c->cntAcl, c->rdrop);
+    if (++c->polls % 5000 == 0) {
+        PUCHAR se = c->se;
+        LOG("bthx: poll %lu isr %lu tx %lu evt %lu acl %lu drop %lu | m=%08X s=%08X rxfifo=%08X status=%08X ios=%08X s_en=%08X", c->polls, c->isrCount, c->cntTx, c->cntEvt, c->cntAcl, c->rdrop,
+            R(SE_GENI_M_IRQ_STATUS), R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_STATUS), R(SE_GENI_IOS), R(SE_GENI_S_IRQ_EN));
+    }
 }
 
 static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
@@ -610,7 +615,9 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
     if (c->cntTx < 40) LOG("bthx: tx#%lu type %u len %lu: %02X %02X %02X %02X", c->cntTx, h->Type, h->DataLen,
         h->DataLen > 0 ? h->Data[0] : 0, h->DataLen > 1 ? h->Data[1] : 0, h->DataLen > 2 ? h->Data[2] : 0, h->DataLen > 3 ? h->Data[3] : 0);
     WdfWaitLockAcquire(c->txLock, NULL);
+    if (c->cntTx < 4) g_verbose = TRUE;
     UartTx(c->se, buf, 1 + h->DataLen);
+    g_verbose = FALSE;
     WdfWaitLockRelease(c->txLock);
     ExFreePool(buf);
     c->cntTx++;
