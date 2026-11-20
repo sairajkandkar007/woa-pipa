@@ -627,7 +627,7 @@ VOID RxPoll(WDFTIMER t)
     WdfInterruptReleaseLock(c->irq);
     ProcessRing(c, c->irq);
     c->polls++;
-}}
+}
 
 EVT_WDF_WORKITEM AckWork;
 VOID AckWork(WDFWORKITEM wi)
