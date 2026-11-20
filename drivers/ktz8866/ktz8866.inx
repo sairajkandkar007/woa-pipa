@@ -20,9 +20,9 @@ DefaultDestDir = 13
 ktz8866.sys = 1,,
 
 [Manufacturer]
-%Mfg% = Std,NTARM64
+%Mfg% = Std,NTARM64.10.0...16299
 
-[Std.NTARM64]
+[Std.NTARM64.10.0...16299]
 %Desc% = Ktz_Inst, ACPI\PIPA8866
 
 [Ktz_Inst.NT]
