@@ -428,7 +428,8 @@ typedef struct _PKT { LIST_ENTRY le; ULONG len; UCHAR type; UCHAR data[1]; } PKT
 
 typedef struct _FDO_CTX {
     WDFDEVICE dev;
-    PUCHAR se;                      /* QUP0 SE6, mapped once the controller is ready */
+    PUCHAR se;                      /* QUP0 SE6, set once the controller is ready (ISR data path) */
+    PUCHAR seMask;                  /* QUP0 SE6 mapped at D0 entry, used to mask a stray interrupt */
     WDFINTERRUPT irq;
     BOOLEAN started, ready, childAdded;
     UCHAR bdaddr[6];
@@ -462,7 +463,14 @@ BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
     PFDO_CTX c = FdoCtx(WdfInterruptGetDevice(irq));
     PUCHAR se = c->se; ULONG m, s, st, wc, i, k, nb, w;
     UNREFERENCED_PARAMETER(msgId);
-    if (!se) return FALSE;
+    if (!se) {      /* not ours yet: make sure the (level) line drops, or a single CPU livelocks */
+        se = c->seMask;
+        if (!se) return FALSE;
+        W(SE_IRQ_EN, 0); W(SE_GENI_M_IRQ_EN, 0); W(SE_GENI_S_IRQ_EN, 0);
+        W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF); W(SE_GENI_S_IRQ_CLEAR, 0xFFFFFFFF);
+        c->rdrop++;
+        return TRUE;
+    }
     m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
     if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
     for (;;) {
@@ -712,7 +720,7 @@ static VOID BtThread(PVOID ctx)
         g_verbose = FALSE;
         st = AddChild(c);
         c->childAdded = NT_SUCCESS(st);
-        LOG("bt: HCI transport up, child PDO st=%08X", st);
+        LOG("bt: HCI transport up, child PDO st=%08X (stray irqs before ready: %lu)", st, c->rdrop);
     }
     PsTerminateSystemThread(STATUS_SUCCESS);
 }
@@ -767,6 +775,18 @@ NTSTATUS PwrD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
     LOG("D0 entry (from D%d)", (int)prev - 1);
     if (c->started) return STATUS_SUCCESS;   /* controller keeps running (no idle / sleep support yet) */
     c->started = TRUE;
+    {   /* uart6's interrupt gets connected right after this callback: clock SE6 and mask it first */
+        PUCHAR g = MapPhys(GCC_VOTE_PAGE, 0x1000), se;
+        if (g) { WRITE_REGISTER_ULONG((volatile ULONG *)(g + 0x8), READ_REGISTER_ULONG((volatile ULONG *)(g + 0x8)) | (1u << 16)); MmUnmapIoSpace(g, 0x1000); }
+        KeStallExecutionProcessor(100);
+        se = c->seMask = MapPhys(SE6_BASE, 0x4000);
+        if (se) {
+            LOG("se6 before mask: se_irq_en=%08X m_en=%08X s_en=%08X m_st=%08X s_st=%08X", R(SE_IRQ_EN), R(SE_GENI_M_IRQ_EN),
+                R(SE_GENI_S_IRQ_EN), R(SE_GENI_M_IRQ_STATUS), R(SE_GENI_S_IRQ_STATUS));
+            W(SE_IRQ_EN, 0); W(SE_GENI_M_IRQ_EN, 0); W(SE_GENI_S_IRQ_EN, 0);
+            W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF); W(SE_GENI_S_IRQ_CLEAR, 0xFFFFFFFF);
+        }
+    }
     for (i = 16; i <= 19; i++) SetFunc(i, 1 /* qup6 */, PULL_UP, 1 /* 4 mA */);
     SetOut(21, 1);                         /* BT_EN */
     KeStallExecutionProcessor(20000);
