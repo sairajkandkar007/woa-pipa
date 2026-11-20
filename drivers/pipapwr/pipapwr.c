@@ -472,7 +472,7 @@ typedef struct _FDO_CTX {
     LIST_ENTRY evtList, aclList; ULONG evtCount, aclCount;
     WDFWAITLOCK txLock;
     BTHX_CAPABILITIES caps;
-    ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged, polls, rawLogged;
+    ULONG cntTx, cntEvt, cntAcl, cntSco, isrCount, ioctlLogged, polls, rawLogged;
     volatile BOOLEAN ibsAwake; ULONG ibsWakeInd, ibsSleepInd, ibsWakeTimeout;
     KEVENT wakeAck; WDFWORKITEM ackWork;
     WDFSPINLOCK parseLock;
@@ -578,19 +578,21 @@ static VOID ParseByte(PFDO_CTX c, UCHAR b)
         if (b == 0xFD) { c->ibsWakeInd++; WdfWorkItemEnqueue(c->ackWork); return; }
         if (b == 0xFC) { c->ibsAwake = TRUE; KeSetEvent(&c->wakeAck, 0, FALSE); return; }
         if (b == 0xFE) { c->ibsAwake = FALSE; c->ibsSleepInd++; return; }
-        if (b != 0x04 && b != 0x02) return;           /* wait for an event or ACL type byte */
-        c->pktype = b; c->pkneed = (b == 0x04) ? 3 : 5; c->hdrDone = FALSE;
+        if (b != 0x04 && b != 0x02 && b != 0x03) return;   /* wait for an event, ACL or SCO type byte */
+        c->pktype = b; c->pkneed = (b == 0x02) ? 5 : 3; c->hdrDone = FALSE;   /* evt: 1+2, sco: 1+2+1 -> see below */
+        if (b == 0x03) c->pkneed = 4;
     }
     c->pk[c->pkn++] = b;
     if (c->pkn < c->pkneed) return;
     if (!c->hdrDone) {                                 /* header complete: add the payload length */
-        ULONG pl = (c->pktype == 0x04) ? c->pk[2] : (ULONG)(c->pk[3] | (c->pk[4] << 8));
+        ULONG pl = (c->pktype == 0x04) ? c->pk[2] : (c->pktype == 0x03) ? c->pk[3] : (ULONG)(c->pk[3] | (c->pk[4] << 8));
         c->hdrDone = TRUE;
         c->pkneed += pl;
         if (c->pkneed > sizeof(c->pk)) { c->pkn = 0; return; }   /* garbage - resync */
         if (pl) return;
     }
-    Deliver(c, c->pktype == 0x04 ? (UCHAR)HciPacketEvent : (UCHAR)HciPacketAclData, c->pk + 1, c->pkn - 1);
+    if (c->pktype == 0x03) c->cntSco++;                /* SCO over HCI is not supported: drop, but stay in sync */
+    else Deliver(c, c->pktype == 0x04 ? (UCHAR)HciPacketEvent : (UCHAR)HciPacketAclData, c->pk + 1, c->pkn - 1);
     c->pkn = 0;
 }
 
