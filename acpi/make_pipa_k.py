@@ -242,6 +242,14 @@ def main():
             d[t + m.start() + 1] = m.group(1)[0] - 0x2B + 16; n += 1
         assert n >= 4, 'UR18 TLMMGPIO'
         print(f'pipa bt: UR18 -> uart6 0x998000, irq 0x27F, wrap0_s6, QUP_0, pins 43-46 -> 16-19 ({n} entries)')
+    if '--pipa-bt-own' in sys.argv:
+        # qcuart can't power uart6 without qcpep's private P-state interface; pipapwr drives SE6 itself.
+        # Park UR18 (so qcuart never touches SE6) and BTH0 (its _DEP on UR18 would never resolve).
+        for dev, hid in ((b'UR18', b'QCOM2518'), (b'BTH0', b'QCOM2571')):
+            pos = bytes(d).find(dev + b'\x08_HID\x0d' + hid)
+            assert pos > 0 and bytes(d).count(dev + b'\x08_HID\x0d' + hid) == 1, f'{dev} _HID'
+            q = pos + len(dev) + 6; d[q:q+8] = b'QCOMFFFF'
+        print('pipa bt-own: UR18 and BTH0 parked (pipapwr drives uart6 directly)')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
         # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.
