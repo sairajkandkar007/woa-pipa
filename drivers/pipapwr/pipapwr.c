@@ -443,7 +443,7 @@ typedef struct _FDO_CTX {
     LIST_ENTRY evtList, aclList; ULONG evtCount, aclCount;
     WDFWAITLOCK txLock;
     BTHX_CAPABILITIES caps;
-    ULONG cntTx, cntEvt, cntAcl;
+    ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged;
 } FDO_CTX, *PFDO_CTX;
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(FDO_CTX, FdoCtx)
 
@@ -472,6 +472,7 @@ BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
         return TRUE;
     }
     m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
+    c->isrCount++;
     if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
     for (;;) {
         st = R(SE_GENI_RX_FIFO_STATUS); wc = st & 0x1FFFFFF;
@@ -512,6 +513,8 @@ static VOID Deliver(PFDO_CTX c, UCHAR type, const UCHAR *data, ULONG len)
     PULONG cnt = (type == HciPacketEvent) ? &c->evtCount : &c->aclCount;
     WDFREQUEST req; NTSTATUS st; PPKT p;
     if (type == HciPacketEvent) c->cntEvt++; else c->cntAcl++;
+    if (c->cntEvt + c->cntAcl < 40) LOG("bthx: rx type %u len %lu: %02X %02X %02X %02X %02X %02X (isr %lu)", type, len,
+        len > 0 ? data[0] : 0, len > 1 ? data[1] : 0, len > 2 ? data[2] : 0, len > 3 ? data[3] : 0, len > 4 ? data[4] : 0, len > 5 ? data[5] : 0, c->isrCount);
     WdfSpinLockAcquire(c->pktLock);
     st = WdfIoQueueRetrieveNextRequest(q, &req);
     if (NT_SUCCESS(st)) {
@@ -575,6 +578,8 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
     buf = (UCHAR *)ExAllocatePool2(POOL_FLAG_NON_PAGED, 1 + h->DataLen, 'xTtB');
     if (!buf) return STATUS_INSUFFICIENT_RESOURCES;
     buf[0] = h->Type; RtlCopyMemory(buf + 1, h->Data, h->DataLen);
+    if (c->cntTx < 40) LOG("bthx: tx#%lu type %u len %lu: %02X %02X %02X %02X", c->cntTx, h->Type, h->DataLen,
+        h->DataLen > 0 ? h->Data[0] : 0, h->DataLen > 1 ? h->Data[1] : 0, h->DataLen > 2 ? h->Data[2] : 0, h->DataLen > 3 ? h->Data[3] : 0);
     WdfWaitLockAcquire(c->txLock, NULL);
     UartTx(c->se, buf, 1 + h->DataLen);
     WdfWaitLockRelease(c->txLock);
@@ -588,6 +593,7 @@ VOID FdoIoctl(WDFQUEUE q, WDFREQUEST req, size_t outLen, size_t inLen, ULONG cod
 {
     PFDO_CTX c = FdoCtx(WdfIoQueueGetDevice(q));
     NTSTATUS st = STATUS_SUCCESS; ULONG_PTR info = 0; PVOID p;
+    if (code != IOCTL_BTHX_READ_HCI && code != IOCTL_BTHX_WRITE_HCI && c->ioctlLogged < 20) { c->ioctlLogged++; LOG("bthx: ioctl %08lX out %Iu in %Iu", code, outLen, inLen); }
     switch (code) {
     case IOCTL_BTHX_GET_VERSION:
         st = WdfRequestRetrieveOutputBuffer(req, sizeof(BTHX_VERSION), &p, NULL);
