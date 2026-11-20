@@ -107,7 +107,8 @@ static VOID SetOut(ULONG pin, ULONG v)
 #define SE_HW_PARAM_1   0xe28
 #define SE_DMA_GENERAL_CFG 0xe30
 
-static BOOLEAN g_verbose = TRUE;
+static BOOLEAN g_verbose = FALSE;
+static UCHAR g_nvmBaud;   /* QCA baud code written into the NVM HCI tag: 0 = 115200, 0x0E = 3000000 */
 
 static PUCHAR MapPhys(ULONGLONG pa, SIZE_T len)
 {
@@ -209,7 +210,10 @@ static BOOLEAN RxByte(PUCHAR se, UCHAR *b, ULONG ms)
 static LONG ReadEvent(PUCHAR se, UCHAR *evt, UCHAR *p, ULONG cap, ULONG ms)
 {
     UCHAR t = 0, len, i;
-    do { if (!RxByte(se, &t, ms)) return -1; } while (t != 0x04);
+    do {
+        if (!RxByte(se, &t, ms)) return -1;
+        if (t == 0xFD) { static const UCHAR ack = 0xFC; UartTx(se, &ack, 1); }   /* IBS wake-ind -> ack */
+    } while (t != 0x04);
     if (!RxByte(se, evt, ms) || !RxByte(se, &len, ms)) return -1;
     for (i = 0; i < len; i++) { UCHAR c; if (!RxByte(se, &c, ms)) return -1; if (i < cap) p[i] = c; }
     return len;
@@ -267,7 +271,7 @@ static VOID NvmFixup(UCHAR *d, ULONG size)
         USHORT tag = data[idx] | (data[idx + 1] << 8), tlen = data[idx + 2] | (data[idx + 3] << 8);
         UCHAR *v = data + idx + 12;
         if (idx + 12 + tlen > length) break;
-        if (tag == 17 && tlen >= 3) { LOG("bt: nvm HCI tag %02X %02X %02X -> baud 115200, IBS off", v[0], v[1], v[2]); v[0] &= 0x7F; v[1] = 0; }
+        if (tag == 17 && tlen >= 3) { LOG("bt: nvm HCI tag %02X %02X %02X -> baud code %02X", v[0], v[1], v[2], g_nvmBaud); v[1] = g_nvmBaud; }
         if (tag == 27 && tlen >= 1) { LOG("bt: nvm deep-sleep tag %02X -> off", v[0]); v[0] &= 0xFE; }
         if (tag == 2 && tlen == 6) LOG("bt: nvm bd_addr %02X:%02X:%02X:%02X:%02X:%02X", v[5], v[4], v[3], v[2], v[1], v[0]);
         idx += 12 + tlen;
@@ -299,7 +303,6 @@ static BOOLEAN Download(PUCHAR se, PCWSTR path, BOOLEAN nvm)
         }
         nseg++;
     }
-    g_verbose = TRUE;
     LOG("bt: %ws sent in %lu segments", nvm ? L"NVM" : L"patch", nseg);
     ExFreePool(d);
     return TRUE;
@@ -340,71 +343,97 @@ static BOOLEAN BtFirmware(PUCHAR se, UCHAR rom, const UCHAR *bdaddr)
     return TRUE;
 }
 
-static PUCHAR BtProbe(const UCHAR *bdaddr)
+/* gcc_qupv3_wrap0_s6_clk_src RCG @0x117730 (CMD,CFG,M,N,D; DFS enable = +0x14 bit0). Boot leaves it on
+ * XO bypass. Program an ftbl entry from GPLL0_OUT_EVEN (300 MHz, src 6) /1 * M/N, dual-edge MND, the way
+ * clk-rcg2.c does: 7.3728 MHz = 384/15625 (115200 x16), 48 MHz = 4/25 (3 Mbaud x16). Returns the rate or 0. */
+static ULONG SetS6Clock(ULONG m, ULONG n, ULONG hz)
 {
-    static const UCHAR reset[] = { 0x01, 0x03, 0x0C, 0x00 };
-    static const UCHAR ver[] = { 0x01, 0x00, 0xFC, 0x01, 0x19 };
-    PUCHAR gcc, rcg, wrap, se; ULONG qver, samp, div, n, fw, sclk;
-    UCHAR rx[96];
+    PUCHAR rcg = MapPhys(GCC_RCG_PAGE, 0x1000); ULONG ok = 0;
+    if (rcg) {
+        volatile ULONG *r = (volatile ULONG *)(rcg + 0x730);
+        ULONG dfs = READ_REGISTER_ULONG(r + 5), cfg0 = READ_REGISTER_ULONG(r + 1), t;
+        if (!(dfs & 1)) {
+            WRITE_REGISTER_ULONG(r + 2, m);
+            WRITE_REGISTER_ULONG(r + 3, (~(n - m)) & 0xFFFF);
+            WRITE_REGISTER_ULONG(r + 4, (~n) & 0xFFFF);
+            WRITE_REGISTER_ULONG(r + 1, (cfg0 & ~0x37FFu) | 1u | (6u << 8) | 0x2000u);
+            WRITE_REGISTER_ULONG(r, READ_REGISTER_ULONG(r) | 1u);
+            for (t = 0; t < 500 && (READ_REGISTER_ULONG(r) & 1u); t++) KeStallExecutionProcessor(1);
+            if (!(READ_REGISTER_ULONG(r) & 1u)) ok = hz;
+        }
+        LOG("bt: s6 clock %lu Hz: cfg %08X -> %08X dfs %08X %s", hz, cfg0, READ_REGISTER_ULONG(r + 1), dfs, ok ? "ok" : "FAILED");
+        MmUnmapIoSpace(rcg, 0x1000);
+    }
+    return ok;
+}
+
+static BOOLEAN ReadVersion(PUCHAR se, UCHAR *rom)
+{
+    static const UCHAR ver[] = { 0x00 + 0x19 };
+    UCHAR r[24]; ULONG st;
+    RtlZeroMemory(r, sizeof(r));
+    st = HciCmd(se, 0xFC00, ver, 1, r, sizeof(r), 1000);
+    /* CC payload: ncmd, op(2), status, rtype 0x19, len 0x0C, product(4), patch(2), rom(2), soc(4) */
+    if (st != 0 || r[4] != 0x19) { LOG("bt: version request failed st=%lX rtype=%02X", st, r[4]); return FALSE; }
+    {
+        ULONG socid = r[14] | (r[15] << 8) | (r[16] << 16) | ((ULONG)r[17] << 24);
+        ULONG romv = r[12] | (r[13] << 8);
+        ULONG socver = (socid << 16) | (romv & 0xFFFF);
+        *rom = (UCHAR)(((socver & 0xF00) >> 4) | (socver & 0xF));
+        LOG("bt: soc_id=%08X rom_ver=%04X patch=%04X -> fw rom %02X", socid, romv, r[10] | (r[11] << 8), *rom);
+    }
+    return TRUE;
+}
+
+
+static PUCHAR BtProbe(const UCHAR *bdaddr, BOOLEAN fast)
+{
+    PUCHAR gcc, wrap, se; ULONG qver, samp, n, fw, sclk; UCHAR rom;
 
     gcc = MapPhys(GCC_VOTE_PAGE, 0x1000);
     if (!gcc) { LOG("bt: map gcc failed"); return NULL; }
     n = READ_REGISTER_ULONG((volatile ULONG *)(gcc + 0x8));
     WRITE_REGISTER_ULONG((volatile ULONG *)(gcc + 0x8), n | (1u << 16));   /* gcc_qupv3_wrap0_s6_clk */
     KeStallExecutionProcessor(100);
-    LOG("bt: gcc vote 52008 %08X -> %08X", n, READ_REGISTER_ULONG((volatile ULONG *)(gcc + 0x8)));
     MmUnmapIoSpace(gcc, 0x1000);
-    /* gcc_qupv3_wrap0_s6_clk_src RCG @0x117730 (CMD,CFG,M,N,D; DFS enable = +0x14 bit0).
-     * Boot left it on XO 19.2 MHz bypass, which can't make 115200 exactly. If DFS is off, program the
-     * gcc-sm8250 ftbl entry 7.3728 MHz = GPLL0_OUT_EVEN(src 6) /1 * 384/15625 (MND dual edge), as clk-rcg2.c does. */
-    rcg = MapPhys(GCC_RCG_PAGE, 0x1000);
-    sclk = 19200000;
-    if (rcg) {
-        volatile ULONG *r = (volatile ULONG *)(rcg + 0x730);
-        ULONG dfs = READ_REGISTER_ULONG(r + 5), cfg0 = READ_REGISTER_ULONG(r + 1), t;
-        LOG("bt: s6 rcg cmd=%08X cfg=%08X m=%08X n=%08X d=%08X dfs_en=%08X", READ_REGISTER_ULONG(r), cfg0,
-            READ_REGISTER_ULONG(r + 2), READ_REGISTER_ULONG(r + 3), READ_REGISTER_ULONG(r + 4), dfs);
-        if (!(dfs & 1) && (cfg0 & 0x7FF) == 0) {
-            WRITE_REGISTER_ULONG(r + 2, 384);
-            WRITE_REGISTER_ULONG(r + 3, (~(15625u - 384u)) & 0xFFFF);
-            WRITE_REGISTER_ULONG(r + 4, (~15625u) & 0xFFFF);
-            WRITE_REGISTER_ULONG(r + 1, (cfg0 & ~0x37FFu) | 1u | (6u << 8) | 0x2000u);
-            WRITE_REGISTER_ULONG(r, READ_REGISTER_ULONG(r) | 1u);
-            for (t = 0; t < 500 && (READ_REGISTER_ULONG(r) & 1u); t++) KeStallExecutionProcessor(1);
-            LOG("bt: s6 rcg -> 7.3728 MHz cmd=%08X cfg=%08X (update %s)", READ_REGISTER_ULONG(r), READ_REGISTER_ULONG(r + 1),
-                (READ_REGISTER_ULONG(r) & 1u) ? "STUCK" : "ok");
-            if (!(READ_REGISTER_ULONG(r) & 1u)) sclk = 7372800;
-        }
-        MmUnmapIoSpace(rcg, 0x1000);
-    }
     wrap = MapPhys(QUP0_WRAP, 0x1000);
     qver = wrap ? READ_REGISTER_ULONG((volatile ULONG *)(wrap + 0x4)) : 0;
     if (wrap) MmUnmapIoSpace(wrap, 0x1000);
     samp = (qver >= 0x20050000) ? 16 : 32;
-    div = (sclk + 115200 * samp / 2) / (115200 * samp);   /* 7.3728M/16 -> 4 exact; 19.2M -> 10 (+4%) */
+    sclk = SetS6Clock(384, 15625, 7372800);
+    if (!sclk) return NULL;
     se = MapPhys(SE6_BASE, 0x4000);
     if (!se) { LOG("bt: map se6 failed"); return NULL; }
     fw = R(GENI_FW_REVISION_RO);
-    LOG("bt: sclk %lu qup hw ver %08X sampling %lu div %lu; se6 fw=%08X status=%08X ios=%08X", sclk, qver, samp, div, fw, R(SE_GENI_STATUS), R(SE_GENI_IOS));
-    if (((fw >> 8) & 0xFF) != 2) { LOG("bt: SE6 is not UART firmware - abort"); MmUnmapIoSpace(se, 0x4000); return NULL; }
-    UartSetup(se, div);
-    n = UartRx(se, rx, sizeof(rx), 50);           /* drain anything pending */
-    if (n) Dump("stale rx", rx, n);
-    UartTx(se, reset, sizeof(reset));
-    n = UartRx(se, rx, sizeof(rx), 1000); Dump("hci_reset reply", rx, n);
-    UartTx(se, ver, sizeof(ver));
-    n = UartRx(se, rx, sizeof(rx), 1000); Dump("qca_version reply", rx, n);
-    if (n >= 21 && rx[0] == 4 && rx[1] == 0x0E && rx[4] == 0x00 && rx[5] == 0xFC && rx[6] == 0 && rx[7] == 0x19) {
-        ULONG socid = rx[17] | (rx[18] << 8) | (rx[19] << 16) | ((ULONG)rx[20] << 24);
-        ULONG romv = rx[15] | (rx[16] << 8);
-        ULONG socver = (socid << 16) | (romv & 0xFFFF);
-        UCHAR rom = (UCHAR)(((socver & 0xF00) >> 4) | (socver & 0xF));
-        LOG("bt: soc_id=%08X rom_ver=%04X patch=%04X -> fw rom %02X", socid, romv, rx[13] | (rx[14] << 8), rom);
-        if (BtFirmware(se, rom, bdaddr)) {
-            LOG("bt: controller ready");
-            return se;                       /* stays mapped: the HCI transport uses it */
-        }
-    } else LOG("bt: version reply not understood - no firmware download");
+    if (((fw >> 8) & 0xFF) != 2) { LOG("bt: SE6 is not UART firmware (%08X) - abort", fw); MmUnmapIoSpace(se, 0x4000); return NULL; }
+    UartSetup(se, sclk / (115200 * samp));
+    g_rxn = g_rxp = 0;
+    UartRx(se, g_rxb, sizeof(g_rxb), 50);           /* drain anything pending */
+    g_rxn = g_rxp = 0;
+    n = HciCmd(se, 0x0C03, NULL, 0, NULL, 0, 1000);
+    LOG("bt: HCI_Reset @115200 st=%lX", n);
+    if (n != 0 || !ReadVersion(se, &rom)) goto fail;
+    g_nvmBaud = 0;
+    if (fast) {
+        /* hci_qca.c qca_set_speed() for QCA6390: EDL baud command, give it 300 ms, then follow on the host */
+        static const UCHAR baud[] = { 0x01, 0x48, 0xFC, 0x01, 0x0E };
+        UartTx(se, baud, sizeof(baud));
+        MsSleep(300);
+        if (SetS6Clock(4, 25, 48000000)) {
+            UartSetup(se, 48000000 / (3000000 * samp));
+            MsSleep(10);
+            g_rxn = g_rxp = 0;
+            UartRx(se, g_rxb, sizeof(g_rxb), 20);      /* drop the (garbled) baud response */
+            g_rxn = g_rxp = 0;
+            if (ReadVersion(se, &rom)) { g_nvmBaud = 0x0E; LOG("bt: running at 3 Mbaud"); }
+            else { LOG("bt: no answer at 3 Mbaud"); goto fail; }
+        } else goto fail;
+    }
+    if (BtFirmware(se, rom, bdaddr)) {
+        LOG("bt: controller ready");
+        return se;                       /* stays mapped: the HCI transport uses it */
+    }
+fail:
     LOG("bt: setup failed s_irq=%08X rxfifo=%08X ios=%08X", R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_IOS));
     MmUnmapIoSpace(se, 0x4000);
     return NULL;
@@ -497,7 +526,6 @@ BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
     }
     m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
     c->isrCount++;
-    if (c->isrCount <= 4) LOG("isr#%lu m=%08X s=%08X rxfifo=%08X status=%08X", c->isrCount, m, s, R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_STATUS));
     if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
     DrainFifo(c);
     W(SE_GENI_S_IRQ_CLEAR, s);
@@ -525,8 +553,6 @@ static VOID Deliver(PFDO_CTX c, UCHAR type, const UCHAR *data, ULONG len)
     PULONG cnt = (type == HciPacketEvent) ? &c->evtCount : &c->aclCount;
     WDFREQUEST req; NTSTATUS st; PPKT p;
     if (type == HciPacketEvent) c->cntEvt++; else c->cntAcl++;
-    if (c->cntEvt + c->cntAcl < 40) LOG("bthx: rx type %u len %lu: %02X %02X %02X %02X %02X %02X (isr %lu)", type, len,
-        len > 0 ? data[0] : 0, len > 1 ? data[1] : 0, len > 2 ? data[2] : 0, len > 3 ? data[3] : 0, len > 4 ? data[4] : 0, len > 5 ? data[5] : 0, c->isrCount);
     WdfSpinLockAcquire(c->pktLock);
     st = WdfIoQueueRetrieveNextRequest(q, &req);
     if (NT_SUCCESS(st)) {
@@ -578,11 +604,6 @@ static VOID ProcessRing(PFDO_CTX c, WDFINTERRUPT irq)
         while (c->rtail != c->rhead && n < sizeof(tmp)) { tmp[n++] = c->ring[c->rtail]; c->rtail = (c->rtail + 1) % RING_SIZE; }
         WdfInterruptReleaseLock(irq);
         if (!n) break;
-        if (c->rawLogged < 96) {
-            for (i = 0; i < n && c->rawLogged < 96; i += 8, c->rawLogged += 8)
-                LOG("raw rx: %02X %02X %02X %02X %02X %02X %02X %02X (n=%lu)", tmp[i], i+1<n?tmp[i+1]:0, i+2<n?tmp[i+2]:0, i+3<n?tmp[i+3]:0,
-                    i+4<n?tmp[i+4]:0, i+5<n?tmp[i+5]:0, i+6<n?tmp[i+6]:0, i+7<n?tmp[i+7]:0, n);
-        }
         for (i = 0; i < n; i++) ParseByte(c, tmp[i]);
     }
     WdfSpinLockRelease(c->parseLock);
@@ -594,7 +615,7 @@ VOID BtDpc(WDFINTERRUPT irq, WDFOBJECT obj)
     ProcessRing(FdoCtx(WdfInterruptGetDevice(irq)), irq);
 }
 
-/* fallback RX poll (1 ms): the uart6 GIC interrupt has not been seen firing yet */
+/* safety-net RX poll (50 ms): normally the uart6 interrupt does the work */
 EVT_WDF_TIMER RxPoll;
 VOID RxPoll(WDFTIMER t)
 {
@@ -605,12 +626,8 @@ VOID RxPoll(WDFTIMER t)
     { PUCHAR se = c->se; W(SE_GENI_S_IRQ_CLEAR, R(SE_GENI_S_IRQ_STATUS) & RXBITS); }
     WdfInterruptReleaseLock(c->irq);
     ProcessRing(c, c->irq);
-    if (++c->polls % 5000 == 0) {
-        PUCHAR se = c->se;
-        LOG("bthx: poll %lu ibs wake %lu sleep %lu wto %lu isr %lu tx %lu evt %lu acl %lu drop %lu | m=%08X s=%08X rxfifo=%08X status=%08X ios=%08X s_en=%08X", c->polls, c->ibsWakeInd, c->ibsSleepInd, c->ibsWakeTimeout, c->isrCount, c->cntTx, c->cntEvt, c->cntAcl, c->rdrop,
-            R(SE_GENI_M_IRQ_STATUS), R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_STATUS), R(SE_GENI_IOS), R(SE_GENI_S_IRQ_EN));
-    }
-}
+    c->polls++;
+}}
 
 EVT_WDF_WORKITEM AckWork;
 VOID AckWork(WDFWORKITEM wi)
@@ -635,8 +652,6 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
     buf = (UCHAR *)ExAllocatePool2(POOL_FLAG_NON_PAGED, 1 + h->DataLen, 'xTtB');
     if (!buf) return STATUS_INSUFFICIENT_RESOURCES;
     buf[0] = h->Type; RtlCopyMemory(buf + 1, h->Data, h->DataLen);
-    if (c->cntTx < 40) LOG("bthx: tx#%lu type %u len %lu: %02X %02X %02X %02X", c->cntTx, h->Type, h->DataLen,
-        h->DataLen > 0 ? h->Data[0] : 0, h->DataLen > 1 ? h->Data[1] : 0, h->DataLen > 2 ? h->Data[2] : 0, h->DataLen > 3 ? h->Data[3] : 0);
     WdfWaitLockAcquire(c->txLock, NULL);
     if (!c->ibsAwake) {        /* HCI_IBS_WAKE_IND, wait for WAKE_ACK (retry like hci_qca's wake retrans) */
         static const UCHAR wake = 0xFD; ULONG tries; LARGE_INTEGER to; to.QuadPart = -10000LL * 20;
@@ -647,9 +662,7 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
         }
         if (!c->ibsAwake) { c->ibsWakeTimeout++; c->ibsAwake = TRUE; LOG("bthx: no WAKE_ACK from controller, sending anyway"); }
     }
-    if (c->cntTx < 4) g_verbose = TRUE;
     UartTx(c->se, buf, 1 + h->DataLen);
-    g_verbose = FALSE;
     WdfWaitLockRelease(c->txLock);
     ExFreePool(buf);
     c->cntTx++;
@@ -661,7 +674,6 @@ VOID FdoIoctl(WDFQUEUE q, WDFREQUEST req, size_t outLen, size_t inLen, ULONG cod
 {
     PFDO_CTX c = FdoCtx(WdfIoQueueGetDevice(q));
     NTSTATUS st = STATUS_SUCCESS; ULONG_PTR info = 0; PVOID p;
-    if (code != IOCTL_BTHX_READ_HCI && code != IOCTL_BTHX_WRITE_HCI && c->ioctlLogged < 20) { c->ioctlLogged++; LOG("bthx: ioctl %08lX out %Iu in %Iu", code, outLen, inLen); }
     switch (code) {
     case IOCTL_BTHX_GET_VERSION:
         st = WdfRequestRetrieveOutputBuffer(req, sizeof(BTHX_VERSION), &p, NULL);
@@ -784,7 +796,11 @@ static VOID BtThread(PVOID ctx)
     GetBdAddr(c);
     /* BT_EN low->high so the QCA6390 BT core boots fresh, then talk to it */
     SetOut(21, 0); MsSleep(50); SetOut(21, 1); MsSleep(150);
-    se = BtProbe(c->bdaddr);
+    se = BtProbe(c->bdaddr, TRUE);
+    if (!se) {      /* retry the proven 115200 path from a fresh controller boot */
+        SetOut(21, 0); MsSleep(50); SetOut(21, 1); MsSleep(150);
+        se = BtProbe(c->bdaddr, FALSE);
+    }
     if (se) {
         /* switch RX to interrupt mode */
         W(SE_GENI_S_IRQ_CLEAR, 0xFFFFFFFF); W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF);
@@ -793,8 +809,7 @@ static VOID BtThread(PVOID ctx)
         W(SE_GENI_M_IRQ_EN, RXBITS);
         c->ready = TRUE;
         g_verbose = FALSE;
-        ExSetTimerResolution(10000, TRUE);
-        WdfTimerStart(c->poll, WDF_REL_TIMEOUT_IN_MS(1));
+        WdfTimerStart(c->poll, WDF_REL_TIMEOUT_IN_MS(50));
         st = AddChild(c);
         c->childAdded = NT_SUCCESS(st);
         LOG("bt: HCI transport up, child PDO st=%08X (stray irqs before ready: %lu)", st, c->rdrop);
@@ -841,7 +856,7 @@ NTSTATUS PwrDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     }
     {
         WDF_TIMER_CONFIG tc; WDF_OBJECT_ATTRIBUTES ta;
-        WDF_TIMER_CONFIG_INIT_PERIODIC(&tc, RxPoll, 1);
+        WDF_TIMER_CONFIG_INIT_PERIODIC(&tc, RxPoll, 50);
         tc.AutomaticSerialization = FALSE;
         WDF_OBJECT_ATTRIBUTES_INIT(&ta); ta.ParentObject = dev;
         st = WdfTimerCreate(&tc, &ta, &c->poll); if (!NT_SUCCESS(st)) return st;
@@ -868,7 +883,18 @@ NTSTATUS PwrD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
 {
     PFDO_CTX c = FdoCtx(dev); ULONG i;
     LOG("D0 entry (from D%d)", (int)prev - 1);
-    if (c->started) return STATUS_SUCCESS;   /* controller keeps running (no idle / sleep support yet) */
+    if (c->started) {
+        /* resume: BT_EN stays high, so the controller keeps its firmware; re-assert our SE6 clock vote and
+         * the RX interrupt enables in case the QUP lost them (full re-init on loss is not implemented yet) */
+        PUCHAR g = MapPhys(GCC_VOTE_PAGE, 0x1000), se = c->se;
+        if (g) { WRITE_REGISTER_ULONG((volatile ULONG *)(g + 0x8), READ_REGISTER_ULONG((volatile ULONG *)(g + 0x8)) | (1u << 16)); MmUnmapIoSpace(g, 0x1000); }
+        if (se && c->ready) {
+            LOG("resume: se6 fw=%08X s_en=%08X status=%08X", R(GENI_FW_REVISION_RO), R(SE_GENI_S_IRQ_EN), R(SE_GENI_STATUS));
+            W(SE_GENI_S_IRQ_EN, RXBITS); W(SE_GENI_M_IRQ_EN, RXBITS); W(SE_IRQ_EN, R(SE_IRQ_EN) | 0xC);
+            if (!(R(SE_GENI_STATUS) & (1u << 12))) W(SE_GENI_S_CMD0, 1u << 27);   /* receiver stopped: restart */
+        }
+        return STATUS_SUCCESS;
+    }
     c->started = TRUE;
     {   /* uart6's interrupt gets connected right after this callback: clock SE6 and mask it first */
         PUCHAR g = MapPhys(GCC_VOTE_PAGE, 0x1000), se;
