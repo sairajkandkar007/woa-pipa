@@ -1,0 +1,60 @@
+;
+; ktz8866.inf - KTZ8866 backlight (Xiaomi Pad 6 / pipa), test driver
+;
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %Mfg%
+CatalogFile = ktz8866.cat
+DriverVer   = 11/20/2026,1.0.0.1
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %Disk%,,,""
+
+[SourceDisksFiles]
+ktz8866.sys = 1,,
+
+[Manufacturer]
+%Mfg% = Std,NTARM64
+
+[Std.NTARM64]
+%Desc% = Ktz_Inst, ACPI\PIPA8866
+
+[Ktz_Inst.NT]
+CopyFiles = Ktz_Files
+
+[Ktz_Files]
+ktz8866.sys
+
+[Ktz_Inst.NT.HW]
+AddReg = Ktz_HW
+
+[Ktz_HW]
+; uncomment / set to force a brightness (0..2047) at start
+;HKR,,Brightness,0x00010001,1500
+
+[Ktz_Inst.NT.Services]
+AddService = ktz8866, 0x00000002, Ktz_Svc
+
+[Ktz_Svc]
+DisplayName   = %Desc%
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %13%\ktz8866.sys
+
+[Ktz_Inst.NT.Wdf]
+KmdfService = ktz8866, Ktz_Wdf
+
+[Ktz_Wdf]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+Mfg  = "woa-pipa"
+Disk = "ktz8866 install disk"
+Desc = "KTZ8866 Backlight (pipa)"

@@ -23,7 +23,7 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
      STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15]
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15] [--pipa-bklt]
 """
 import sys, re
 
@@ -158,6 +158,17 @@ def main():
         assert len(ints) == len(mem) == 36 and bytes(d).count(ints) == 1, 'PEP0 _CRS pattern not found'
         d = bytearray(bytes(d).replace(ints, mem))
         print('PEP0 _CRS: 4 interrupts -> RSC DRV2 0x18220000 + AOP MSGRAM 0x0C300000 memory')
+    if '--pipa-bklt' in sys.argv:
+        # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
+        # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.
+        bk = bytes.fromhex('1045055c5f53425f5b824c04424b4c54085f4849440d504950413838363600085f5549440114095f53544100a40a0f085f43525311210a1e8e1900020001020000010600801a060011005c5f53422e49433130007900')
+        assert b'PIPA8866' not in bytes(d)
+        d = bytearray(bytes(d) + bk); d[4:8] = len(d).to_bytes(4, 'little')
+        # pipa fsa4480 sits at 0x42 (DTB), Kona MTP CFSA says 0x43
+        fsa = b'\xa0\x86\x01\x00\x43\x00\\_SB.I2C5'
+        assert bytes(d).count(fsa) == 1, 'CFSA i2c'
+        i = bytes(d).index(fsa); d[i + 4] = 0x42
+        print('pipa: added \\_SB.BKLT (KTZ8866 @IC10:0x11); CFSA 0x43 -> 0x42')
     d[9] = 0
     d[9] = (-sum(d)) & 0xFF
     assert sum(d) & 0xFF == 0 and len(d) == int.from_bytes(d[4:8], 'little')

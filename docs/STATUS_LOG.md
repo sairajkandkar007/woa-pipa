@@ -174,3 +174,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - `make_pipa_k.py --pipa-i2c15`: Kona I2C5 repurposed as pipa i2c15 (QUP2 SE1 @0x884000, GSIV 0x267, gcc_qupv3_wrap2_s1_clk + wrap_2_m_ahb, ICB QUP_2, gpio44/45). Devices: fsa4480, smb1390 x2, hl6111r.
 - UEFI: Mu-pipa-qpep8250.img md5 acf92bdf…; previous kept as Mu-pipa-qpep8250-i2c11only.img.
 - TESTED OK (12:06): PEP accepted \_SB.I2C5 (i2c15), D0 votes + runtime D3 all ok=1; qci2c DeviceNodeStarted on ACPI\QCOM2511\5 and \a. Both pipa I2C buses up, no 0x101.
+
+## 2026-11-20 — KTZ8866 backlight, stage 1
+- DSDT `--pipa-bklt`: appended `\_SB.BKLT` (_HID PIPA8866, I2C 0x11 @400 kHz on \_SB.IC10 = i2c11). Also CFSA (fsa4480) I2C address 0x43 -> 0x42 to match the pipa DTB.
+- `drivers/ktz8866`: minimal KMDF SPB client. At D0 reads regs 0x01/02/03/04/05/08/09/0F, logs via DbgPrint (`ktz8866:`) and to the device HW key (KtzReadOkMask, KtzDeviceId, KtzBlEn, KtzBrightnessNow). Doesn't re-init the chip; writes brightness only if HW key DWORD `Brightness` exists. Built and installed by the qpep8250 build/phase10 scripts.
+- UEFI md5 f061dbf1…; previous = Mu-pipa-qpep8250-i2c15.img.
