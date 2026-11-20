@@ -8,9 +8,11 @@
  * --pipa-spi4). QualcommPEP handles the device's clocks, bus votes and pins (gpio8-11 qup4) on D0.
  * Register programming follows Linux drivers/spi/spi-geni-qcom.c + drivers/soc/qcom/qcom-geni-se.c.
  *
- * Stage 1: init the SE for SPI mode 0, 8-bit words, FIFO mode, ~1 MHz, then read a few NT36532
- * registers using the Novatek SPI protocol (Linux nt36xxx: page select 0xFF, read = addr & 0x7F,
- * one dummy byte). Everything is logged with DbgPrint ("nt365:"). No HID yet.
+ * Stage 2: NT36532 is flash-less. At D0 the driver loads the touch firmware from
+ * \SystemRoot\System32\drivers\nt36532_{csot,tianma}.bin (copied there by phase10, never shipped
+ * in the repo), downloads it (port of pipa-mainline nt36xxx_fw_update.c, hw-CRC + cascade path),
+ * waits for the FW reset state, reads FW info, then polls the event buffer every 20 ms and logs
+ * finger reports ("nt365: touch ..."). No HID yet.
  */
 #include <ntddk.h>
 #include <wdf.h>
@@ -72,12 +74,21 @@
 #define RX_FIFO_WC_MSK    0x01FFFFFFu
 #define RX_LAST           (1u << 31)
 #define RX_LAST_BYTE_VALID_SHIFT 28
-#define MAX_XFER          60u            /* stay inside one 16-word FIFO */
+#define SPI_TX_ONLY       1u
+#define TX_FIFO_WC_MSK    0x0FFFFFFFu
+#define FIFO_DEPTH        16u
+#define NVT_CHUNK         1024u          /* bytes per page-set when writing SRAM */
+#define MAX_RD            128u
 
 typedef struct _DEV_CTX {
     PUCHAR se;
     ULONG seLen;
     BOOLEAN inited;
+    BOOLEAN fwOk;
+    WDFTIMER poll;
+    ULONG lastFingers;
+    ULONG logBudget;
+    USHORT absX, absY;
 } DEV_CTX, *PDEV_CTX;
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(DEV_CTX, GetCtx)
 
@@ -86,11 +97,12 @@ EVT_WDF_DRIVER_DEVICE_ADD NtDeviceAdd;
 EVT_WDF_DEVICE_PREPARE_HARDWARE NtPrepare;
 EVT_WDF_DEVICE_RELEASE_HARDWARE NtRelease;
 EVT_WDF_DEVICE_D0_ENTRY NtD0Entry;
+EVT_WDF_DEVICE_D0_EXIT NtD0Exit;
+EVT_WDF_TIMER NtPoll;
 
 static __forceinline ULONG rd(PDEV_CTX c, ULONG o) { return READ_REGISTER_ULONG((volatile ULONG *)(c->se + o)); }
-static __forceinline VOID wr(PDEV_CTX c, ULONG o, ULONG v) { WRITE_REGISTER_ULONG((volatile ULONG *)(c->se + o), v); }
 
-/* Linux geni_se_config_packing(se, 8, 4, msb_to_lsb=true, tx, rx) */
+static __forceinline VOID wr(PDEV_CTX c, ULONG o, ULONG v) { WRITE_REGISTER_ULONG((volatile ULONG *)(c->se + o), v); }
 static VOID GeniPacking8(PDEV_CTX c)
 {
     ULONG cfg[4] = { 0 }, i, idx = 7, cfg0, cfg1;
@@ -135,107 +147,275 @@ static NTSTATUS GeniInit(PDEV_CTX c)
     wr(c, SE_SPI_TRANS_CFG, rd(c, SE_SPI_TRANS_CFG) & ~(1u << 1));  /* no CS toggle between words */
     wr(c, SE_SPI_PRE_POST_CMD_DLY, 0);
     GeniPacking8(c);
-    /* clock: DFS level 0 (XO 19.2 MHz), divider 20 -> ~0.96 MHz (or half with oversampling 2) */
+    /* clock: DFS level 0 (XO 19.2 MHz), divider 2 */
     wr(c, GENI_CLK_SEL, 0);
-    wr(c, GENI_SER_M_CLK_CFG, (20u << 4) | 1u);
-    wr(c, GENI_SER_S_CLK_CFG, (20u << 4) | 1u);
+    wr(c, GENI_SER_M_CLK_CFG, (2u << 4) | 1u);   /* 19.2 MHz / 2 = 9.6 MHz (Android uses 9.6) */
+    wr(c, GENI_SER_S_CLK_CFG, (2u << 4) | 1u);
     LOG("SE init done: m_clk=%08X trans_cfg=%08X word_len=%08X", rd(c, GENI_SER_M_CLK_CFG), rd(c, SE_SPI_TRANS_CFG), rd(c, SE_SPI_WORD_LEN));
     return STATUS_SUCCESS;
 }
 
-/* full-duplex, len <= MAX_XFER, polled; CS asserted for the whole transfer */
+/* Streaming polled transfer of any length. rx == NULL -> TX only. CS held for the whole transfer. */
 static NTSTATUS GeniXfer(PDEV_CTX c, const UCHAR *tx, UCHAR *rx, ULONG len)
 {
-    ULONG words = (len + 3) / 4, i, got = 0, st, spin;
-    if (len == 0 || len > MAX_XFER) return STATUS_INVALID_PARAMETER;
+    ULONG txw = 0, words = (len + 3) / 4, got = 0, st, spin = 0;
+    if (len == 0) return STATUS_INVALID_PARAMETER;
     wr(c, SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF);
     wr(c, SE_SPI_TX_TRANS_LEN, len);
-    wr(c, SE_SPI_RX_TRANS_LEN, len);
-    wr(c, SE_GENI_M_CMD0, (SPI_FULL_DUPLEX << 27) | 0);
-    for (i = 0; i < words; i++) {
-        ULONG w = 0, b;
-        for (b = 0; b < 4 && i * 4 + b < len; b++) w |= (ULONG)tx[i * 4 + b] << (8 * b);
-        wr(c, SE_GENI_TX_FIFOn, w);
-    }
-    for (spin = 0; spin < 100000; spin++) {
+    wr(c, SE_SPI_RX_TRANS_LEN, rx ? len : 0);
+    wr(c, SE_GENI_M_CMD0, ((rx ? SPI_FULL_DUPLEX : SPI_TX_ONLY) << 27));
+    for (;;) {
+        /* top up TX FIFO */
+        while (txw < words && (rd(c, SE_GENI_TX_FIFO_STATUS) & TX_FIFO_WC_MSK) < FIFO_DEPTH - 1) {
+            ULONG w = 0, b;
+            for (b = 0; b < 4 && txw * 4 + b < len; b++) w |= (ULONG)tx[txw * 4 + b] << (8 * b);
+            wr(c, SE_GENI_TX_FIFOn, w); txw++;
+        }
         st = rd(c, SE_GENI_M_IRQ_STATUS);
-        if (st & (M_RX_FIFO_WM | M_RX_FIFO_LAST)) {
-            ULONG fs = rd(c, SE_GENI_RX_FIFO_STATUS), wc = fs & RX_FIFO_WC_MSK, k;
+        if (rx) {
+            ULONG wc = rd(c, SE_GENI_RX_FIFO_STATUS) & RX_FIFO_WC_MSK, k;
             for (k = 0; k < wc; k++) {
                 ULONG w = rd(c, SE_GENI_RX_FIFOn), b;
                 for (b = 0; b < 4 && got < len; b++, got++) rx[got] = (UCHAR)(w >> (8 * b));
             }
-            wr(c, SE_GENI_M_IRQ_CLEAR, st & (M_RX_FIFO_WM | M_RX_FIFO_LAST));
+            if (st & (M_RX_FIFO_WM | M_RX_FIFO_LAST)) wr(c, SE_GENI_M_IRQ_CLEAR, st & (M_RX_FIFO_WM | M_RX_FIFO_LAST));
         }
-        if (st & M_TX_FIFO_WM) { wr(c, SE_GENI_TX_WATERMARK_REG, 0); wr(c, SE_GENI_M_IRQ_CLEAR, M_TX_FIFO_WM); }
-        if (st & M_CMD_ERR_MASK) { LOG("xfer error m_irq=%08X", st); wr(c, SE_GENI_M_IRQ_CLEAR, st); return STATUS_IO_DEVICE_ERROR; }
-        if ((st & M_CMD_DONE) && got >= len) { wr(c, SE_GENI_M_IRQ_CLEAR, st); return STATUS_SUCCESS; }
-        KeStallExecutionProcessor(2);
+        if (st & M_TX_FIFO_WM) wr(c, SE_GENI_M_IRQ_CLEAR, M_TX_FIFO_WM);
+        if (st & M_CMD_ERR_MASK) { LOG("xfer error m_irq=%08X len=%lu", st, len); wr(c, SE_GENI_M_IRQ_CLEAR, st); return STATUS_IO_DEVICE_ERROR; }
+        if ((st & M_CMD_DONE) && txw >= words && (!rx || got >= len)) { wr(c, SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF); return STATUS_SUCCESS; }
+        if (++spin > 2000000) break;
+        KeStallExecutionProcessor(1);
     }
-    LOG("xfer timeout m_irq=%08X rx_status=%08X tx_status=%08X geni_status=%08X got=%lu",
-        rd(c, SE_GENI_M_IRQ_STATUS), rd(c, SE_GENI_RX_FIFO_STATUS), rd(c, SE_GENI_TX_FIFO_STATUS), rd(c, GENI_STATUS), got);
-    /* cancel the command so the SE is idle again */
+    LOG("xfer timeout len=%lu txw=%lu got=%lu m_irq=%08X rx=%08X tx=%08X", len, txw, got,
+        rd(c, SE_GENI_M_IRQ_STATUS), rd(c, SE_GENI_RX_FIFO_STATUS), rd(c, SE_GENI_TX_FIFO_STATUS));
     wr(c, SE_GENI_M_CMD_CTRL_REG, 1u << 2);
     KeStallExecutionProcessor(100);
     wr(c, SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF);
     return STATUS_IO_TIMEOUT;
 }
 
-/* Novatek: page select then read n bytes at addr (Linux nvt_set_page + CTP_SPI_READ) */
+/* ---------------- Novatek SPI protocol (pipa-mainline nt36xxx.c) ---------------- */
+static NTSTATUS NvtSetPage(PDEV_CTX c, ULONG addr)
+{
+    UCHAR tx[3] = { 0xFF | 0x80, (UCHAR)((addr >> 15) & 0xFF), (UCHAR)((addr >> 7) & 0xFF) };
+    return GeniXfer(c, tx, NULL, 3);
+}
+/* write n bytes at the current page, offset (addr & 0x7F) */
+static NTSTATUS NvtWriteRaw(PDEV_CTX c, ULONG addr, const UCHAR *d, ULONG n, UCHAR *scratch)
+{
+    scratch[0] = (UCHAR)((addr & 0x7F) | 0x80);
+    RtlCopyMemory(scratch + 1, d, n);
+    return GeniXfer(c, scratch, NULL, n + 1);
+}
+static NTSTATUS NvtWriteAddr(PDEV_CTX c, ULONG addr, UCHAR v)
+{
+    UCHAR s[2]; NTSTATUS st = NvtSetPage(c, addr);
+    return NT_SUCCESS(st) ? NvtWriteRaw(c, addr, &v, 1, s) : st;
+}
+/* read n bytes at the current page: cmd, dummy, data */
+static NTSTATUS NvtReadRaw(PDEV_CTX c, ULONG addr, UCHAR *out, ULONG n)
+{
+    UCHAR tx[MAX_RD + 2] = { 0 }, rx[MAX_RD + 2] = { 0 }; NTSTATUS st;
+    if (n > MAX_RD) return STATUS_INVALID_PARAMETER;
+    tx[0] = (UCHAR)(addr & 0x7F);
+    st = GeniXfer(c, tx, rx, n + 2);
+    if (NT_SUCCESS(st)) RtlCopyMemory(out, rx + 2, n);
+    return st;
+}
 static NTSTATUS NvtRead(PDEV_CTX c, ULONG addr, UCHAR *out, ULONG n)
 {
-    UCHAR tx[MAX_XFER] = { 0 }, rx[MAX_XFER] = { 0 };
-    NTSTATUS st;
-    if (n + 2 > MAX_XFER) return STATUS_INVALID_PARAMETER;
-    tx[0] = 0xFF | 0x80; tx[1] = (UCHAR)((addr >> 15) & 0xFF); tx[2] = (UCHAR)((addr >> 7) & 0xFF);
-    st = GeniXfer(c, tx, rx, 3);
-    if (!NT_SUCCESS(st)) return st;
-    RtlZeroMemory(tx, sizeof(tx));
-    tx[0] = (UCHAR)(addr & 0x7F);
-    st = GeniXfer(c, tx, rx, n + 2);           /* cmd, dummy, data (pipa-mainline nt36xxx: memcpy from rbuf+2) */
-    if (NT_SUCCESS(st)) RtlCopyMemory(out, rx + 1, n);   /* out[0] = dummy slot, out[1..] = data */
+    NTSTATUS st = NvtSetPage(c, addr);
+    return NT_SUCCESS(st) ? NvtReadRaw(c, addr, out, n) : st;
+}
+
+/* NT36532 cascade map + hw info (nt36xxx_mem_map.h) */
+#define SWRST_N8_ADDR        0x03F0FE      /* pipa DT novatek,swrst-n8-addr */
+#define EVENT_BUF_ADDR       0x125800
+#define EV_HOST_CMD          0x50
+#define EV_RESET_COMPLETE    0x60
+#define EV_FWINFO            0x78
+#define BOOT_RDY_ADDR        0x1FB50D
+#define TX_AUTO_COPY_EN      0x1FC925
+#define ILM_LENGTH_ADDR      0x1FB518
+#define DLM_LENGTH_ADDR      0x1FB530
+#define ILM_DES_ADDR         0x1FB528
+#define DLM_DES_ADDR         0x1FB52C
+#define G_ILM_CHECKSUM_ADDR  0x1FB500
+#define G_DLM_CHECKSUM_ADDR  0x1FB504
+#define R_ILM_CHECKSUM_ADDR  0x1FB520
+#define R_DLM_CHECKSUM_ADDR  0x1FB524
+#define BLD_ILM_DLM_CRC_ADDR 0x1FB533
+#define RESET_STATE_INIT     0xA0
+#define RESET_STATE_REK      0xA1
+#define RESET_STATE_MAX      0xAF
+
+typedef struct { ULONG bin, sram, size, crc; } BINMAP;
+#define MAX_PART 32
+
+static ULONG W32(const UCHAR *p) { return p[0] | (p[1] << 8) | (p[2] << 16) | ((ULONG)p[3] << 24); }
+
+/* nvt_bin_header_parser (hw_crc variant) */
+static ULONG ParseHeader(const UCHAR *fw, ULONG fwsize, BINMAP *m, BOOLEAN *cascade)
+{
+    ULONG end = W32(fw), pos, info = 0, ovly = 0, parts, list, ilmdlm = 2;
+    BOOLEAN findHdr = FALSE;
+    *cascade = (fw[0x20] & 0x02) ? TRUE : FALSE;
+    if (*cascade) { for (pos = 0x30; pos < end / 2; pos += 0x10) info++; info++; }
+    else { for (pos = 0x30; pos < end; pos += 0x10) info++; }
+    if (fw[0x28] & 0x10) ovly = fw[0x28] & 0x0F;
+    parts = ilmdlm + ovly + info;
+    LOG("fw header: end=0x%lX cascade=%d info=%lu ovly=%lu partitions=%lu", end, *cascade, info, ovly, parts);
+    if (parts > MAX_PART) return 0;
+    for (list = 0; list < parts; list++) {
+        if (list < ilmdlm) {
+            m[list].bin = W32(&fw[list * 12]); m[list].sram = W32(&fw[4 + list * 12]);
+            m[list].size = W32(&fw[8 + list * 12]); m[list].crc = W32(&fw[0x18 + list * 4]);
+        } else if (list < ilmdlm + info) {
+            if (!findHdr) pos = 0x30 + 0x10 * (list - ilmdlm);
+            else if (*cascade) pos = end - 0x10;
+            m[list].sram = W32(&fw[pos]); m[list].size = W32(&fw[pos + 4]);
+            m[list].bin = W32(&fw[pos + 8]); m[list].crc = W32(&fw[pos + 12]);
+            if (m[list].bin < end && m[list].size != 0) findHdr = TRUE;
+        } else {
+            pos = m[1].bin + 0x10 * (list - ilmdlm - info);
+            m[list].sram = W32(&fw[pos]); m[list].size = W32(&fw[pos + 4]);
+            m[list].bin = W32(&fw[pos + 8]); m[list].crc = W32(&fw[pos + 12]);
+        }
+        if (m[list].bin + m[list].size > fwsize) { LOG("partition %lu out of range", list); return 0; }
+        LOG("  part[%lu] sram=%06lX size=%06lX bin=%06lX crc=%08lX", list, m[list].sram, m[list].size, m[list].bin, m[list].crc);
+    }
+    return parts;
+}
+
+static VOID SetCrcBank(PDEV_CTX c, ULONG des, ULONG sram, ULONG lenA, ULONG size, ULONG gck, ULONG crc)
+{
+    UCHAR s[8], d[4];
+    NvtSetPage(c, des);
+    d[0] = (UCHAR)sram; d[1] = (UCHAR)(sram >> 8); d[2] = (UCHAR)(sram >> 16); NvtWriteRaw(c, des, d, 3, s);
+    d[0] = (UCHAR)size; d[1] = (UCHAR)(size >> 8); d[2] = (UCHAR)(size >> 16); NvtWriteRaw(c, lenA, d, 3, s);
+    d[0] = (UCHAR)crc; d[1] = (UCHAR)(crc >> 8); d[2] = (UCHAR)(crc >> 16); d[3] = (UCHAR)(crc >> 24); NvtWriteRaw(c, gck, d, 4, s);
+}
+
+static NTSTATUS WriteSram(PDEV_CTX c, const UCHAR *fw, ULONG sram, ULONG size, ULONG bin, UCHAR *scratch)
+{
+    NTSTATUS st = STATUS_SUCCESS;
+    while (size) {
+        ULONG n = size < NVT_CHUNK ? size : NVT_CHUNK;
+        st = NvtSetPage(c, sram);
+        if (NT_SUCCESS(st)) st = NvtWriteRaw(c, sram, fw + bin, n, scratch);
+        if (!NT_SUCCESS(st)) return st;
+        sram += n; bin += n; size -= n;
+    }
     return st;
 }
 
-static NTSTATUS NvtWrite1(PDEV_CTX c, ULONG addr, UCHAR v)
+static NTSTATUS CheckResetState(PDEV_CTX c, UCHAR want, ULONG tries)
 {
-    UCHAR tx[4] = { 0xFF | 0x80, (UCHAR)((addr >> 15) & 0xFF), (UCHAR)((addr >> 7) & 0xFF), 0 }, rx[4];
-    NTSTATUS st = GeniXfer(c, tx, rx, 3);
+    UCHAR b[6]; ULONG i;
+    for (i = 0; i < tries; i++) {
+        NvtRead(c, EVENT_BUF_ADDR | EV_RESET_COMPLETE, b, 5);
+        if (b[0] >= want && b[0] <= RESET_STATE_MAX) { LOG("reset state 0x%02X (want >= 0x%02X) after %lu", b[0], want, i); return STATUS_SUCCESS; }
+        KeStallExecutionProcessor(10000);
+    }
+    LOG("reset state timeout: %02X %02X %02X %02X %02X (want 0x%02X)", b[0], b[1], b[2], b[3], b[4], want);
+    return STATUS_IO_TIMEOUT;
+}
+
+/* nvt_download_firmware_hw_crc (cascade) */
+static NTSTATUS Download(PDEV_CTX c, const UCHAR *fw, ULONG fwsize)
+{
+    BINMAP m[MAX_PART] = { 0 }; BOOLEAN casc; ULONG parts, i, tries; NTSTATUS st = STATUS_UNSUCCESSFUL;
+    UCHAR *scratch; UCHAR b[8];
+    LARGE_INTEGER t0, t1, f;
+    parts = ParseHeader(fw, fwsize, m, &casc);
+    if (!parts) return STATUS_INVALID_IMAGE_FORMAT;
+    scratch = (UCHAR *)ExAllocatePool2(POOL_FLAG_NON_PAGED, NVT_CHUNK + 8, 'TN36');
+    if (!scratch) return STATUS_INSUFFICIENT_RESOURCES;
+    for (tries = 0; tries < 3; tries++) {
+        t0 = KeQueryPerformanceCounter(&f);
+        NvtWriteAddr(c, SWRST_N8_ADDR, 0x69);          /* bootloader reset */
+        KeStallExecutionProcessor(5000);
+        SetCrcBank(c, ILM_DES_ADDR, m[0].sram, ILM_LENGTH_ADDR, m[0].size, G_ILM_CHECKSUM_ADDR, m[0].crc);
+        SetCrcBank(c, DLM_DES_ADDR, m[1].sram, DLM_LENGTH_ADDR, m[1].size, G_DLM_CHECKSUM_ADDR, m[1].crc);
+        if (casc) NvtWriteAddr(c, TX_AUTO_COPY_EN, 0x56); /* CHECK_TX_AUTO_COPY_EN */
+        for (i = 0, st = STATUS_SUCCESS; i < parts && NT_SUCCESS(st); i++)
+            if (m[i].size) st = WriteSram(c, fw, m[i].sram, m[i].size + 1, m[i].bin, scratch);
+        if (!NT_SUCCESS(st)) { LOG("write firmware failed %08X", st); continue; }
+        if (casc) {
+            for (i = 0; i < 200; i++) { NvtRead(c, TX_AUTO_COPY_EN, b, 1); if (b[0] == 0) break; KeStallExecutionProcessor(1000); }
+            LOG("auto copy wait i=%lu val=%02X", i, b[0]);
+        }
+        /* nvt_fw_crc_enable + nvt_boot_ready */
+        NvtSetPage(c, EVENT_BUF_ADDR);
+        b[0] = 0x00; NvtWriteRaw(c, EV_RESET_COMPLETE, b, 1, scratch);
+        b[0] = 0xAE; NvtWriteRaw(c, EV_HOST_CMD, b, 1, scratch);
+        NvtWriteAddr(c, BOOT_RDY_ADDR, 1);
+        KeStallExecutionProcessor(5000);
+        t1 = KeQueryPerformanceCounter(NULL);
+        LOG("download pass %lu took %lu ms", tries, (ULONG)((t1.QuadPart - t0.QuadPart) * 1000 / f.QuadPart));
+        st = CheckResetState(c, RESET_STATE_INIT, 10);
+        if (NT_SUCCESS(st)) break;
+        {   /* nvt_read_bld_hw_crc */
+            UCHAR g[4], r[4];
+            NvtRead(c, BLD_ILM_DLM_CRC_ADDR, b, 1);
+            NvtRead(c, G_ILM_CHECKSUM_ADDR, g, 4); NvtRead(c, R_ILM_CHECKSUM_ADDR, r, 4);
+            LOG("crc flag=%02X ilm bin=%08lX golden=%08lX result=%08lX", b[0], m[0].crc, W32(g), W32(r));
+            NvtRead(c, G_DLM_CHECKSUM_ADDR, g, 4); NvtRead(c, R_DLM_CHECKSUM_ADDR, r, 4);
+            LOG("dlm bin=%08lX golden=%08lX result=%08lX", m[1].crc, W32(g), W32(r));
+        }
+    }
+    ExFreePool(scratch);
+    return st;
+}
+
+static NTSTATUS LoadFile(PCWSTR path, UCHAR **buf, ULONG *len)
+{
+    UNICODE_STRING us; OBJECT_ATTRIBUTES oa; IO_STATUS_BLOCK io; HANDLE h; NTSTATUS st;
+    FILE_STANDARD_INFORMATION fsi;
+    RtlInitUnicodeString(&us, path);
+    InitializeObjectAttributes(&oa, &us, OBJ_KERNEL_HANDLE | OBJ_CASE_INSENSITIVE, NULL, NULL);
+    st = ZwCreateFile(&h, GENERIC_READ | SYNCHRONIZE, &oa, &io, NULL, FILE_ATTRIBUTE_NORMAL, FILE_SHARE_READ,
+                      FILE_OPEN, FILE_SYNCHRONOUS_IO_NONALERT | FILE_NON_DIRECTORY_FILE, NULL, 0);
     if (!NT_SUCCESS(st)) return st;
-    tx[0] = (UCHAR)((addr & 0x7F) | 0x80); tx[1] = v;
-    return GeniXfer(c, tx, rx, 2);
+    st = ZwQueryInformationFile(h, &io, &fsi, sizeof(fsi), FileStandardInformation);
+    if (NT_SUCCESS(st) && (fsi.EndOfFile.QuadPart < 0x1000 || fsi.EndOfFile.QuadPart > 0x100000)) st = STATUS_INVALID_IMAGE_FORMAT;
+    if (NT_SUCCESS(st)) {
+        *len = fsi.EndOfFile.LowPart;
+        *buf = (UCHAR *)ExAllocatePool2(POOL_FLAG_PAGED, *len, 'WF36');
+        if (!*buf) st = STATUS_INSUFFICIENT_RESOURCES;
+        else {
+            st = ZwReadFile(h, NULL, NULL, NULL, &io, *buf, *len, NULL, NULL);
+            if (!NT_SUCCESS(st)) { ExFreePool(*buf); *buf = NULL; }
+        }
+    }
+    ZwClose(h);
+    return st;
 }
 
-/* ---- TLMM diag (sm8250 tiles: west 0x0F100000, south 0x0F500000, north 0x0F900000; ctl = 0x1000*pin) ---- */
-static PUCHAR TlmmMap(ULONGLONG tile, ULONG pin)
+/* event buffer: 1 + 6*10 fingers (+pressure at 1+98+i), pen 14 bytes after 65 */
+#define POINT_DATA_LEN 65
+#define PEN_DATA_LEN   14
+VOID NtPoll(WDFTIMER t)
 {
-    PHYSICAL_ADDRESS a; a.QuadPart = tile + 0x1000ull * pin;
-    return (PUCHAR)MmMapIoSpaceEx(a, 0x1000, PAGE_READWRITE | PAGE_NOCACHE);
-}
-static VOID TlmmShow(PCSTR n, ULONGLONG tile, ULONG pin)
-{
-    PUCHAR p = TlmmMap(tile, pin);
-    if (!p) return;
-    LOG("gpio%lu (%s) ctl=%08X io=%08X", pin, n, READ_REGISTER_ULONG((volatile ULONG *)p), READ_REGISTER_ULONG((volatile ULONG *)(p + 4)));
-    MmUnmapIoSpace(p, 0x1000);
-}
-/* drive a GPIO as output (func 0, OE=bit9, drive 2mA) with level v */
-static VOID TlmmOut(ULONGLONG tile, ULONG pin, ULONG v)
-{
-    PUCHAR p = TlmmMap(tile, pin);
-    if (!p) return;
-    WRITE_REGISTER_ULONG((volatile ULONG *)(p + 4), v ? 2u : 0u);
-    WRITE_REGISTER_ULONG((volatile ULONG *)p, (1u << 9));
-    MmUnmapIoSpace(p, 0x1000);
-}
-#define TLMM_SOUTH 0x0F500000ull
-#define TLMM_NORTH 0x0F900000ull
-
-static VOID Dump(PCSTR what, ULONG addr, const UCHAR *b, ULONG n, NTSTATUS st)
-{
-    LOG("%s @%05lX st=%08X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
-        what, addr, st, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11], b[12], b[13], b[14], b[15]);
-    UNREFERENCED_PARAMETER(n);
+    PDEV_CTX c = GetCtx(WdfTimerGetParentObject(t));
+    UCHAR d[POINT_DATA_LEN + PEN_DATA_LEN + 1] = { 0 };
+    ULONG i, n = 0;
+    if (!c->fwOk || !c->se) return;
+    if (!NT_SUCCESS(NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN))) return;
+    for (i = 0; i < 10; i++) {
+        ULONG p = 6 * i, id = d[p] >> 3, stt = d[p] & 7;
+        if (id == 0 || id > 10) continue;
+        if (stt == 1 || stt == 2) {
+            ULONG x = (d[p + 1] << 8) | d[p + 2], y = (d[p + 3] << 8) | d[p + 4];
+            n++;
+            if (c->logBudget) { c->logBudget--; LOG("touch id=%lu x=%lu y=%lu w=%u", id, x, y, d[p + 5]); }
+        }
+    }
+    if (n != c->lastFingers) { LOG("fingers %lu -> %lu", c->lastFingers, n); c->lastFingers = n; if (n) c->logBudget = 40; }
+    if (d[POINT_DATA_LEN] && c->logBudget) {   /* pen block present */
+        c->logBudget--;
+        LOG("pen: %02X %02X %02X %02X %02X %02X %02X %02X", d[65], d[66], d[67], d[68], d[69], d[70], d[71], d[72]);
+    }
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
@@ -247,15 +427,26 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
 
 NTSTATUS NtDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
 {
-    WDF_PNPPOWER_EVENT_CALLBACKS pnp; WDF_OBJECT_ATTRIBUTES a; WDFDEVICE dev;
+    WDF_PNPPOWER_EVENT_CALLBACKS pnp; WDF_OBJECT_ATTRIBUTES a; WDFDEVICE dev; NTSTATUS st;
+    WDF_TIMER_CONFIG tc; WDF_OBJECT_ATTRIBUTES ta;
     UNREFERENCED_PARAMETER(drv);
     WDF_PNPPOWER_EVENT_CALLBACKS_INIT(&pnp);
     pnp.EvtDevicePrepareHardware = NtPrepare;
     pnp.EvtDeviceReleaseHardware = NtRelease;
     pnp.EvtDeviceD0Entry = NtD0Entry;
+    pnp.EvtDeviceD0Exit = NtD0Exit;
     WdfDeviceInitSetPnpPowerEventCallbacks(init, &pnp);
     WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&a, DEV_CTX);
-    return WdfDeviceCreate(&init, &a, &dev);
+    st = WdfDeviceCreate(&init, &a, &dev);
+    if (!NT_SUCCESS(st)) return st;
+    WDF_TIMER_CONFIG_INIT_PERIODIC(&tc, NtPoll, 20);
+    tc.AutomaticSerialization = FALSE;
+    WDF_OBJECT_ATTRIBUTES_INIT(&ta);
+    ta.ParentObject = dev;
+    ta.ExecutionLevel = WdfExecutionLevelPassive;
+    st = WdfTimerCreate(&tc, &ta, &GetCtx(dev)->poll);
+    LOG("poll timer create st=%08X", st);
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS NtPrepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST xl)
@@ -274,57 +465,58 @@ NTSTATUS NtPrepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST xl)
             LOG("SE mem %I64X len %lX mapped=%p", r->u.Memory.Start.QuadPart, c->seLen, c->se);
         }
     }
-    return c->se ? STATUS_SUCCESS : STATUS_INSUFFICIENT_RESOURCES;
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS NtRelease(WDFDEVICE dev, WDFCMRESLIST xl)
 {
     PDEV_CTX c = GetCtx(dev); UNREFERENCED_PARAMETER(xl);
+    if (c->poll) WdfTimerStop(c->poll, TRUE);
     if (c->se) { MmUnmapIoSpace(c->se, c->seLen); c->se = NULL; }
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS NtD0Exit(WDFDEVICE dev, WDF_POWER_DEVICE_STATE target)
+{
+    PDEV_CTX c = GetCtx(dev); UNREFERENCED_PARAMETER(target);
+    if (c->poll) WdfTimerStop(c->poll, TRUE);
     return STATUS_SUCCESS;
 }
 
 NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
 {
     PDEV_CTX c = GetCtx(dev);
-    static const ULONG addrs[] = { 0x3F004 /* chip ver trim (nt36xxx) */, 0x3F000, 0x21C00 /* event buf (nt36xxx default) */ };
-    UCHAR b[16]; ULONG i; NTSTATUS st;
-    UNREFERENCED_PARAMETER(prev);
+    static const PCWSTR files[] = { L"\\SystemRoot\\System32\\drivers\\nt36532_csot.bin", L"\\SystemRoot\\System32\\drivers\\nt36532_tianma.bin" };
+    UCHAR b[40]; ULONG i; NTSTATUS st;
     LOG("D0 entry (from D%d)", (int)prev - 1);
     if (!c->se) return STATUS_SUCCESS;
     if (!NT_SUCCESS(GeniInit(c))) return STATUS_SUCCESS;   /* never fail start during bring-up */
     c->inited = TRUE;
-    /* 1) controller self-test: internal loopback, rx must equal tx */
-    {
-        UCHAR tx[8] = { 0xA5, 0x5A, 0x01, 0x80, 0x3C, 0xC3, 0xFF, 0x00 }, rx[8] = { 0 };
-        wr(c, SE_SPI_LOOPBACK, 1);
-        st = GeniXfer(c, tx, rx, 8);
-        wr(c, SE_SPI_LOOPBACK, 0);
-        LOG("loopback st=%08X rx=%02X %02X %02X %02X %02X %02X %02X %02X (%s)", st, rx[0], rx[1], rx[2], rx[3], rx[4], rx[5], rx[6], rx[7],
-            RtlCompareMemory(tx, rx, 8) == 8 ? "MATCH" : "mismatch");
+    RtlZeroMemory(b, sizeof(b));
+    st = NvtRead(c, 0x1FB104, b, 7);
+    LOG("chip id @1FB104 st=%08X: %02X %02X %02X %02X %02X %02X %02X", st, b[0], b[1], b[2], b[3], b[4], b[5], b[6]);
+    if (b[4] != 0x32 || b[5] != 0x65 || b[6] != 0x03) { LOG("not an NT36532 - stop"); return STATUS_SUCCESS; }
+
+    for (i = 0; i < RTL_NUMBER_OF(files) && !c->fwOk; i++) {
+        UCHAR *fw = NULL; ULONG len = 0;
+        st = LoadFile(files[i], &fw, &len);
+        LOG("firmware %ws st=%08X len=%lu", files[i], st, len);
+        if (!NT_SUCCESS(st)) continue;
+        st = Download(c, fw, len);
+        ExFreePool(fw);
+        LOG("download %ws -> %08X", files[i], st);
+        if (NT_SUCCESS(st)) c->fwOk = TRUE;
     }
-    /* 2) plain reads */
-    for (i = 0; i < RTL_NUMBER_OF(addrs); i++) {
-        RtlZeroMemory(b, sizeof(b));
-        st = NvtRead(c, addrs[i], b, 16);
-        Dump("read", addrs[i], b, 16, st);
-    }
-    /* 2b) pin levels (read only) */
-    TlmmShow("miso", TLMM_NORTH, 8); TlmmShow("cs", TLMM_NORTH, 11); TlmmShow("ts-irq", TLMM_SOUTH, 39);
-    /* 3) NT36532 uses the new TDDI register map (pipa-mainline nt36xxx_mem_map.h):
-     *    chip_ver_trim 0x1FB104, swrst_sif 0x1FB43E, event buffer 0x125800 (cascade map).
-     *    Old-map addresses (0x3F004, 0x21C00) may simply not exist -> 0xFF. Read the new ones,
-     *    then bootloader reset via SWRST_N8 0x3F0FE (as pipa DT) and read again. */
-    {
-        static const ULONG na[] = { 0x1FB104, 0x1FB100, 0x125800, 0x1FB43C };
-        for (i = 0; i < RTL_NUMBER_OF(na); i++) {
-            RtlZeroMemory(b, sizeof(b)); st = NvtRead(c, na[i], b, 15); Dump("new-map", na[i], b, 16, st);
-        }
-        st = NvtWrite1(c, 0x3F0FE, 0x69);
-        KeStallExecutionProcessor(10000);
-        for (i = 0; i < RTL_NUMBER_OF(na); i++) {
-            RtlZeroMemory(b, sizeof(b)); st = NvtRead(c, na[i], b, 15); Dump("after-0x69", na[i], b, 16, st);
-        }
-    }
+    if (!c->fwOk) return STATUS_SUCCESS;
+
+    CheckResetState(c, RESET_STATE_REK, 50);
+    RtlZeroMemory(b, sizeof(b));
+    NvtRead(c, EVENT_BUF_ADDR | EV_FWINFO, b, 38);
+    c->absX = (USHORT)((b[4] << 8) | b[5]); c->absY = (USHORT)((b[6] << 8) | b[7]);
+    LOG("fw info: ver=%02X ~ver=%02X x_num=%u y_num=%u abs_x=%u abs_y=%u buttons=%u cascade=%u",
+        b[0], b[1], b[2], b[3], c->absX, c->absY, b[10], b[33] & 1);
+    c->lastFingers = 0; c->logBudget = 0;
+    WdfTimerStart(c->poll, WDF_REL_TIMEOUT_IN_MS(200));
+    LOG("polling started - touch the screen");
     return STATUS_SUCCESS;
 }
