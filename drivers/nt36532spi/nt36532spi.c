@@ -240,6 +240,10 @@ NTSTATUS NtPrepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST xl)
     for (i = 0; i < WdfCmResourceListGetCount(xl); i++) {
         PCM_PARTIAL_RESOURCE_DESCRIPTOR r = WdfCmResourceListGetDescriptor(xl, i);
         if (r->Type == CmResourceTypeMemory && !c->se) {
+            if (r->u.Memory.Start.QuadPart != 0x990000) {   /* only pipa's SE4 - never a Kona MTP DSDT SPI4 */
+                LOG("SE mem %I64X is not pipa SE4 (0x990000) - not touching it (old/unpatched DSDT?)", r->u.Memory.Start.QuadPart);
+                return STATUS_SUCCESS;
+            }
             c->seLen = r->u.Memory.Length;
             c->se = (PUCHAR)MmMapIoSpaceEx(r->u.Memory.Start, c->seLen, PAGE_READWRITE | PAGE_NOCACHE);
             LOG("SE mem %I64X len %lX mapped=%p", r->u.Memory.Start.QuadPart, c->seLen, c->se);
