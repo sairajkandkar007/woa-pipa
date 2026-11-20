@@ -534,7 +534,9 @@ VOID NtPoll(WDFTIMER t)
         if (id == 0 || id > 10) continue;
         if (stt == 1 || stt == 2) {
             ULONG x = (d[p + 1] << 8) | d[p + 2], y = (d[p + 3] << 8) | d[p + 4];
-            if (x > LX || y > LY) continue;
+            if (x > LX + 200 || y > LY + 200) continue;   /* junk */
+            if (x > LX) x = LX;                            /* edge contacts can read 18000/28800: clamp, don't drop */
+            if (y > LY) y = LY;
             rep.c[n].tip = 1; rep.c[n].cid = (UCHAR)(id - 1); rep.c[n].x = (USHORT)x; rep.c[n].y = (USHORT)y;
             n++;
             if (c->logBudget) { c->logBudget--; LOG("touch id=%lu x=%lu y=%lu w=%u", id, x, y, d[p + 5]); }
