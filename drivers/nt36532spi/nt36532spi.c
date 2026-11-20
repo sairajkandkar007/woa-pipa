@@ -85,6 +85,7 @@ typedef struct _DEV_CTX {
     ULONG seLen;
     BOOLEAN inited;
     BOOLEAN fwOk;
+    volatile BOOLEAN polling;
     WDFTIMER poll;
     ULONG lastFingers;
     ULONG logBudget;
@@ -401,7 +402,7 @@ VOID NtPoll(WDFTIMER t)
     UCHAR d[POINT_DATA_LEN + PEN_DATA_LEN + 1] = { 0 };
     ULONG i, n = 0;
     if (!c->fwOk || !c->se) return;
-    if (!NT_SUCCESS(NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN))) return;
+    if (!NT_SUCCESS(NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN))) { WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(20)); return; }
     for (i = 0; i < 10; i++) {
         ULONG p = 6 * i, id = d[p] >> 3, stt = d[p] & 7;
         if (id == 0 || id > 10) continue;
@@ -416,6 +417,7 @@ VOID NtPoll(WDFTIMER t)
         c->logBudget--;
         LOG("pen: %02X %02X %02X %02X %02X %02X %02X %02X", d[65], d[66], d[67], d[68], d[69], d[70], d[71], d[72]);
     }
+    if (c->polling) WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(20));
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
@@ -439,7 +441,7 @@ NTSTATUS NtDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&a, DEV_CTX);
     st = WdfDeviceCreate(&init, &a, &dev);
     if (!NT_SUCCESS(st)) return st;
-    WDF_TIMER_CONFIG_INIT_PERIODIC(&tc, NtPoll, 20);
+    WDF_TIMER_CONFIG_INIT(&tc, NtPoll);   /* passive timers cannot be periodic: one-shot, re-armed in NtPoll */
     tc.AutomaticSerialization = FALSE;
     WDF_OBJECT_ATTRIBUTES_INIT(&ta);
     ta.ParentObject = dev;
@@ -471,6 +473,7 @@ NTSTATUS NtPrepare(WDFDEVICE dev, WDFCMRESLIST raw, WDFCMRESLIST xl)
 NTSTATUS NtRelease(WDFDEVICE dev, WDFCMRESLIST xl)
 {
     PDEV_CTX c = GetCtx(dev); UNREFERENCED_PARAMETER(xl);
+    c->polling = FALSE;
     if (c->poll) WdfTimerStop(c->poll, TRUE);
     if (c->se) { MmUnmapIoSpace(c->se, c->seLen); c->se = NULL; }
     return STATUS_SUCCESS;
@@ -479,6 +482,7 @@ NTSTATUS NtRelease(WDFDEVICE dev, WDFCMRESLIST xl)
 NTSTATUS NtD0Exit(WDFDEVICE dev, WDF_POWER_DEVICE_STATE target)
 {
     PDEV_CTX c = GetCtx(dev); UNREFERENCED_PARAMETER(target);
+    c->polling = FALSE;
     if (c->poll) WdfTimerStop(c->poll, TRUE);
     return STATUS_SUCCESS;
 }
@@ -495,7 +499,7 @@ NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
     RtlZeroMemory(b, sizeof(b));
     st = NvtRead(c, 0x1FB104, b, 7);
     LOG("chip id @1FB104 st=%08X: %02X %02X %02X %02X %02X %02X %02X", st, b[0], b[1], b[2], b[3], b[4], b[5], b[6]);
-    if (b[4] != 0x32 || b[5] != 0x65 || b[6] != 0x03) { LOG("not an NT36532 - stop"); return STATUS_SUCCESS; }
+    if (b[3] != 0x32 || b[4] != 0x65 || b[5] != 0x03) { LOG("not an NT36532 - stop"); return STATUS_SUCCESS; }
 
     for (i = 0; i < RTL_NUMBER_OF(files) && !c->fwOk; i++) {
         UCHAR *fw = NULL; ULONG len = 0;
@@ -516,7 +520,8 @@ NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
     LOG("fw info: ver=%02X ~ver=%02X x_num=%u y_num=%u abs_x=%u abs_y=%u buttons=%u cascade=%u",
         b[0], b[1], b[2], b[3], c->absX, c->absY, b[10], b[33] & 1);
     c->lastFingers = 0; c->logBudget = 0;
-    WdfTimerStart(c->poll, WDF_REL_TIMEOUT_IN_MS(200));
+    c->polling = TRUE;
+    if (c->poll) WdfTimerStart(c->poll, WDF_REL_TIMEOUT_IN_MS(200));
     LOG("polling started - touch the screen");
     return STATUS_SUCCESS;
 }
