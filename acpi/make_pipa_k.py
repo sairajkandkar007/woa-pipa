@@ -23,9 +23,9 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
      STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs]
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup]
 """
-import sys
+import sys, re
 
 def main():
     if len(sys.argv) < 3:
@@ -84,6 +84,40 @@ def main():
             assert d[off] == old and 0x12 in (d[off - 2], d[off - 3]), f'unexpected DSDT at {off:#x}'
             d[off] = new
         print('fixed 8 package element counts (PPPP, PRRP, 6x CPXC)')
+    if '--pipa-qup' in sys.argv:
+        # pipa uses QUP1 SE3 (i2c11 @0xA8C000: KTZ8866 backlight, haptics) - not the Kona MTP buses.
+        # Repurpose IC10 (QUP1 SE1 @0xA84000) as i2c11 in place, and park I2C5/I2C8/SPI4
+        # (SEs that are touch-SPI/unused on pipa) by renaming their _HID so no driver binds.
+        import struct
+        b = bytes(d)
+        def one(pat, what):
+            assert b.count(pat) == 1, f'{what}: {b.count(pat)} matches'
+            return b.index(pat)
+        # _CRS of IC10: Memory32Fixed base + Interrupt
+        crs_old = b'\x86\x09\x00\x01' + struct.pack('<II', 0xA84000, 0x4000)
+        i = one(crs_old, 'IC10 mem'); d[i+4:i+8] = struct.pack('<I', 0xA8C000)
+        irq_old = b'\x89\x06\x00\x01\x01' + struct.pack('<I', 0x182)
+        j = b.find(irq_old, i, i + 64); assert j > 0, 'IC10 irq'; d[j+5:j+9] = struct.pack('<I', 0x184)
+        # PEP descriptor of IC10: clocks + pins inside the \_SB.IC10 package
+        k = one(b'\\_SB.IC10\x00', 'IC10 desc'); end = k + 1500
+        n = 0
+        for _ in range(2):
+            c = bytes(d).find(b'gcc_qupv3_wrap1_s1_clk', k, end); assert c > 0, 'IC10 clk'
+            d[c:c+22] = b'gcc_qupv3_wrap1_s3_clk'; n += 1
+        pinmap = {0x27: 0x3C, 0x28: 0x3D}
+        t = k
+        for _ in range(4):   # D0 + D3 TLMMGPIO entries for the two pins
+            t = bytes(d).find(b'TLMMGPIO\x00', t + 1, end); assert t > 0, 'IC10 TLMMGPIO'
+            m = re.search(rb'\x0a([\x27\x28])', bytes(d[t:t + 16]))
+            assert m, 'IC10 pin byte'
+            d[t + m.start() + 1] = pinmap[m.group(1)[0]]
+        # park the MTP buses
+        for dev, hid in ((b'I2C5', b'QCOM2511'), (b'I2C8', b'QCOM2511'), (b'SPI4', b'QCOM250F')):
+            pos = bytes(d).find(dev + b'\x08_HID\x0d' + hid)
+            assert pos > 0, f'{dev} _HID'
+            q = pos + len(dev) + 6
+            d[q:q+8] = b'QCOMFFFF'
+        print('pipa QUP: IC10 -> i2c11 (0xA8C000, irq 0x184, wrap1_s3, gpio60/61); I2C5/I2C8/SPI4 parked')
     if '--qpep-crs' in sys.argv:
         # QualcommPEP (SM8250 build) needs the RSC DRV2 window and AOP MSGRAM as PEP0 memory
         # resources. Replace 4 PEP0 interrupts unused by QualcommPEP (0xA1,0x1A5,0x40,0x41;

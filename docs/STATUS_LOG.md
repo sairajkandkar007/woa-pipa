@@ -162,3 +162,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - 18:25: same 0x101 with KD OFF -> real hang, not the debug link. QUP wrapper clocks confirmed on (0x52008 bits 6-9/17-21 set, core CBCRs running; s_ahb CLK_OFF is HW gating).
   Root cause (likely): mainline sm8250-xiaomi-pipa.dts enables only **i2c11** (KTZ8866 backlight) among QUP SEs. The Kona MTP buses I2C5 (wrap0 s4), I2C8 (wrap0 s7), IC10 (wrap1 s1), SPI4 (wrap0 s3) are not used/owned by HLOS on pipa -> touching their SE registers hangs a CPU.
   Action: Kona qci2c/qcspi removed again; next: pipa-specific DSDT for QUP (i2c11 + the touch SPI from the downstream DT), not the Kona MTP set.
+
+## 2026-11-20 12:15 — DSDT --pipa-qup (first pipa-specific bus)
+- Also found: Kona DSDT pairs SE addresses with mismatched clocks (I2C5 @0x890000 = Linux wrap2 SE4, but votes gcc_qupv3_wrap0_s4 = the touch SE @0x990000; I2C8 @0x89C000 is not a SE on SM8250).
+- `make_pipa_k.py --pipa-qup`: IC10 repurposed in place as **i2c11** (QUP1 SE3 @0xA8C000, GIC 0x184, wrap1_s3 clock, TLMM gpio60/61 = qup11); I2C5/I2C8/SPI4 parked (_HID -> QCOMFFFF). Verified by iasl decompile.
+- UEFI image Mu-pipa-qpep8250.img rebuilt with it (md5 cb8f046f); previous image kept as Mu-pipa-qpep8250-noqup.img. Kona qci2c re-enabled (I2C only).
