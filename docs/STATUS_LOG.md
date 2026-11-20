@@ -188,3 +188,5 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Caveat: Kona ADSP AUDD child still points at \_SB.SPI4 (no ADSP driver running, so inert).
 - SPI4 not enumerated/started (held by _DEP on QGP0 GPI-DMA + MMU0, no drivers). _DEP rewritten to PEP0 only.
 - SPI4 + qcspi => hardware reset (no bugcheck). Without qcspi: boots, PEP publishes \_SB.SPI4 fine. qcspi8250.inf sets Instance\4 OpMode=GPI (2) while every qci2c instance is FIFO; Kona QGP0 is at 0x904000 (Windows GPI EE) but pipa's TZ/Android uses EE offset 0x1000 -> likely XPU violation on GPI access. Test: local modified INF (OpMode=FIFO), not committed (BSP file).
+- 13:34 QUP diag: wrap0_s4 branch was off (bit14 of 0x52008 unvoted), runs once voted; DFS perf table programmed (identical to wrap1_s3); SE4 GENI fw_rev=0x0101 (SPI firmware loaded). So clock/firmware OK when voted.
+- qcpep: live DbgPrint mirror of ICB/CLK/TLMM actions, D-state, accepted and perf-state requests, to see the last action before the qcspi hang.

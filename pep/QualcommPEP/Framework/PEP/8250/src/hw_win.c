@@ -1242,6 +1242,7 @@ static int win_io_tlmm_cfg(void* ctx, const tlmm_gpio_t* config)
         owners_unlock(o);
         return 0;
     }
+    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: TLMM> pin=%lu func=%lu dir=%lu pull=%lu drive=%lu\n", (ULONG)config->pin, (ULONG)config->function, (ULONG)config->direction, (ULONG)config->pull, (ULONG)config->drive);
     r = tlmm_apply(&o->tlmm_io, config);
     if (r == TLMM_ROLLBACK_FAILED) {
         /* rollback was impossible or not verified after a hardware write. Quarantine the entire
@@ -4528,9 +4529,14 @@ static VOID hw_backend_win_detach_locked(_In_ WDFDEVICE dev);
 
 
 /* ---- 8250 bring-up: trace every applied hardware action (UFS hang investigation) ---- */
+/* live mirror to the kernel debugger: survives hangs that lose the WPP ring (SPI4 investigation) */
+#define KDACT(fmt, ...) DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: " fmt "\n", __VA_ARGS__)
 static int traced_bus_vote(void* ctx, const char* path, const power_action_t* a)
 {
-    int ok = win_io_bus_vote(ctx, path, a);
+    int ok;
+    KDACT("ICB> %s %s->%s ab=%llu", path ? path : "?", a ? a->u.icb.master : "?", a ? a->u.icb.slave : "?", a ? (unsigned long long)a->u.icb.average : 0ull);
+    ok = win_io_bus_vote(ctx, path, a);
+    KDACT("ICB< ok=%d", ok);
     TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE, "act: ICB %s %s->%s ab=%llu ib=%llu ok=%d",
                 path ? path : "?", a ? a->u.icb.master : "?", a ? a->u.icb.slave : "?",
                 a ? (unsigned long long)a->u.icb.average : 0ull,
@@ -4573,7 +4579,9 @@ static int traced_clock_apply(void* ctx, const char* path, const power_action_t*
     int ok;
     if (a && (a->u.clock.vote == 1u || a->u.clock.vote == 8u))
         qup_wrapper_keep_on(ctx, a->u.clock.name);
+    KDACT("CLK> %s %s vote=%lu hz=%lu", path ? path : "?", a ? a->u.clock.name : "?", a ? (ULONG)a->u.clock.vote : 0ul, (a && a->u.clock.extra_cnt) ? (ULONG)a->u.clock.extra[0] : 0ul);
     ok = win_io_clock_apply(ctx, path, a);
+    KDACT("CLK< ok=%d", ok);
     TraceEvents(TRACE_LEVEL_WARNING, TRACE_CLOCK, "act: CLK %s %s vote=%lu hz=%lu ok=%d",
                 path ? path : "?", a ? a->u.clock.name : "?", a ? (ULONG)a->u.clock.vote : 0ul,
                 (a && a->u.clock.extra_cnt) ? (ULONG)a->u.clock.extra[0] : 0ul, ok);
