@@ -1242,7 +1242,7 @@ static int win_io_tlmm_cfg(void* ctx, const tlmm_gpio_t* config)
         owners_unlock(o);
         return 0;
     }
-    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: TLMM> pin=%lu func=%lu dir=%lu pull=%lu drive=%lu\n", (ULONG)config->pin, (ULONG)config->function, (ULONG)config->direction, (ULONG)config->pull, (ULONG)config->drive);
+    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: TLMM> pin=%lu func=%lu dir=%lu pull=%lu drive=%lu\n", (ULONG)config->pin, (ULONG)config->function, (ULONG)config->direction, (ULONG)config->pull, (ULONG)config->drive);
     r = tlmm_apply(&o->tlmm_io, config);
     if (r == TLMM_ROLLBACK_FAILED) {
         /* rollback was impossible or not verified after a hardware write. Quarantine the entire
@@ -4530,7 +4530,7 @@ static VOID hw_backend_win_detach_locked(_In_ WDFDEVICE dev);
 
 /* ---- 8250 bring-up: trace every applied hardware action (UFS hang investigation) ---- */
 /* live mirror to the kernel debugger: survives hangs that lose the WPP ring (SPI4 investigation) */
-#define KDACT(fmt, ...) DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: " fmt "\n", __VA_ARGS__)
+#define KDACT(fmt, ...) DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: " fmt "\n", __VA_ARGS__)
 static int traced_bus_vote(void* ctx, const char* path, const power_action_t* a)
 {
     int ok;

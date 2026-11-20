@@ -974,7 +974,7 @@ static BOOLEAN __fastcall pep_dev_notify(_In_ ULONG notify, _Inout_opt_ PVOID da
             static LONG g_dpm_dx_logged;
             PPEP_DEVICE_POWER_STATE d = (PPEP_DEVICE_POWER_STATE)data;
             const pep_devnode_t* dn = (const pep_devnode_t*)d->DeviceHandle;
-            DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: dpm %wZ D%d complete=%u rc=%lu\n",
+            DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: dpm %wZ D%d complete=%u rc=%lu\n",
                        dn ? &dn->instance_path : NULL, (int)d->PowerState - 1, (unsigned)d->Complete, (ULONG)rc);
             if (!d->Complete && InterlockedIncrement(&g_dpm_dx_logged) <= 24)
                 TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: %wZ D%d rc=%lu",
@@ -986,12 +986,12 @@ static BOOLEAN __fastcall pep_dev_notify(_In_ ULONG notify, _Inout_opt_ PVOID da
                         c->DeviceHandle, c->Component, c->IdleState,
                         (unsigned)c->Completed, (ULONG)rc);
         } else if (notify == PEP_DPM_REQUEST_COMPONENT_PERF_STATE && data) {
-            DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: perf-state request dev=%p rc=%lu\n",
+            DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: perf-state request dev=%p rc=%lu\n",
                        ((PPEP_REQUEST_COMPONENT_PERF_STATE)data)->DeviceHandle, (ULONG)rc);
         } else if (notify == PEP_DPM_PREPARE_DEVICE && data) {
             PPEP_PREPARE_DEVICE pd = (PPEP_PREPARE_DEVICE)data;
             if (pd->DeviceAccepted)
-                DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: accepted %wZ\n", pd->DeviceId);
+                DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: accepted %wZ\n", pd->DeviceId);
             if (pd->DeviceAccepted)
                 TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER, "dpm: accepted %wZ", pd->DeviceId);
         }

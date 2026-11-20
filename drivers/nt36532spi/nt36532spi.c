@@ -289,7 +289,6 @@ static ULONG ParseHeader(const UCHAR *fw, ULONG fwsize, BINMAP *m, BOOLEAN *casc
             m[list].bin = W32(&fw[pos + 8]); m[list].crc = W32(&fw[pos + 12]);
         }
         if (m[list].bin + m[list].size > fwsize) { LOG("partition %lu out of range", list); return 0; }
-        LOG("  part[%lu] sram=%06lX size=%06lX bin=%06lX crc=%08lX", list, m[list].sram, m[list].size, m[list].bin, m[list].crc);
     }
     return parts;
 }
@@ -457,9 +456,7 @@ static NTSTATUS CopyOut(WDFREQUEST r, const VOID *src, size_t len)
 VOID NtIoctl(WDFQUEUE q, WDFREQUEST r, size_t outLen, size_t inLen, ULONG code)
 {
     PDEV_CTX c = GetCtx(WdfIoQueueGetDevice(q)); NTSTATUS st = STATUS_NOT_SUPPORTED;
-    static LONG nlog;
-    if (code != IOCTL_HID_READ_REPORT || InterlockedIncrement(&nlog) <= 4)
-        LOG("ioctl %08X (fn %lu) in=%Iu out=%Iu", code, (code >> 2) & 0xFFF, inLen, outLen);
+    UNREFERENCED_PARAMETER(outLen); UNREFERENCED_PARAMETER(inLen);
     switch (code) {
     case IOCTL_HID_GET_DEVICE_DESCRIPTOR: st = CopyOut(r, &g_HidDesc, sizeof(g_HidDesc)); break;
     case IOCTL_HID_GET_REPORT_DESCRIPTOR: st = CopyOut(r, g_ReportDesc, sizeof(g_ReportDesc)); break;
@@ -477,7 +474,6 @@ VOID NtIoctl(WDFQUEUE q, WDFREQUEST r, size_t outLen, size_t inLen, ULONG code)
         st = WdfRequestRetrieveOutputMemory(r, &om);
         if (NT_SUCCESS(st)) {
             ob = (UCHAR *)WdfMemoryGetBuffer(om, &ol);
-            LOG("get feature id=%u len=%Iu", ol ? ob[0] : 0xFF, ol);
             if (ol >= 2 && ob[0] == RID_MAXCOUNT) { ob[1] = MAX_CONTACTS; WdfRequestSetInformation(r, 2); st = STATUS_SUCCESS; }
             else st = STATUS_INVALID_PARAMETER;
         }
@@ -504,14 +500,10 @@ static VOID SendReport(PDEV_CTX c, const TOUCH_REPORT *rep)
 {
     WDFREQUEST r;
     if (!c->readQ) return;
-    static LONG ndrop, nsent;
     NTSTATUS st;
-    if (!NT_SUCCESS(WdfIoQueueRetrieveNextRequest(c->readQ, &r))) {   /* nobody reading: drop */
-        if (InterlockedIncrement(&ndrop) <= 5) LOG("report dropped: no pending READ_REPORT");
-        return;
-    }
+    if (!NT_SUCCESS(WdfIoQueueRetrieveNextRequest(c->readQ, &r))) return;   /* nobody reading: drop */
     st = CopyOut(r, rep, sizeof(*rep));
-    if (InterlockedIncrement(&nsent) <= 5 || !NT_SUCCESS(st)) LOG("report sent count=%u st=%08X", rep->count, st);
+    if (!NT_SUCCESS(st)) LOG("report delivery failed %08X", st);
     WdfRequestComplete(r, st);
 }
 
@@ -521,10 +513,9 @@ VOID NtPoll(WDFTIMER t)
     UCHAR d[POINT_DATA_LEN + PEN_DATA_LEN + 1] = { 0 };
     TOUCH_REPORT rep;
     ULONG i, n = 0;
-    static ULONG beat, rdfail;
+    static ULONG rdfail;
     NTSTATUS rs;
     if (!c->fwOk || !c->se) { LOG("poll: stopped (fwOk=%d se=%p)", c->fwOk, c->se); return; }
-    if ((++beat % 500) == 0) LOG("poll alive #%lu", beat);
     rs = NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN);
     if (!NT_SUCCESS(rs)) { if (++rdfail <= 5) LOG("poll: read failed %08X", rs); goto rearm; }
     RtlZeroMemory(&rep, sizeof(rep));
@@ -539,10 +530,8 @@ VOID NtPoll(WDFTIMER t)
             if (y > LY) y = LY;
             rep.c[n].tip = 1; rep.c[n].cid = (UCHAR)(id - 1); rep.c[n].x = (USHORT)x; rep.c[n].y = (USHORT)y;
             n++;
-            if (c->logBudget) { c->logBudget--; LOG("touch id=%lu x=%lu y=%lu w=%u", id, x, y, d[p + 5]); }
         }
     }
-    if (n != c->lastFingers) { LOG("fingers %lu -> %lu", c->lastFingers, n); if (n) c->logBudget = 6; }
     if (n || c->lastFingers) {         /* report while touching, plus one all-up report */
         if (!n) {                       /* lift: send the previous contacts with tip=0 */
             for (i = 0; i < c->lastFingers && i < MAX_CONTACTS; i++) { rep.c[i].cid = c->lastCid[i]; }
@@ -556,7 +545,6 @@ VOID NtPoll(WDFTIMER t)
     c->lastFingers = n;
 rearm:
     if (c->polling) WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(n ? 10 : 20));
-    else LOG("poll: not re-armed (polling=0)");
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
@@ -587,7 +575,7 @@ NTSTATUS NtDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     ta.ParentObject = dev;
     ta.ExecutionLevel = WdfExecutionLevelPassive;
     st = WdfTimerCreate(&tc, &ta, &GetCtx(dev)->poll);
-    LOG("poll timer create st=%08X", st);
+    if (!NT_SUCCESS(st)) LOG("poll timer create failed %08X", st);
     {
         WDF_IO_QUEUE_CONFIG qc; WDFQUEUE q;
         WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&qc, WdfIoQueueDispatchParallel);

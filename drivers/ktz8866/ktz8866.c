@@ -71,41 +71,6 @@ static VOID KtzSaveDword(WDFDEVICE d, PCWSTR name, ULONG v)
 }
 
 
-/* ---- temporary QUP clock diagnostic (touch SPI = QUP0 SE4) ----
- * Reads GCC branch/RCG/DFS registers for wrap0_s4 (SPI touch) and wrap1_s3 (working i2c11),
- * then votes the wrap0_s4 branch exactly like the PEP does and re-checks CLK_OFF.
- * Only if the branch reports running does it read SE4's GENI FW revision (0x990068). */
-#define GCC_BASE 0x00100000ull
-static ULONG rd32(PUCHAR b, ULONG off) { return READ_REGISTER_ULONG((volatile ULONG *)(b + off)); }
-static PUCHAR mapp(ULONGLONG pa) { PHYSICAL_ADDRESS a; a.QuadPart = pa; return (PUCHAR)MmMapIoSpaceEx(a, 0x1000, PAGE_READWRITE | PAGE_NOCACHE); }
-static VOID dump_rcg(PCSTR n, ULONGLONG cmd)
-{
-    PUCHAR p = mapp(GCC_BASE + (cmd & ~0xFFFull)); ULONG o = (ULONG)(cmd & 0xFFF), l;
-    if (!p) return;
-    LOG("%s rcg cmd=%08X cfg=%08X m=%08X n=%08X d=%08X dfs_en=%08X", n, rd32(p, o), rd32(p, o + 4), rd32(p, o + 8), rd32(p, o + 0xC), rd32(p, o + 0x10), rd32(p, o + 0x14));
-    for (l = 0; l < 8; l++) LOG("%s   perf[%lu]=%08X m=%08X n=%08X", n, l, rd32(p, o + 0x1C + 4 * l), rd32(p, o + 0x5C + 4 * l), rd32(p, o + 0x9C + 4 * l));
-    MmUnmapIoSpace(p, 0x1000);
-}
-static VOID QupClockDiag(VOID)
-{
-    PUCHAR v = mapp(GCC_BASE + 0x52000), b4 = mapp(GCC_BASE + 0x17000), b13 = mapp(GCC_BASE + 0x18000);
-    ULONG i, c;
-    if (!v || !b4 || !b13) { LOG("diag: map failed"); goto out; }
-    LOG("diag: vote 0x52008=%08X 0x52010=%08X 0x52000=%08X", rd32(v, 8), rd32(v, 0x10), rd32(v, 0));
-    LOG("diag: cbcr wrap0_s4=%08X wrap1_s3=%08X", rd32(b4, 0x4CC), rd32(b13, 0x39C));
-    dump_rcg("wrap0_s4", 0x174D0); dump_rcg("wrap1_s3", 0x183A0);
-    WRITE_REGISTER_ULONG((volatile ULONG *)(v + 8), rd32(v, 8) | (1u << 14));
-    for (i = 0; i < 200; i++) { c = rd32(b4, 0x4CC); if (!(c & 0x80000000u)) break; KeStallExecutionProcessor(10); }
-    c = rd32(b4, 0x4CC);
-    LOG("diag: after vote bit14: 0x52008=%08X cbcr wrap0_s4=%08X (%s)", rd32(v, 8), c, (c & 0x80000000u) ? "CLK_OFF" : "running");
-    if (!(c & 0x80000000u)) {
-        PUCHAR se = mapp(0x990000);
-        if (se) { LOG("diag: SE4 fw_rev=%08X s_fw_rev=%08X geni_status=%08X", rd32(se, 0x68), rd32(se, 0x6C), rd32(se, 0x40)); MmUnmapIoSpace(se, 0x1000); }
-    }
-out:
-    if (v) MmUnmapIoSpace(v, 0x1000); if (b4) MmUnmapIoSpace(b4, 0x1000); if (b13) MmUnmapIoSpace(b13, 0x1000);
-}
-
 NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
 {
     WDF_DRIVER_CONFIG cfg;
@@ -193,6 +158,5 @@ NTSTATUS KtzD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
         }
         WdfRegistryClose(k);
     }
-    /* QupClockDiag(); -- done, see STATUS_LOG 13:34 */
     return STATUS_SUCCESS;  /* never fail start: a dead I2C read must not take the device down */
 }

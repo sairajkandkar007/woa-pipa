@@ -146,16 +146,16 @@ NTSTATUS mmio_d0_map_peripherals(_Inout_ mmio_t* mmio)
      * (Linux gcc-sm8250.c enable bits) before any QUP client can start. */
     {
         ULONG v8 = 0, v10 = 0;
-        const ULONG m8 = (1u << 6) | (1u << 7) | (1u << 8) | (1u << 9) | (0xFFu << 10) | /* wrap0 common + s0-s7 (bring-up) */
-                         (1u << 18) | (1u << 19) | (1u << 20) | (1u << 21) | (0x3Fu << 22); /* wrap1 common + s0-s5 */
-        const ULONG m10 = (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3) | (0x3Fu << 4); /* wrap2 common + s0-s5 */
+        const ULONG m8 = (1u << 6) | (1u << 7) | (1u << 8) | (1u << 9) |       /* wrap0 common */
+                         (1u << 18) | (1u << 19) | (1u << 20) | (1u << 21);     /* wrap1 common */
+        const ULONG m10 = (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3);        /* wrap2 common (SE clocks: per-device PEP votes) */
         if (mmio_read32(&mmio->gcc, 0x52008u, &v8) && mmio_read32(&mmio->gcc, 0x52010u, &v10)) {
             (void)mmio_write32(&mmio->gcc, 0x52008u, v8 | m8);
             (void)mmio_write32(&mmio->gcc, 0x52010u, v10 | m10);
             (void)mmio_read32(&mmio->gcc, 0x52008u, &v8);
             (void)mmio_read32(&mmio->gcc, 0x52010u, &v10);
         }
-        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: QUP votes 52008=%08lX 52010=%08lX\n", v8, v10);
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: QUP votes 52008=%08lX 52010=%08lX\n", v8, v10);
         TraceEvents(TRACE_LEVEL_WARNING, TRACE_CLOCK, "clock: QUP wrapper votes 52008=%08lX 52010=%08lX",
                     v8, v10);
     }

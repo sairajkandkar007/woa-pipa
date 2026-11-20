@@ -82,7 +82,7 @@ ULONG_PTR pep_prepare_dev(_Inout_opt_ PVOID data)
             BOOLEAN printable = (early_irql == PASSIVE_LEVEL) && ascii_dev_id(p->dev_id, early_id);
             TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER,
                         "dpm: prepare rejected reason=backend-unavailable");
-            DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: prepare rejected backend-unavailable %s\n", printable ? early_id : "?");
+            DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: prepare rejected backend-unavailable %s\n", printable ? early_id : "?");
             TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER,
                         "dpm: prepare path=%s IRQL=%lu accepted=0",
                         printable ? early_id : "<not-safe-to-format>", (ULONG)early_irql);
@@ -121,7 +121,7 @@ ULONG_PTR pep_prepare_dev(_Inout_opt_ PVOID data)
             {
                 TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER,
                             "dpm: prepare path=%wZ rejected reason=identity-unmatched", p->dev_id);
-                DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: prepare %wZ rejected identity-unmatched\n", p->dev_id);
+                DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: prepare %wZ rejected identity-unmatched\n", p->dev_id);
             }
             else
                 TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER,
@@ -132,7 +132,7 @@ ULONG_PTR pep_prepare_dev(_Inout_opt_ PVOID data)
     if (!pep_ufs_comp_desc_matches_graph(path)) {
         TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER,
                     "dpm: prepare path=%s rejected reason=descriptor-generation", path);
-        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: prepare %s rejected descriptor-generation\n", path);
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: prepare %s rejected descriptor-generation\n", path);
         return 1;
     }
     if (!strcmp(path, "\\_SB.UFS0") &&
@@ -146,13 +146,13 @@ ULONG_PTR pep_prepare_dev(_Inout_opt_ PVOID data)
         !npa_dev_clients_ready_locked(g_molokai_npa_authoritative_clients, path)) {
         TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER,
                     "dpm: prepare path=%s rejected reason=clients-unavailable", path);
-        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: prepare %s rejected clients-unavailable\n", path);
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: prepare %s rejected clients-unavailable\n", path);
         return 1;
     }
     if (!graph_can_claim(g_molokai_dpm_authoritative_graph, path)) {
         TraceEvents(TRACE_LEVEL_WARNING, TRACE_POWER,
                     "dpm: prepare path=%s rejected reason=graph-claim", path);
-        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: prepare %s rejected graph-claim\n", path);
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, "qcpep: prepare %s rejected graph-claim\n", path);
         return 1;
     }
     if (InterlockedIncrement(&g_prepare_traces) <= 64)
