@@ -471,13 +471,20 @@ VOID NtIoctl(WDFQUEUE q, WDFREQUEST r, size_t outLen, size_t inLen, ULONG code)
         if (NT_SUCCESS(st)) return;
         break;
     case IOCTL_HID_GET_FEATURE: {
-        WDFMEMORY im; UCHAR *ib; size_t il; UCHAR rep[2] = { RID_MAXCOUNT, MAX_CONTACTS };
-        st = WdfRequestRetrieveInputMemory(r, &im);
+        /* via mshidkmdf this arrives METHOD_OUT_DIRECT with no input buffer: the caller puts the
+         * report ID in byte 0 of the output buffer (HidD_GetFeature convention). */
+        WDFMEMORY om; UCHAR *ob; size_t ol;
+        st = WdfRequestRetrieveOutputMemory(r, &om);
         if (NT_SUCCESS(st)) {
-            ib = (UCHAR *)WdfMemoryGetBuffer(im, &il);
-            if (il >= 1 && ib[0] == RID_MAXCOUNT) st = CopyOut(r, rep, sizeof(rep));
+            ob = (UCHAR *)WdfMemoryGetBuffer(om, &ol);
+            LOG("get feature id=%u len=%Iu", ol ? ob[0] : 0xFF, ol);
+            if (ol >= 2 && ob[0] == RID_MAXCOUNT) { ob[1] = MAX_CONTACTS; WdfRequestSetInformation(r, 2); st = STATUS_SUCCESS; }
             else st = STATUS_INVALID_PARAMETER;
         }
+        break; }
+    case IOCTL_HID_GET_STRING: {
+        static const WCHAR name[] = L"pipa Touch Screen (NT36532)";
+        st = CopyOut(r, name, sizeof(name));
         break; }
     case IOCTL_HID_SET_FEATURE:
     case IOCTL_HID_ACTIVATE_DEVICE:
