@@ -197,6 +197,15 @@ static NTSTATUS NvtRead(PDEV_CTX c, ULONG addr, UCHAR *out, ULONG n)
     return st;
 }
 
+static NTSTATUS NvtWrite1(PDEV_CTX c, ULONG addr, UCHAR v)
+{
+    UCHAR tx[4] = { 0xFF | 0x80, (UCHAR)((addr >> 15) & 0xFF), (UCHAR)((addr >> 7) & 0xFF), 0 }, rx[4];
+    NTSTATUS st = GeniXfer(c, tx, rx, 3);
+    if (!NT_SUCCESS(st)) return st;
+    tx[0] = (UCHAR)((addr & 0x7F) | 0x80); tx[1] = v;
+    return GeniXfer(c, tx, rx, 2);
+}
+
 static VOID Dump(PCSTR what, ULONG addr, const UCHAR *b, ULONG n, NTSTATUS st)
 {
     LOG("%s @%05lX st=%08X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
@@ -256,10 +265,29 @@ NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
     if (!c->se) return STATUS_SUCCESS;
     if (!NT_SUCCESS(GeniInit(c))) return STATUS_SUCCESS;   /* never fail start during bring-up */
     c->inited = TRUE;
+    /* 1) controller self-test: internal loopback, rx must equal tx */
+    {
+        UCHAR tx[8] = { 0xA5, 0x5A, 0x01, 0x80, 0x3C, 0xC3, 0xFF, 0x00 }, rx[8] = { 0 };
+        wr(c, SE_SPI_LOOPBACK, 1);
+        st = GeniXfer(c, tx, rx, 8);
+        wr(c, SE_SPI_LOOPBACK, 0);
+        LOG("loopback st=%08X rx=%02X %02X %02X %02X %02X %02X %02X %02X (%s)", st, rx[0], rx[1], rx[2], rx[3], rx[4], rx[5], rx[6], rx[7],
+            RtlCompareMemory(tx, rx, 8) == 8 ? "MATCH" : "mismatch");
+    }
+    /* 2) plain reads */
     for (i = 0; i < RTL_NUMBER_OF(addrs); i++) {
         RtlZeroMemory(b, sizeof(b));
         st = NvtRead(c, addrs[i], b, 16);
         Dump("read", addrs[i], b, 16, st);
+    }
+    /* 3) Linux nvt_ts_check_chip_ver_trim: bootloader reset (0x69 -> SWRST_N8 0x3F0FE), then trim id */
+    for (i = 0; i < 3; i++) {
+        st = NvtWrite1(c, 0x3F0FE, 0x69);
+        KeStallExecutionProcessor(10000);
+        RtlZeroMemory(b, sizeof(b));
+        if (NT_SUCCESS(st)) st = NvtRead(c, 0x3F004, b, 16);
+        Dump("trim-after-reset", 0x3F004, b, 16, st);
+        KeStallExecutionProcessor(10000);
     }
     return STATUS_SUCCESS;
 }
