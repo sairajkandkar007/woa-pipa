@@ -457,7 +457,9 @@ static NTSTATUS CopyOut(WDFREQUEST r, const VOID *src, size_t len)
 VOID NtIoctl(WDFQUEUE q, WDFREQUEST r, size_t outLen, size_t inLen, ULONG code)
 {
     PDEV_CTX c = GetCtx(WdfIoQueueGetDevice(q)); NTSTATUS st = STATUS_NOT_SUPPORTED;
-    UNREFERENCED_PARAMETER(outLen); UNREFERENCED_PARAMETER(inLen);
+    static LONG nlog;
+    if (code != IOCTL_HID_READ_REPORT || InterlockedIncrement(&nlog) <= 4)
+        LOG("ioctl %08X (fn %lu) in=%Iu out=%Iu", code, (code >> 2) & 0xFFF, inLen, outLen);
     switch (code) {
     case IOCTL_HID_GET_DEVICE_DESCRIPTOR: st = CopyOut(r, &g_HidDesc, sizeof(g_HidDesc)); break;
     case IOCTL_HID_GET_REPORT_DESCRIPTOR: st = CopyOut(r, g_ReportDesc, sizeof(g_ReportDesc)); break;
@@ -492,8 +494,15 @@ static VOID SendReport(PDEV_CTX c, const TOUCH_REPORT *rep)
 {
     WDFREQUEST r;
     if (!c->readQ) return;
-    if (!NT_SUCCESS(WdfIoQueueRetrieveNextRequest(c->readQ, &r))) return;   /* nobody reading: drop */
-    WdfRequestComplete(r, CopyOut(r, rep, sizeof(*rep)));
+    static LONG ndrop, nsent;
+    NTSTATUS st;
+    if (!NT_SUCCESS(WdfIoQueueRetrieveNextRequest(c->readQ, &r))) {   /* nobody reading: drop */
+        if (InterlockedIncrement(&ndrop) <= 5) LOG("report dropped: no pending READ_REPORT");
+        return;
+    }
+    st = CopyOut(r, rep, sizeof(*rep));
+    if (InterlockedIncrement(&nsent) <= 5 || !NT_SUCCESS(st)) LOG("report sent count=%u st=%08X", rep->count, st);
+    WdfRequestComplete(r, st);
 }
 
 VOID NtPoll(WDFTIMER t)
