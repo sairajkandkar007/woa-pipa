@@ -27,6 +27,8 @@ nt36532spi.sys = 1,,
 %Desc% = Nt_Inst, ACPI\QCOM250F
 
 [Nt_Inst.NT]
+Include   = MsHidKmdf.inf
+Needs     = MsHidKmdf.NT
 CopyFiles = Nt_Files
 
 [Nt_Files]
@@ -39,8 +41,9 @@ AddReg = Nt_HW_AddReg
 HKR,,"LowerFilters",0x00010000,"nt36532spi"
 
 [Nt_Inst.NT.Services]
+Include    = MsHidKmdf.inf
+Needs      = MsHidKmdf.NT.Services
 AddService = nt36532spi,, Nt_Svc
-AddService = mshidkmdf, 0x00000002, Mshid_Svc
 
 [Nt_Svc]
 DisplayName   = %Desc%
@@ -48,12 +51,6 @@ ServiceType   = 1
 StartType     = 3
 ErrorControl  = 1
 ServiceBinary = %13%\nt36532spi.sys
-
-[Mshid_Svc]
-ServiceType   = 1
-StartType     = 3
-ErrorControl  = 1
-ServiceBinary = %12%\mshidkmdf.sys
 
 [Nt_Inst.NT.Wdf]
 KmdfService = nt36532spi, Nt_Wdf
