@@ -1,13 +1,14 @@
 ;
-; nt36532spi.inf - pipa touch SPI (NT36532 on QUP0 SE4), test driver
+; nt36532spi.inf - pipa touchscreen: own GENI SPI + NT36532, exposed as a HID touch screen.
+; Stack: ACPI\QCOM250F PDO -> nt36532spi (lower filter, does the work) -> mshidkmdf (HID shim) -> hidclass
 ;
 [Version]
 Signature   = "$WINDOWS NT$"
-Class       = System
-ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Class       = HIDClass
+ClassGuid   = {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
 Provider    = %Mfg%
 CatalogFile = nt36532spi.cat
-DriverVer   = 11/20/2026,1.0.0.1
+DriverVer   = 11/20/2026,1.0.0.2
 PnpLockdown = 1
 
 [DestinationDirs]
@@ -31,9 +32,15 @@ CopyFiles = Nt_Files
 [Nt_Files]
 nt36532spi.sys
 
+[Nt_Inst.NT.HW]
+AddReg = Nt_HW_AddReg
+
+[Nt_HW_AddReg]
+HKR,,"LowerFilters",0x00010000,"nt36532spi"
 
 [Nt_Inst.NT.Services]
-AddService = nt36532spi, 0x00000002, Nt_Svc
+AddService = nt36532spi,, Nt_Svc
+AddService = mshidkmdf, 0x00000002, Mshid_Svc
 
 [Nt_Svc]
 DisplayName   = %Desc%
@@ -41,6 +48,12 @@ ServiceType   = 1
 StartType     = 3
 ErrorControl  = 1
 ServiceBinary = %13%\nt36532spi.sys
+
+[Mshid_Svc]
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %12%\mshidkmdf.sys
 
 [Nt_Inst.NT.Wdf]
 KmdfService = nt36532spi, Nt_Wdf
@@ -51,4 +64,4 @@ KmdfLibraryVersion = $KMDFVERSION$
 [Strings]
 Mfg  = "woa-pipa"
 Disk = "nt36532spi install disk"
-Desc = "pipa touch SPI (NT36532)"
+Desc = "pipa Touch Screen (NT36532)"

@@ -16,6 +16,7 @@
  */
 #include <ntddk.h>
 #include <wdf.h>
+#include <hidport.h>
 
 #define LOG(fmt, ...) DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "nt365: " fmt "\n", __VA_ARGS__)
 
@@ -90,6 +91,10 @@ typedef struct _DEV_CTX {
     ULONG lastFingers;
     ULONG logBudget;
     USHORT absX, absY;
+    WDFQUEUE readQ;
+    USHORT scan;
+    BOOLEAN sentUp;
+    UCHAR lastCid[10];
 } DEV_CTX, *PDEV_CTX;
 WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(DEV_CTX, GetCtx)
 
@@ -100,6 +105,7 @@ EVT_WDF_DEVICE_RELEASE_HARDWARE NtRelease;
 EVT_WDF_DEVICE_D0_ENTRY NtD0Entry;
 EVT_WDF_DEVICE_D0_EXIT NtD0Exit;
 EVT_WDF_TIMER NtPoll;
+EVT_WDF_IO_QUEUE_IO_INTERNAL_DEVICE_CONTROL NtIoctl;
 
 static __forceinline ULONG rd(PDEV_CTX c, ULONG o) { return READ_REGISTER_ULONG((volatile ULONG *)(c->se + o)); }
 
@@ -396,28 +402,135 @@ static NTSTATUS LoadFile(PCWSTR path, UCHAR **buf, ULONG *len)
 /* event buffer: 1 + 6*10 fingers (+pressure at 1+98+i), pen 14 bytes after 65 */
 #define POINT_DATA_LEN 65
 #define PEN_DATA_LEN   14
+
+/* ---------------- HID multi-touch (mshidkmdf shim; we are its lower filter) ----------------
+ * Parallel-mode touch screen: 10 contacts per report. Coordinates are the controller's native
+ * portrait space (x 0..17999, y 0..28799 = 1800x2880 * 10). Panel ~14.8 x 23.7 cm. */
+#define MAX_CONTACTS 10
+#define RID_TOUCH    1
+#define RID_MAXCOUNT 2
+#define LX 17999
+#define LY 28799
+#define PX 1480     /* 0.01 cm */
+#define PY 2370
+#pragma pack(push, 1)
+typedef struct { UCHAR tip; UCHAR cid; USHORT x; USHORT y; } CONTACT;
+typedef struct { UCHAR rid; CONTACT c[MAX_CONTACTS]; USHORT scan; UCHAR count; } TOUCH_REPORT;
+#pragma pack(pop)
+
+#define FINGER_COLL \
+    0x05,0x0D, 0x09,0x22, 0xA1,0x02, \
+      0x09,0x42, 0x15,0x00, 0x25,0x01, 0x75,0x01, 0x95,0x01, 0x81,0x02, \
+      0x95,0x07, 0x81,0x03, \
+      0x09,0x51, 0x75,0x08, 0x95,0x01, 0x25,0x0F, 0x81,0x02, \
+      0x05,0x01, 0x75,0x10, 0x55,0x0E, 0x65,0x11, \
+      0x09,0x30, 0x26,(LX & 0xFF),(LX >> 8), 0x46,(PX & 0xFF),(PX >> 8), 0x81,0x02, \
+      0x09,0x31, 0x26,(LY & 0xFF),(LY >> 8), 0x46,(PY & 0xFF),(PY >> 8), 0x81,0x02, \
+      0x55,0x00, 0x65,0x00, 0x35,0x00, 0x45,0x00, \
+    0xC0
+static const UCHAR g_ReportDesc[] = {
+    0x05,0x0D, 0x09,0x04, 0xA1,0x01, 0x85,RID_TOUCH,
+    FINGER_COLL, FINGER_COLL, FINGER_COLL, FINGER_COLL, FINGER_COLL,
+    FINGER_COLL, FINGER_COLL, FINGER_COLL, FINGER_COLL, FINGER_COLL,
+    0x05,0x0D, 0x55,0x0C, 0x66,0x01,0x10, 0x47,0xFF,0xFF,0x00,0x00, 0x27,0xFF,0xFF,0x00,0x00,
+    0x75,0x10, 0x95,0x01, 0x09,0x56, 0x81,0x02,                     /* scan time (100 us) */
+    0x55,0x00, 0x66,0x00,0x00, 0x45,0x00,
+    0x09,0x54, 0x15,0x00, 0x25,0x7F, 0x75,0x08, 0x95,0x01, 0x81,0x02, /* contact count */
+    0x85,RID_MAXCOUNT, 0x09,0x55, 0x25,MAX_CONTACTS, 0x75,0x08, 0x95,0x01, 0xB1,0x02, /* contact count max */
+    0xC0
+};
+static const HID_DESCRIPTOR g_HidDesc = {
+    sizeof(HID_DESCRIPTOR), 0x21, 0x0100, 0x00, 0x01, { 0x22, sizeof(g_ReportDesc) }
+};
+
+static NTSTATUS CopyOut(WDFREQUEST r, const VOID *src, size_t len)
+{
+    WDFMEMORY m; size_t cap; NTSTATUS st = WdfRequestRetrieveOutputMemory(r, &m);
+    if (!NT_SUCCESS(st)) return st;
+    WdfMemoryGetBuffer(m, &cap);
+    if (cap < len) return STATUS_INVALID_BUFFER_SIZE;
+    st = WdfMemoryCopyFromBuffer(m, 0, (PVOID)src, len);
+    if (NT_SUCCESS(st)) WdfRequestSetInformation(r, len);
+    return st;
+}
+
+VOID NtIoctl(WDFQUEUE q, WDFREQUEST r, size_t outLen, size_t inLen, ULONG code)
+{
+    PDEV_CTX c = GetCtx(WdfIoQueueGetDevice(q)); NTSTATUS st = STATUS_NOT_SUPPORTED;
+    UNREFERENCED_PARAMETER(outLen); UNREFERENCED_PARAMETER(inLen);
+    switch (code) {
+    case IOCTL_HID_GET_DEVICE_DESCRIPTOR: st = CopyOut(r, &g_HidDesc, sizeof(g_HidDesc)); break;
+    case IOCTL_HID_GET_REPORT_DESCRIPTOR: st = CopyOut(r, g_ReportDesc, sizeof(g_ReportDesc)); break;
+    case IOCTL_HID_GET_DEVICE_ATTRIBUTES: {
+        HID_DEVICE_ATTRIBUTES a = { sizeof(a), 0x0603 /* Novatek */, 0x6532, 0x0001 };
+        st = CopyOut(r, &a, sizeof(a)); break; }
+    case IOCTL_HID_READ_REPORT:
+        st = WdfRequestForwardToIoQueue(r, c->readQ);
+        if (NT_SUCCESS(st)) return;
+        break;
+    case IOCTL_HID_GET_FEATURE: {
+        WDFMEMORY im; UCHAR *ib; size_t il; UCHAR rep[2] = { RID_MAXCOUNT, MAX_CONTACTS };
+        st = WdfRequestRetrieveInputMemory(r, &im);
+        if (NT_SUCCESS(st)) {
+            ib = (UCHAR *)WdfMemoryGetBuffer(im, &il);
+            if (il >= 1 && ib[0] == RID_MAXCOUNT) st = CopyOut(r, rep, sizeof(rep));
+            else st = STATUS_INVALID_PARAMETER;
+        }
+        break; }
+    case IOCTL_HID_SET_FEATURE:
+    case IOCTL_HID_ACTIVATE_DEVICE:
+    case IOCTL_HID_DEACTIVATE_DEVICE:
+    case IOCTL_HID_SEND_IDLE_NOTIFICATION_REQUEST:
+        st = STATUS_SUCCESS; break;
+    default:
+        st = STATUS_NOT_SUPPORTED; break;
+    }
+    WdfRequestComplete(r, st);
+}
+
+static VOID SendReport(PDEV_CTX c, const TOUCH_REPORT *rep)
+{
+    WDFREQUEST r;
+    if (!c->readQ) return;
+    if (!NT_SUCCESS(WdfIoQueueRetrieveNextRequest(c->readQ, &r))) return;   /* nobody reading: drop */
+    WdfRequestComplete(r, CopyOut(r, rep, sizeof(*rep)));
+}
+
 VOID NtPoll(WDFTIMER t)
 {
     PDEV_CTX c = GetCtx(WdfTimerGetParentObject(t));
     UCHAR d[POINT_DATA_LEN + PEN_DATA_LEN + 1] = { 0 };
+    TOUCH_REPORT rep;
     ULONG i, n = 0;
     if (!c->fwOk || !c->se) return;
-    if (!NT_SUCCESS(NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN))) { WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(20)); return; }
+    if (!NT_SUCCESS(NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN))) goto rearm;
+    RtlZeroMemory(&rep, sizeof(rep));
+    rep.rid = RID_TOUCH;
     for (i = 0; i < 10; i++) {
         ULONG p = 6 * i, id = d[p] >> 3, stt = d[p] & 7;
         if (id == 0 || id > 10) continue;
         if (stt == 1 || stt == 2) {
             ULONG x = (d[p + 1] << 8) | d[p + 2], y = (d[p + 3] << 8) | d[p + 4];
+            if (x > LX || y > LY) continue;
+            rep.c[n].tip = 1; rep.c[n].cid = (UCHAR)(id - 1); rep.c[n].x = (USHORT)x; rep.c[n].y = (USHORT)y;
             n++;
             if (c->logBudget) { c->logBudget--; LOG("touch id=%lu x=%lu y=%lu w=%u", id, x, y, d[p + 5]); }
         }
     }
-    if (n != c->lastFingers) { LOG("fingers %lu -> %lu", c->lastFingers, n); c->lastFingers = n; if (n) c->logBudget = 40; }
-    if (d[POINT_DATA_LEN] && c->logBudget) {   /* pen block present */
-        c->logBudget--;
-        LOG("pen: %02X %02X %02X %02X %02X %02X %02X %02X", d[65], d[66], d[67], d[68], d[69], d[70], d[71], d[72]);
+    if (n != c->lastFingers) { LOG("fingers %lu -> %lu", c->lastFingers, n); if (n) c->logBudget = 6; }
+    if (n || c->lastFingers) {         /* report while touching, plus one all-up report */
+        if (!n) {                       /* lift: send the previous contacts with tip=0 */
+            for (i = 0; i < c->lastFingers && i < MAX_CONTACTS; i++) { rep.c[i].cid = c->lastCid[i]; }
+        }
+        c->scan = (USHORT)(c->scan + 200);   /* 20 ms in 100 us units */
+        rep.scan = c->scan;
+        rep.count = (UCHAR)(n ? n : c->lastFingers);
+        SendReport(c, &rep);
     }
-    if (c->polling) WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(20));
+    for (i = 0; i < n; i++) c->lastCid[i] = rep.c[i].cid;
+    c->lastFingers = n;
+rearm:
+    if (c->polling) WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(n ? 10 : 20));
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
@@ -432,6 +545,7 @@ NTSTATUS NtDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     WDF_PNPPOWER_EVENT_CALLBACKS pnp; WDF_OBJECT_ATTRIBUTES a; WDFDEVICE dev; NTSTATUS st;
     WDF_TIMER_CONFIG tc; WDF_OBJECT_ATTRIBUTES ta;
     UNREFERENCED_PARAMETER(drv);
+    WdfFdoInitSetFilter(init);         /* lower filter below mshidkmdf */
     WDF_PNPPOWER_EVENT_CALLBACKS_INIT(&pnp);
     pnp.EvtDevicePrepareHardware = NtPrepare;
     pnp.EvtDeviceReleaseHardware = NtRelease;
@@ -448,6 +562,17 @@ NTSTATUS NtDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     ta.ExecutionLevel = WdfExecutionLevelPassive;
     st = WdfTimerCreate(&tc, &ta, &GetCtx(dev)->poll);
     LOG("poll timer create st=%08X", st);
+    {
+        WDF_IO_QUEUE_CONFIG qc; WDFQUEUE q;
+        WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&qc, WdfIoQueueDispatchParallel);
+        qc.EvtIoInternalDeviceControl = NtIoctl;
+        st = WdfIoQueueCreate(dev, &qc, WDF_NO_OBJECT_ATTRIBUTES, &q);
+        if (!NT_SUCCESS(st)) { LOG("default queue st=%08X", st); return st; }
+        WDF_IO_QUEUE_CONFIG_INIT(&qc, WdfIoQueueDispatchManual);
+        qc.PowerManaged = WdfFalse;
+        st = WdfIoQueueCreate(dev, &qc, WDF_NO_OBJECT_ATTRIBUTES, &GetCtx(dev)->readQ);
+        if (!NT_SUCCESS(st)) { LOG("read queue st=%08X", st); return st; }
+    }
     return STATUS_SUCCESS;
 }
 
