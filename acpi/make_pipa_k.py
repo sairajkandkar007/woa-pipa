@@ -249,7 +249,12 @@ def main():
             pos = bytes(d).find(dev + b'\x08_HID\x0d' + hid)
             assert pos > 0 and bytes(d).count(dev + b'\x08_HID\x0d' + hid) == 1, f'{dev} _HID'
             q = pos + len(dev) + 6; d[q:q+8] = b'QCOMFFFF'
-        print('pipa bt-own: UR18 and BTH0 parked (pipapwr drives uart6 directly)')
+        # a parked ACPI device still claims its _CRS interrupt: give UR18 back its Kona IRQ so WPWR owns 0x27F
+        import struct
+        b = bytes(d); irq = b'\x89\x06\x00\x01\x01' + struct.pack('<I', 0x27F)
+        assert b.count(irq) == 1, 'UR18 irq 0x27F'
+        i = b.index(irq); d[i+5:i+9] = struct.pack('<I', 0x269)
+        print('pipa bt-own: UR18 and BTH0 parked (pipapwr drives uart6 directly), UR18 irq back to 0x269')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
         # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.
