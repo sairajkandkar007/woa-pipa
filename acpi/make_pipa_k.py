@@ -233,7 +233,15 @@ def main():
                 if c < 0: break
                 d[c:c+len(old)] = new; t = c + 1; n += 1
             assert n > 0, old
-        print('pipa bt: UR18 -> uart6 0x998000, irq 0x27F, wrap0_s6, QUP_0')
+        # TLMMGPIO entries: Kona uart18 pins gpio43-46 (pipa i2c15 lives on 44/45!) -> uart6 gpio16-19 (qup6 = func 1 too)
+        t = k; n = 0
+        while True:
+            t = bytes(d).find(b'TLMMGPIO\x00', t + 1, end)
+            if t < 0: break
+            m = re.search(rb'\x0a([\x2b-\x2e])', bytes(d[t:t + 16])); assert m, 'UR18 pin byte'
+            d[t + m.start() + 1] = m.group(1)[0] - 0x2B + 16; n += 1
+        assert n >= 4, 'UR18 TLMMGPIO'
+        print(f'pipa bt: UR18 -> uart6 0x998000, irq 0x27F, wrap0_s6, QUP_0, pins 43-46 -> 16-19 ({n} entries)')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
         # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.
