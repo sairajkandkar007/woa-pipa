@@ -1,0 +1,54 @@
+;
+; pipapwr.inf - pipa QCA6390 radio power (WLAN_EN/BT_EN, BT UART pins)
+;
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider    = %Mfg%
+CatalogFile = pipapwr.cat
+DriverVer   = 11/20/2026,1.0.0.1
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %Disk%,,,""
+
+[SourceDisksFiles]
+pipapwr.sys = 1,,
+
+[Manufacturer]
+%Mfg% = Std,NTARM64.10.0...16299
+
+[Std.NTARM64.10.0...16299]
+%Desc% = Pw_Inst, ACPI\PIPA6390
+
+[Pw_Inst.NT]
+CopyFiles = Pw_Files
+
+[Pw_Files]
+pipapwr.sys
+
+
+[Pw_Inst.NT.Services]
+AddService = pipapwr, 0x00000002, Pw_Svc
+
+[Pw_Svc]
+DisplayName   = %Desc%
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %13%\pipapwr.sys
+
+[Pw_Inst.NT.Wdf]
+KmdfService = pipapwr, Pw_Wdf
+
+[Pw_Wdf]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+Mfg  = "woa-pipa"
+Disk = "pipapwr install disk"
+Desc = "pipa radio power (QCA6390)"

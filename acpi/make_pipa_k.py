@@ -23,7 +23,7 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
      STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15] [--pipa-bklt] [--pipa-spi4]
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15] [--pipa-bklt] [--pipa-spi4] [--pipa-bt] [--pipa-wpwr]
 """
 import sys, re
 
@@ -198,6 +198,26 @@ def main():
         assert 0 < a < 40 and 0 < m < 40, seg.hex()
         d[q + a:q + a + 8] = b'_SB_PEP0'; d[q + m:q + m + 8] = b'_SB_PEP0'
         print(f'pipa touch SPI: SPI4 -> 0x990000, irq 0x27D, wrap0_s4 x{n}, gpio8-11 ({pins} TLMM entries)')
+    if '--pipa-bt' in sys.argv:
+        # Bluetooth UART: Kona UR18 (0xC8C000, QUP2 SE3 descriptor) -> pipa uart6 = QUP0 SE6 @0x998000,
+        # GIC SPI 607 -> GSIV 0x27F, gcc_qupv3_wrap0_s6_clk, ICB QUP_0. Pins gpio16-19 are set by pipapwr.
+        import struct
+        b = bytes(d)
+        mem = b'\x86\x09\x00\x01' + struct.pack('<II', 0xC8C000, 0x4000)
+        assert b.count(mem) == 1, 'UR18 mem'; i = b.index(mem); d[i+4:i+8] = struct.pack('<I', 0x998000)
+        j = b.find(b'\x89\x06\x00\x01\x01' + struct.pack('<I', 0x269), i, i + 64); assert j > 0, 'UR18 irq'
+        d[j+5:j+9] = struct.pack('<I', 0x27F)
+        pat = b'\rDEVICE\x00\r\\_SB.UR18\x00'; assert b.count(pat) == 1, 'UR18 desc'; k = b.index(pat) + 9
+        end = b.find(b'\rDEVICE\x00', k + 10); end = end if end > 0 else k + 1500
+        for old, new in ((b'gcc_qupv3_wrap2_s3_clk', b'gcc_qupv3_wrap0_s6_clk'), (b'gcc_qupv3_wrap_2_m_ahb_clk', b'gcc_qupv3_wrap_0_m_ahb_clk'),
+                         (b'ICBID_MASTER_QUP_2', b'ICBID_MASTER_QUP_0'), (b'ICBID_SLAVE_QUP_2', b'ICBID_SLAVE_QUP_0')):
+            t = k; n = 0
+            while True:
+                c = bytes(d).find(old, t, end)
+                if c < 0: break
+                d[c:c+len(old)] = new; t = c + 1; n += 1
+            assert n > 0, old
+        print('pipa bt: UR18 -> uart6 0x998000, irq 0x27F, wrap0_s6, QUP_0')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
         # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.
@@ -209,6 +229,12 @@ def main():
         assert bytes(d).count(fsa) == 1, 'CFSA i2c'
         i = bytes(d).index(fsa); d[i + 4] = 0x42
         print('pipa: added \\_SB.BKLT (KTZ8866 @IC10:0x11); CFSA 0x43 -> 0x42')
+    if '--pipa-wpwr' in sys.argv:
+        # Append \\_SB.WPWR (PIPA6390): pipapwr drives QCA6390 WLAN_EN (gpio20) / BT_EN (gpio21), uart6 pins.
+        wp = bytes.fromhex('102c5c5f53425f5b822457505752085f4849440d504950413633393000085f5549440114095f53544100a40a0f')
+        assert b'PIPA6390' not in bytes(d)
+        d = bytearray(bytes(d) + wp); d[4:8] = len(d).to_bytes(4, 'little')
+        print('pipa: added \\_SB.WPWR (PIPA6390)')
     d[9] = 0
     d[9] = (-sum(d)) & 0xFF
     assert sum(d) & 0xFF == 0 and len(d) == int.from_bytes(d[4:8], 'little')

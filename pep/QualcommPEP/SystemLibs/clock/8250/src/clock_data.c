@@ -69,8 +69,13 @@ const gcc_domain_t gcc_domains[] = {
     {"gcc_qupv3_wrap0_s4_clk_src", 0x174d0u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_qupv3_wrap0_s7_clk_src", 0x17860u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
     {"gcc_usb3_sec_phy_aux_clk_src", 0x10064u, 0u, 30u, 1u, 0u, 0u},
+    {"gcc_qupv3_wrap0_s0_clk_src", 0x17010u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap0_s1_clk_src", 0x17140u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap0_s2_clk_src", 0x17270u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap0_s5_clk_src", 0x17600u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
+    {"gcc_qupv3_wrap0_s6_clk_src", 0x17730u, 16u, 0u, 0u, GCC_DOMAIN_READ_ONLY, 0u},
 };
-const unsigned int gcc_domain_cnt = 31u;
+const unsigned int gcc_domain_cnt = 36u;
 
 const gcc_clock_t gcc_clocks[] = {
     {"gcc_aggre_ufs_phy_axi_clk", GCC_KIND_BRANCH, 0x770CCu, 0x0u, 0x0u, 0, 0x0u, 0x0u, CLOCK_CTL_GCC},
@@ -169,6 +174,11 @@ const gcc_clock_t gcc_clocks[] = {
     {"gcc_qupv3_wrap0_core_clk", GCC_KIND_VOTE, 0x23000u, 0x52008u, 0x100u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_qupv3_wrap0_core_2x_clk", GCC_KIND_VOTE, 0x23008u, 0x52008u, 0x200u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
     {"gcc_qupv3_wrap_0_s_ahb_clk", GCC_KIND_VOTE, 0x17008u, 0x52008u, 0x80u, -1, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_s0_clk", GCC_KIND_VOTE, 0x1700Cu, 0x52008u, 0x400u, 31, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_s1_clk", GCC_KIND_VOTE, 0x1713Cu, 0x52008u, 0x800u, 32, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_s2_clk", GCC_KIND_VOTE, 0x1726Cu, 0x52008u, 0x1000u, 33, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_s5_clk", GCC_KIND_VOTE, 0x175FCu, 0x52008u, 0x8000u, 34, 0x0u, 0x0u, CLOCK_CTL_GCC},
+    {"gcc_qupv3_wrap0_s6_clk", GCC_KIND_VOTE, 0x1772Cu, 0x52008u, 0x10000u, 35, 0x0u, 0x0u, CLOCK_CTL_GCC},
 };
 const unsigned int gcc_clock_cnt = sizeof(gcc_clocks) / sizeof(gcc_clocks[0]);
 
