@@ -167,3 +167,5 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Also found: Kona DSDT pairs SE addresses with mismatched clocks (I2C5 @0x890000 = Linux wrap2 SE4, but votes gcc_qupv3_wrap0_s4 = the touch SE @0x990000; I2C8 @0x89C000 is not a SE on SM8250).
 - `make_pipa_k.py --pipa-qup`: IC10 repurposed in place as **i2c11** (QUP1 SE3 @0xA8C000, GIC 0x184, wrap1_s3 clock, TLMM gpio60/61 = qup11); I2C5/I2C8/SPI4 parked (_HID -> QCOMFFFF). Verified by iasl decompile.
 - UEFI image Mu-pipa-qpep8250.img rebuilt with it (md5 cb8f046f); previous image kept as Mu-pipa-qpep8250-noqup.img. Kona qci2c re-enabled (I2C only).
+- 12:00 RESULT: boots; `\_SB.IC10` (pipa i2c11) accepted, D0 (ICB QUP_1 paths, wrap1 core/core_2x/s_ahb, m_ahb, wrap1_s3 all ok=1), qci2c **DeviceNodeStarted**, then runtime **D3** (clocks off, ICB 0, all ok=1).
+  First full PEP-managed device lifecycle (D0 -> start -> D3) on pipa with no hacks.
