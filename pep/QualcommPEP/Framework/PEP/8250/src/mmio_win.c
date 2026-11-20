@@ -146,7 +146,7 @@ NTSTATUS mmio_d0_map_peripherals(_Inout_ mmio_t* mmio)
      * (Linux gcc-sm8250.c enable bits) before any QUP client can start. */
     {
         ULONG v8 = 0, v10 = 0;
-        const ULONG m8 = (1u << 6) | (1u << 7) | (1u << 8) | (1u << 9) |       /* wrap0 */
+        const ULONG m8 = (1u << 6) | (1u << 7) | (1u << 8) | (1u << 9) | (1u << 14) | /* wrap0 (+ s4 = pipa touch SPI) */
                          (1u << 18) | (1u << 19) | (1u << 20) | (1u << 21);     /* wrap1 */
         const ULONG m10 = (1u << 0) | (1u << 1) | (1u << 2) | (1u << 3);        /* wrap2 */
         if (mmio_read32(&mmio->gcc, 0x52008u, &v8) && mmio_read32(&mmio->gcc, 0x52010u, &v10)) {
