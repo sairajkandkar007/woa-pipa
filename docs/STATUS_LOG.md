@@ -207,3 +207,13 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - Radio step 1: DSDT --pipa-bt (UR18 -> uart6 QUP0 SE6 0x998000, GSIV 0x27F, wrap0_s6, QUP_0) and --pipa-wpwr (appended \_SB.WPWR PIPA6390). drivers/pipapwr: sets uart6 pins gpio16-19 to qup6, drives BT_EN gpio21 then WLAN_EN gpio20 high (16 mA, pull-up), logs before/after. PEP clock table + catalog: added gcc_qupv3_wrap0_s0/1/2/5/6. UART/BT drivers NOT installed yet (check qcuart8250 for qcspi-style hard-coded maps first).
 - PCIe/Wi-Fi finding: pipa UEFI (Mu-Silicium) has no PcieDxe -> nothing trains the PCIe link; Kona PCI0 D0 descriptor drives TLMM gpio36 (= pipa display DVDD buck enable!) - must be remapped before PCIe work. qcppx8250 = PCIe platform extension (PERST/refgen/WLEN reset), not link init.
 - 21:50 qcuart8250 checked under WinDbg: maps only its own SEs (0xA90000, 0xA94000, 0x998000, 0xC94000) - no hard-coded TLMM, safe. Touch fine (unresponsive only while the MmMapIoSpaceEx breakpoint was active). Next: Bluetooth\BTFMUART (qcbtfmuart8250, ACPI\VEN_QCOM&DEV_2571&SUBSYS_MTP08250 matches pipa's _SUB), fw apbtfw*.tlv/apnv*.bin from the Kona BSP.
+
+## 2026-11-20 late — Bluetooth: QCA6390 firmware loaded
+- qcuart can't open uart6 (open -> STATUS_DEVICE_NOT_READY; needs qcpep's private P-state interface). UR18/BTH0 parked (`--pipa-bt-own`).
+- `pipapwr` now drives QUP0 SE6 GENI UART directly (polled FIFO): votes gcc_qupv3_wrap0_s6_clk, programs the s6 RCG
+  from XO bypass to 7.3728 MHz (GPLL0_EVEN M/N 384/15625), 115200 8N1, div 4 (QUP 2.5 => 16x oversampling).
+- QCA6390: soc_id 0x400A0200, rom 0x0200 -> htbtfw20.tlv + htnv20.bin (linux-firmware, local only, `claude\bt_fw`).
+- Download (btqca.c port, dl_mode 3) 868+25 segments in ~25 s; NVM patched: baud 115200, IBS off, deep sleep off.
+- After fw: HCI_Reset ok, HCI 5.2 (0x0B), manufacturer 0x001D (Qualcomm), LMP sub 0x3ABF.
+- BD_ADDR is the NVM placeholder 00:00:00:00:5A:AD -> must set a real one (EDL_WRITE_BD_ADDR 0xFC14) before use.
+- Next: Windows HCI transport (bus driver for BthMini, based on the Serial HCI bus sample), interrupt-driven RX.
