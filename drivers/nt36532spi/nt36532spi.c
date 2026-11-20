@@ -206,6 +206,31 @@ static NTSTATUS NvtWrite1(PDEV_CTX c, ULONG addr, UCHAR v)
     return GeniXfer(c, tx, rx, 2);
 }
 
+/* ---- TLMM diag (sm8250 tiles: west 0x0F100000, south 0x0F500000, north 0x0F900000; ctl = 0x1000*pin) ---- */
+static PUCHAR TlmmMap(ULONGLONG tile, ULONG pin)
+{
+    PHYSICAL_ADDRESS a; a.QuadPart = tile + 0x1000ull * pin;
+    return (PUCHAR)MmMapIoSpaceEx(a, 0x1000, PAGE_READWRITE | PAGE_NOCACHE);
+}
+static VOID TlmmShow(PCSTR n, ULONGLONG tile, ULONG pin)
+{
+    PUCHAR p = TlmmMap(tile, pin);
+    if (!p) return;
+    LOG("gpio%lu (%s) ctl=%08X io=%08X", pin, n, READ_REGISTER_ULONG((volatile ULONG *)p), READ_REGISTER_ULONG((volatile ULONG *)(p + 4)));
+    MmUnmapIoSpace(p, 0x1000);
+}
+/* drive a GPIO as output (func 0, OE=bit9, drive 2mA) with level v */
+static VOID TlmmOut(ULONGLONG tile, ULONG pin, ULONG v)
+{
+    PUCHAR p = TlmmMap(tile, pin);
+    if (!p) return;
+    WRITE_REGISTER_ULONG((volatile ULONG *)(p + 4), v ? 2u : 0u);
+    WRITE_REGISTER_ULONG((volatile ULONG *)p, (1u << 9));
+    MmUnmapIoSpace(p, 0x1000);
+}
+#define TLMM_SOUTH 0x0F500000ull
+#define TLMM_NORTH 0x0F900000ull
+
 static VOID Dump(PCSTR what, ULONG addr, const UCHAR *b, ULONG n, NTSTATUS st)
 {
     LOG("%s @%05lX st=%08X: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
@@ -284,6 +309,16 @@ NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
         st = NvtRead(c, addrs[i], b, 16);
         Dump("read", addrs[i], b, 16, st);
     }
+    /* 2b) pin levels: MISO gpio8, CS gpio11, TS reset gpio33, TS irq gpio39 */
+    TlmmShow("miso", TLMM_NORTH, 8); TlmmShow("cs", TLMM_NORTH, 11);
+    TlmmShow("ts-reset", TLMM_SOUTH, 33); TlmmShow("ts-irq", TLMM_SOUTH, 39);
+    /* 2c) pulse TS reset (gpio33, DT pmx_ts_reset) low 10 ms -> high, wait 50 ms */
+    TlmmOut(TLMM_SOUTH, 33, 0); KeStallExecutionProcessor(10000);
+    TlmmOut(TLMM_SOUTH, 33, 1); KeStallExecutionProcessor(50000);
+    TlmmShow("ts-reset", TLMM_SOUTH, 33); TlmmShow("ts-irq", TLMM_SOUTH, 39);
+    RtlZeroMemory(b, sizeof(b));
+    st = NvtRead(c, 0x3F004, b, 16);
+    Dump("after-gpio33-reset", 0x3F004, b, 16, st);
     /* 3) Linux nvt_ts_check_chip_ver_trim: bootloader reset (0x69 -> SWRST_N8 0x3F0FE), then trim id */
     for (i = 0; i < 3; i++) {
         st = NvtWrite1(c, 0x3F0FE, 0x69);
