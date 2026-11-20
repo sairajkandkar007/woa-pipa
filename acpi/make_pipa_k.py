@@ -119,6 +119,22 @@ def main():
             q = pos + len(dev) + 6
             d[q:q+8] = b'QCOMFFFF'
         print('pipa QUP: IC10 -> i2c11 (0xA8C000, irq 0x184, wrap1_s3, gpio60/61); %s parked' % '/'.join(x[0].decode() for x in parked))
+    if '--pipa-btpwr' in sys.argv:
+        # BTH0 PEP D0/D3 votes carry Kona MTP WCN rails; pipa's QCA6390 PMU needs L16A (3.0V vddasd).
+        # Swap LDO11_C (unused on pipa) -> LDO16_A in the BTH0 entries; D0 voltage 3.3V -> 3.024V.
+        import struct
+        b = bytes(d)
+        k = b.find(b'\\_SB.BTH0\x00'); k = b.find(b'\\_SB.BTH0\x00', k + 1)
+        k2 = b.find(b'\\_SB.BTH0\x00', k + 1)
+        k = k2 if b.find(b'LDO11_C', k2, k2 + 1500) > 0 else k
+        assert k > 0, 'BTH0 desc'
+        n = 0; t = k
+        for _ in range(2):
+            t = bytes(d).find(b'PPP_RESOURCE_ID_LDO11_C\x00', t + 1, k + 1500); assert t > 0, 'BTH0 LDO11_C'
+            d[t:t + 24] = b'PPP_RESOURCE_ID_LDO16_A\x00'; n += 1
+        v = bytes(d).find(struct.pack('<I', 0x328980), k, k + 1500); assert v > 0, 'BTH0 3.3V'
+        d[v:v + 4] = struct.pack('<I', 0x2E2500)
+        print(f'BTH0 PEP rails: LDO11_C -> LDO16_A (x{n}), 3.024V')
     if '--pipa-i2c15' in sys.argv:
         # Repurpose I2C5 (QUP0 SE4 @0x890000) as pipa i2c15 (QUP2 SE1 @0x884000: fsa4480, smb1390, hl6111r)
         import struct

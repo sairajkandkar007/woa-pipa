@@ -21,6 +21,7 @@ const ppp_res_t ppp_catalog[] = {
     {"PPP_RESOURCE_ID_CXO_BUFFERS_BBCLK2_A", 0, PPP_PMIC_CLOCK, 0u, 1u},
     {"PPP_RESOURCE_ID_LDO11_C", 0, PPP_LDO, 0u, 1u},
     {"PPP_RESOURCE_ID_LDO12_A", 0, PPP_LDO, 0u, 1u},
+    {"PPP_RESOURCE_ID_LDO16_A", 0, PPP_LDO, 0u, 1u}, /* pipa QCA6390 vddasd */
     {"PPP_RESOURCE_ID_LDO17_A", 0, PPP_LDO, 0u, 1u},
     {"PPP_RESOURCE_ID_LDO18_A", 0, PPP_LDO, 0u, 1u},
     {"PPP_RESOURCE_ID_LDO1_A", 0, PPP_LDO, 0u, 1u},
