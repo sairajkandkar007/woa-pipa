@@ -263,7 +263,8 @@ def main():
         print('pipa: added \\_SB.BKLT (KTZ8866 @IC10:0x11); CFSA 0x43 -> 0x42')
     if '--pipa-wpwr' in sys.argv:
         # Append \\_SB.WPWR (PIPA6390): pipapwr drives QCA6390 WLAN_EN (gpio20) / BT_EN (gpio21), uart6 pins.
-        wp = bytes.fromhex('102c5c5f53425f5b822457505752085f4849440d504950413633393000085f5549440114095f53544100a40a0f')
+        # compiled from acpi/pipa_wpwr.asl (adds _CRS Interrupt 0x27F = uart6 for the BT HCI transport)
+        wp = bytes.fromhex('1041045c5f53425f5b823857505752085f4849440d504950413633393000085f5549440114095f53544100a40a0f085f435253110e0a0b89060001017f0200007900')
         assert b'PIPA6390' not in bytes(d)
         d = bytearray(bytes(d) + wp); d[4:8] = len(d).to_bytes(4, 'little')
         print('pipa: added \\_SB.WPWR (PIPA6390)')

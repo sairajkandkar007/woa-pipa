@@ -17,6 +17,7 @@
 #include <ntddk.h>
 #include <wdf.h>
 #include <ntstrsafe.h>
+#include <bthxddi.h>
 
 #define LOG(fmt, ...) DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "pipapwr: " fmt "\n", __VA_ARGS__)
 #define TLMM_NORTH 0x0F900000ull
@@ -87,10 +88,12 @@ static VOID SetOut(ULONG pin, ULONG v)
 #define SE_GENI_M_CMD0  0x600
 #define SE_GENI_M_CMD_CTRL_REG 0x604
 #define SE_GENI_M_IRQ_STATUS 0x610
+#define SE_GENI_M_IRQ_EN 0x614
 #define SE_GENI_M_IRQ_CLEAR 0x618
 #define SE_GENI_S_CMD0  0x630
 #define SE_GENI_S_CMD_CTRL_REG 0x634
 #define SE_GENI_S_IRQ_STATUS 0x640
+#define SE_GENI_S_IRQ_EN 0x644
 #define SE_GENI_S_IRQ_CLEAR 0x648
 #define SE_GENI_TX_FIFOn 0x700
 #define SE_GENI_RX_FIFOn 0x780
@@ -126,7 +129,8 @@ static VOID UartSetup(PUCHAR se, ULONG div)
     W(SE_DMA_GENERAL_CFG, R(SE_DMA_GENERAL_CFG) | 0xF);
     W(GENI_OUTPUT_CTRL, 0x7F);
     W(GENI_FORCE_DEFAULT_REG, 1);
-    W(SE_IRQ_EN, R(SE_IRQ_EN) | 0xC);           /* GENI M/S irq (status only, we poll) */
+    W(SE_IRQ_EN, R(SE_IRQ_EN) | 0xC);           /* GENI M/S irq to the top level ... */
+    W(SE_GENI_M_IRQ_EN, 0); W(SE_GENI_S_IRQ_EN, 0);  /* ... but nothing enabled while we poll */
     W(SE_GENI_DMA_MODE_EN, R(SE_GENI_DMA_MODE_EN) & ~1u);
     /* packing: 8 bit words, 4 per FIFO entry, lsb first (values from geni_se_config_packing) */
     W(SE_GENI_TX_PACKING_CFG0, 0x4380E); W(SE_GENI_TX_PACKING_CFG1, 0xC3E0E);
@@ -301,7 +305,7 @@ static BOOLEAN Download(PUCHAR se, PCWSTR path, BOOLEAN nvm)
     return TRUE;
 }
 
-static VOID BtFirmware(PUCHAR se, UCHAR rom)
+static BOOLEAN BtFirmware(PUCHAR se, UCHAR rom, const UCHAR *bdaddr)
 {
     WCHAR p1[80], p2[80]; UCHAR r[16]; ULONG st;
     static const UCHAR nolog[] = { 0x14, 0x00 };
@@ -311,9 +315,9 @@ static VOID BtFirmware(PUCHAR se, UCHAR rom)
     /* honor CTS during the download so the controller can throttle us */
     W(SE_UART_TX_TRANS_CFG, R(SE_UART_TX_TRANS_CFG) & ~(1u << 1));
     KeQuerySystemTimePrecise(&t0);
-    if (!Download(se, p1, FALSE)) return;
+    if (!Download(se, p1, FALSE)) return FALSE;
     MsSleep(10);
-    if (!Download(se, p2, TRUE)) return;
+    if (!Download(se, p2, TRUE)) return FALSE;
     KeQuerySystemTimePrecise(&t1);
     LOG("bt: firmware download took %lu ms", (ULONG)((t1.QuadPart - t0.QuadPart) / 10000));
     st = HciCmd(se, 0xFC17, nolog, 2, NULL, 0, 1000);
@@ -326,9 +330,17 @@ static VOID BtFirmware(PUCHAR se, UCHAR rom)
     RtlZeroMemory(r, sizeof(r));
     st = HciCmd(se, 0x1009, NULL, 0, r, sizeof(r), 1000);       /* Read_BD_ADDR */
     LOG("bt: bd_addr st=%lX %02X:%02X:%02X:%02X:%02X:%02X", st, r[9], r[8], r[7], r[6], r[5], r[4]);
+    if (bdaddr) {     /* EDL_WRITE_BD_ADDR (btqca.c qca_set_bdaddr): 6 bytes, little endian */
+        st = HciCmd(se, 0xFC14, bdaddr, 6, NULL, 0, 1000);
+        LOG("bt: write bd_addr st=%lX", st);
+        RtlZeroMemory(r, sizeof(r));
+        st = HciCmd(se, 0x1009, NULL, 0, r, sizeof(r), 1000);
+        LOG("bt: bd_addr now st=%lX %02X:%02X:%02X:%02X:%02X:%02X", st, r[9], r[8], r[7], r[6], r[5], r[4]);
+    }
+    return TRUE;
 }
 
-static VOID BtProbe(VOID)
+static PUCHAR BtProbe(const UCHAR *bdaddr)
 {
     static const UCHAR reset[] = { 0x01, 0x03, 0x0C, 0x00 };
     static const UCHAR ver[] = { 0x01, 0x00, 0xFC, 0x01, 0x19 };
@@ -336,7 +348,7 @@ static VOID BtProbe(VOID)
     UCHAR rx[96];
 
     gcc = MapPhys(GCC_VOTE_PAGE, 0x1000);
-    if (!gcc) { LOG("bt: map gcc failed"); return; }
+    if (!gcc) { LOG("bt: map gcc failed"); return NULL; }
     n = READ_REGISTER_ULONG((volatile ULONG *)(gcc + 0x8));
     WRITE_REGISTER_ULONG((volatile ULONG *)(gcc + 0x8), n | (1u << 16));   /* gcc_qupv3_wrap0_s6_clk */
     KeStallExecutionProcessor(100);
@@ -371,10 +383,10 @@ static VOID BtProbe(VOID)
     samp = (qver >= 0x20050000) ? 16 : 32;
     div = (sclk + 115200 * samp / 2) / (115200 * samp);   /* 7.3728M/16 -> 4 exact; 19.2M -> 10 (+4%) */
     se = MapPhys(SE6_BASE, 0x4000);
-    if (!se) { LOG("bt: map se6 failed"); return; }
+    if (!se) { LOG("bt: map se6 failed"); return NULL; }
     fw = R(GENI_FW_REVISION_RO);
     LOG("bt: sclk %lu qup hw ver %08X sampling %lu div %lu; se6 fw=%08X status=%08X ios=%08X", sclk, qver, samp, div, fw, R(SE_GENI_STATUS), R(SE_GENI_IOS));
-    if (((fw >> 8) & 0xFF) != 2) { LOG("bt: SE6 is not UART firmware - abort"); MmUnmapIoSpace(se, 0x4000); return; }
+    if (((fw >> 8) & 0xFF) != 2) { LOG("bt: SE6 is not UART firmware - abort"); MmUnmapIoSpace(se, 0x4000); return NULL; }
     UartSetup(se, div);
     n = UartRx(se, rx, sizeof(rx), 50);           /* drain anything pending */
     if (n) Dump("stale rx", rx, n);
@@ -388,19 +400,319 @@ static VOID BtProbe(VOID)
         ULONG socver = (socid << 16) | (romv & 0xFFFF);
         UCHAR rom = (UCHAR)(((socver & 0xF00) >> 4) | (socver & 0xF));
         LOG("bt: soc_id=%08X rom_ver=%04X patch=%04X -> fw rom %02X", socid, romv, rx[13] | (rx[14] << 8), rom);
-        BtFirmware(se, rom);
+        if (BtFirmware(se, rom, bdaddr)) {
+            LOG("bt: controller ready");
+            return se;                       /* stays mapped: the HCI transport uses it */
+        }
     } else LOG("bt: version reply not understood - no firmware download");
-    LOG("bt: done s_irq=%08X rxfifo=%08X ios=%08X", R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_IOS));
+    LOG("bt: setup failed s_irq=%08X rxfifo=%08X ios=%08X", R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_IOS));
     MmUnmapIoSpace(se, 0x4000);
+    return NULL;
+}
+
+
+/* ======================================================================================
+ * HCI transport for the Windows Bluetooth stack (BthMini).
+ * This FDO (\_SB.WPWR) is a tiny bus driver: once the controller is up it adds a child PDO with
+ * compatible ID MS_BTHX_BTHMINI, so the inbox BthMini/BthPort stack loads on it. The child forwards
+ * the IOCTL_BTHX_* requests here (model: Windows-driver-samples bluetooth/serialhcibus).
+ *  - TX: H4 frames written polled to the GENI TX FIFO (CTS honored), serialized by a wait lock.
+ *  - RX: uart6 interrupt (GSIV 0x27F from WPWR _CRS): ISR drains the RX FIFO into a ring,
+ *        DPC parses H4 (event / ACL) and completes READ_HCI requests or parks packets in a list.
+ * ====================================================================================== */
+
+#define RING_SIZE   8192
+#define MAX_PKT     (4 + 1021)
+
+typedef struct _PKT { LIST_ENTRY le; ULONG len; UCHAR type; UCHAR data[1]; } PKT, *PPKT;
+
+typedef struct _FDO_CTX {
+    WDFDEVICE dev;
+    PUCHAR se;                      /* QUP0 SE6, mapped once the controller is ready */
+    WDFINTERRUPT irq;
+    BOOLEAN started, ready, childAdded;
+    UCHAR bdaddr[6];
+    /* RX ring (ISR producer, DPC consumer; synchronized with the interrupt lock) */
+    UCHAR ring[RING_SIZE]; ULONG rhead, rtail, rdrop;
+    /* H4 parser (DPC only) */
+    UCHAR pk[1 + MAX_PKT]; ULONG pkn, pkneed; UCHAR pktype; BOOLEAN hdrDone;
+    /* read side */
+    WDFSPINLOCK pktLock;
+    WDFQUEUE ioQueue, evtQueue, aclQueue;
+    LIST_ENTRY evtList, aclList; ULONG evtCount, aclCount;
+    WDFWAITLOCK txLock;
+    BTHX_CAPABILITIES caps;
+    ULONG cntTx, cntEvt, cntAcl;
+} FDO_CTX, *PFDO_CTX;
+WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(FDO_CTX, FdoCtx)
+
+typedef struct _PDO_CTX { WDFDEVICE parent; } PDO_CTX, *PPDO_CTX;
+WDF_DECLARE_CONTEXT_TYPE_WITH_NAME(PDO_CTX, PdoCtx)
+
+EVT_WDF_INTERRUPT_ISR BtIsr;
+EVT_WDF_INTERRUPT_DPC BtDpc;
+EVT_WDF_IO_QUEUE_IO_DEVICE_CONTROL FdoIoctl;
+EVT_WDF_IO_QUEUE_IO_DEVICE_CONTROL PdoIoctl;
+EVT_WDF_IO_QUEUE_IO_INTERNAL_DEVICE_CONTROL PdoInternalIoctl;
+
+#define RXBITS ((1u << 26) | (1u << 27))       /* RX_FIFO_WATERMARK | RX_FIFO_LAST */
+
+BOOLEAN BtIsr(WDFINTERRUPT irq, ULONG msgId)
+{
+    PFDO_CTX c = FdoCtx(WdfInterruptGetDevice(irq));
+    PUCHAR se = c->se; ULONG m, s, st, wc, i, k, nb, w;
+    UNREFERENCED_PARAMETER(msgId);
+    if (!se) return FALSE;
+    m = R(SE_GENI_M_IRQ_STATUS); s = R(SE_GENI_S_IRQ_STATUS);
+    if (!((m & (RXBITS | 0x80000000u)) | s)) return FALSE;
+    for (;;) {
+        st = R(SE_GENI_RX_FIFO_STATUS); wc = st & 0x1FFFFFF;
+        if (!wc) break;
+        for (i = 0; i < wc; i++) {
+            w = R(SE_GENI_RX_FIFOn);
+            nb = 4;
+            if (i == wc - 1 && (st & 0x80000000u)) { nb = (st >> 28) & 7; if (!nb) nb = 4; }
+            for (k = 0; k < nb; k++) {
+                ULONG nh = (c->rhead + 1) % RING_SIZE;
+                if (nh == c->rtail) { c->rdrop++; continue; }
+                c->ring[c->rhead] = (UCHAR)(w >> (8 * k)); c->rhead = nh;
+            }
+        }
+    }
+    W(SE_GENI_S_IRQ_CLEAR, s);
+    W(SE_GENI_M_IRQ_CLEAR, m & ~1u);           /* leave M_CMD_DONE for the TX poller */
+    WdfInterruptQueueDpcForIsr(irq);
+    return TRUE;
+}
+
+static VOID CompleteRead(WDFREQUEST req, UCHAR type, const UCHAR *data, ULONG len)
+{
+    PBTHX_HCI_READ_WRITE_CONTEXT h; size_t cap; NTSTATUS st;
+    ULONG need = (ULONG)FIELD_OFFSET(BTHX_HCI_READ_WRITE_CONTEXT, Data) + len;
+    st = WdfRequestRetrieveOutputBuffer(req, need, (PVOID *)&h, &cap);
+    if (!NT_SUCCESS(st)) { WdfRequestComplete(req, st); return; }
+    h->Type = type; h->DataLen = len;
+    RtlCopyMemory(h->Data, data, len);
+    WdfRequestCompleteWithInformation(req, STATUS_SUCCESS, need);
+}
+
+/* a complete packet from the controller: hand to a waiting READ_HCI or park it */
+static VOID Deliver(PFDO_CTX c, UCHAR type, const UCHAR *data, ULONG len)
+{
+    WDFQUEUE q = (type == HciPacketEvent) ? c->evtQueue : c->aclQueue;
+    PLIST_ENTRY list = (type == HciPacketEvent) ? &c->evtList : &c->aclList;
+    PULONG cnt = (type == HciPacketEvent) ? &c->evtCount : &c->aclCount;
+    WDFREQUEST req; NTSTATUS st; PPKT p;
+    if (type == HciPacketEvent) c->cntEvt++; else c->cntAcl++;
+    WdfSpinLockAcquire(c->pktLock);
+    st = WdfIoQueueRetrieveNextRequest(q, &req);
+    if (NT_SUCCESS(st)) {
+        WdfSpinLockRelease(c->pktLock);
+        CompleteRead(req, type, data, len);
+        return;
+    }
+    p = (PPKT)ExAllocatePool2(POOL_FLAG_NON_PAGED, sizeof(PKT) + len, 'kPtB');
+    if (p && *cnt < 512) {
+        p->len = len; p->type = type; RtlCopyMemory(p->data, data, len);
+        InsertTailList(list, &p->le); (*cnt)++;
+        p = NULL;
+    }
+    WdfSpinLockRelease(c->pktLock);
+    if (p) ExFreePool(p);
+}
+
+static VOID ParseByte(PFDO_CTX c, UCHAR b)
+{
+    if (c->pkn == 0) {
+        if (b != 0x04 && b != 0x02) return;           /* wait for an event or ACL type byte */
+        c->pktype = b; c->pkneed = (b == 0x04) ? 3 : 5; c->hdrDone = FALSE;
+    }
+    c->pk[c->pkn++] = b;
+    if (c->pkn < c->pkneed) return;
+    if (!c->hdrDone) {                                 /* header complete: add the payload length */
+        ULONG pl = (c->pktype == 0x04) ? c->pk[2] : (ULONG)(c->pk[3] | (c->pk[4] << 8));
+        c->hdrDone = TRUE;
+        c->pkneed += pl;
+        if (c->pkneed > sizeof(c->pk)) { c->pkn = 0; return; }   /* garbage - resync */
+        if (pl) return;
+    }
+    Deliver(c, c->pktype == 0x04 ? (UCHAR)HciPacketEvent : (UCHAR)HciPacketAclData, c->pk + 1, c->pkn - 1);
+    c->pkn = 0;
+}
+
+VOID BtDpc(WDFINTERRUPT irq, WDFOBJECT obj)
+{
+    PFDO_CTX c = FdoCtx(WdfInterruptGetDevice(irq));
+    UCHAR tmp[256]; ULONG n, i;
+    UNREFERENCED_PARAMETER(obj);
+    for (;;) {
+        n = 0;
+        WdfInterruptAcquireLock(irq);
+        while (c->rtail != c->rhead && n < sizeof(tmp)) { tmp[n++] = c->ring[c->rtail]; c->rtail = (c->rtail + 1) % RING_SIZE; }
+        WdfInterruptReleaseLock(irq);
+        if (!n) break;
+        for (i = 0; i < n; i++) ParseByte(c, tmp[i]);
+    }
+}
+
+static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
+{
+    PBTHX_HCI_READ_WRITE_CONTEXT h; size_t len; NTSTATUS st; UCHAR *buf;
+    st = WdfRequestRetrieveInputBuffer(req, sizeof(BTHX_HCI_READ_WRITE_CONTEXT), (PVOID *)&h, &len);
+    if (!NT_SUCCESS(st)) return st;
+    UNREFERENCED_PARAMETER(inLen);
+    if (h->DataLen > MAX_PKT || FIELD_OFFSET(BTHX_HCI_READ_WRITE_CONTEXT, Data) + h->DataLen > len) return STATUS_INVALID_PARAMETER;
+    if (h->Type != HciPacketCommand && h->Type != HciPacketAclData) return STATUS_INVALID_PARAMETER;
+    if (!c->ready) return STATUS_DEVICE_NOT_READY;
+    buf = (UCHAR *)ExAllocatePool2(POOL_FLAG_NON_PAGED, 1 + h->DataLen, 'xTtB');
+    if (!buf) return STATUS_INSUFFICIENT_RESOURCES;
+    buf[0] = h->Type; RtlCopyMemory(buf + 1, h->Data, h->DataLen);
+    WdfWaitLockAcquire(c->txLock, NULL);
+    UartTx(c->se, buf, 1 + h->DataLen);
+    WdfWaitLockRelease(c->txLock);
+    ExFreePool(buf);
+    c->cntTx++;
+    WdfRequestCompleteWithInformation(req, STATUS_SUCCESS, h->DataLen);
+    return STATUS_PENDING;   /* already completed */
+}
+
+VOID FdoIoctl(WDFQUEUE q, WDFREQUEST req, size_t outLen, size_t inLen, ULONG code)
+{
+    PFDO_CTX c = FdoCtx(WdfIoQueueGetDevice(q));
+    NTSTATUS st = STATUS_SUCCESS; ULONG_PTR info = 0; PVOID p;
+    switch (code) {
+    case IOCTL_BTHX_GET_VERSION:
+        st = WdfRequestRetrieveOutputBuffer(req, sizeof(BTHX_VERSION), &p, NULL);
+        if (NT_SUCCESS(st)) { RtlCopyMemory(p, &Microsoft_BTHX_DDI_Version, sizeof(BTHX_VERSION)); info = sizeof(BTHX_VERSION); }
+        break;
+    case IOCTL_BTHX_SET_VERSION:
+        st = WdfRequestRetrieveInputBuffer(req, sizeof(BTHX_VERSION), &p, NULL);
+        if (NT_SUCCESS(st)) LOG("bthx: set version %lx", ((BTHX_VERSION *)p)->Version);
+        break;
+    case IOCTL_BTHX_QUERY_CAPABILITIES:
+        st = WdfRequestRetrieveOutputBuffer(req, sizeof(BTHX_CAPABILITIES), &p, NULL);
+        if (NT_SUCCESS(st)) { RtlCopyMemory(p, &c->caps, sizeof(BTHX_CAPABILITIES)); info = sizeof(BTHX_CAPABILITIES); }
+        break;
+    case IOCTL_BTHX_WRITE_HCI:
+        st = WriteHci(c, req, inLen);
+        if (st == STATUS_PENDING) return;
+        break;
+    case IOCTL_BTHX_READ_HCI: {
+        BTHX_HCI_PACKET_TYPE *pt; PPKT pk = NULL; WDFQUEUE tq; PLIST_ENTRY list; PULONG cnt;
+        st = WdfRequestRetrieveInputBuffer(req, sizeof(BTHX_HCI_PACKET_TYPE), (PVOID *)&pt, NULL);
+        if (!NT_SUCCESS(st)) break;
+        if (*pt == HciPacketEvent) { tq = c->evtQueue; list = &c->evtList; cnt = &c->evtCount; }
+        else if (*pt == HciPacketAclData) { tq = c->aclQueue; list = &c->aclList; cnt = &c->aclCount; }
+        else { st = STATUS_INVALID_PARAMETER; break; }
+        WdfSpinLockAcquire(c->pktLock);
+        if (!IsListEmpty(list)) { pk = CONTAINING_RECORD(RemoveHeadList(list), PKT, le); (*cnt)--; }
+        else st = WdfRequestForwardToIoQueue(req, tq);
+        WdfSpinLockRelease(c->pktLock);
+        if (pk) { CompleteRead(req, pk->type, pk->data, pk->len); ExFreePool(pk); return; }
+        if (NT_SUCCESS(st)) return;
+        break; }
+    default:
+        UNREFERENCED_PARAMETER(outLen);
+        st = STATUS_NOT_SUPPORTED;
+        LOG("bthx: unknown ioctl %08lX", code);
+    }
+    WdfRequestCompleteWithInformation(req, st, info);
+}
+
+/* ---------------- child PDO for BthMini ---------------- */
+VOID PdoIoctl(WDFQUEUE q, WDFREQUEST req, size_t outLen, size_t inLen, ULONG code)
+{
+    PPDO_CTX pc = PdoCtx(WdfIoQueueGetDevice(q));
+    WDF_REQUEST_FORWARD_OPTIONS fo; NTSTATUS st;
+    UNREFERENCED_PARAMETER(outLen); UNREFERENCED_PARAMETER(inLen); UNREFERENCED_PARAMETER(code);
+    WDF_REQUEST_FORWARD_OPTIONS_INIT(&fo);
+    st = WdfRequestForwardToParentDeviceIoQueue(req, FdoCtx(pc->parent)->ioQueue, &fo);
+    if (!NT_SUCCESS(st)) WdfRequestComplete(req, st);
+}
+VOID PdoInternalIoctl(WDFQUEUE q, WDFREQUEST req, size_t outLen, size_t inLen, ULONG code)
+{
+    PdoIoctl(q, req, outLen, inLen, code);
+}
+
+static NTSTATUS AddChild(PFDO_CTX c)
+{
+    PWDFDEVICE_INIT init; NTSTATUS st; WDFDEVICE child; WDF_OBJECT_ATTRIBUTES a; WDF_IO_QUEUE_CONFIG qc;
+    WDF_DEVICE_PNP_CAPABILITIES caps;
+    DECLARE_CONST_UNICODE_STRING(hwid, L"PIPA\\QCA6390_UART");
+    DECLARE_CONST_UNICODE_STRING(compat, L"MS_BTHX_BTHMINI");
+    DECLARE_CONST_UNICODE_STRING(inst, L"00");
+    DECLARE_CONST_UNICODE_STRING(text, L"Qualcomm QCA6390 Bluetooth (pipa)");
+    DECLARE_CONST_UNICODE_STRING(loc, L"pipa uart6");
+    init = WdfPdoInitAllocate(c->dev);
+    if (!init) return STATUS_INSUFFICIENT_RESOURCES;
+    st = WdfPdoInitAssignDeviceID(init, &hwid);
+    if (NT_SUCCESS(st)) st = WdfPdoInitAddHardwareID(init, &hwid);
+    if (NT_SUCCESS(st)) st = WdfPdoInitAddCompatibleID(init, &compat);
+    if (NT_SUCCESS(st)) st = WdfPdoInitAssignInstanceID(init, &inst);
+    if (NT_SUCCESS(st)) st = WdfPdoInitAddDeviceText(init, &text, &loc, 0x409);
+    if (!NT_SUCCESS(st)) { WdfDeviceInitFree(init); return st; }
+    WdfPdoInitSetDefaultLocale(init, 0x409);
+    WdfPdoInitAllowForwardingRequestToParent(init);
+    WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&a, PDO_CTX);
+    st = WdfDeviceCreate(&init, &a, &child);
+    if (!NT_SUCCESS(st)) { WdfDeviceInitFree(init); return st; }
+    PdoCtx(child)->parent = c->dev;
+    WDF_DEVICE_PNP_CAPABILITIES_INIT(&caps);
+    caps.Removable = WdfFalse; caps.SurpriseRemovalOK = WdfTrue; caps.UniqueID = WdfTrue;
+    WdfDeviceSetPnpCapabilities(child, &caps);
+    WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&qc, WdfIoQueueDispatchParallel);
+    qc.EvtIoDeviceControl = PdoIoctl;
+    qc.EvtIoInternalDeviceControl = PdoInternalIoctl;
+    st = WdfIoQueueCreate(child, &qc, WDF_NO_OBJECT_ATTRIBUTES, NULL);
+    if (!NT_SUCCESS(st)) { WdfObjectDelete(child); return st; }
+    WdfFdoLockStaticChildListForIteration(c->dev);
+    st = WdfFdoAddStaticChild(c->dev, child);
+    WdfFdoUnlockStaticChildListFromIteration(c->dev);
+    if (!NT_SUCCESS(st)) WdfObjectDelete(child);
+    return st;
+}
+
+/* ---------------- bring-up thread ---------------- */
+static VOID GetBdAddr(PFDO_CTX c)
+{
+    WDFKEY k; UNICODE_STRING n; ULONG lo = 0, hi = 0; BOOLEAN have = FALSE;
+    RtlInitUnicodeString(&n, L"BdAddrLo");
+    if (NT_SUCCESS(WdfDeviceOpenRegistryKey(c->dev, PLUGPLAY_REGKEY_DEVICE, KEY_READ | KEY_WRITE, WDF_NO_OBJECT_ATTRIBUTES, &k))) {
+        UNICODE_STRING n2; RtlInitUnicodeString(&n2, L"BdAddrHi");
+        if (NT_SUCCESS(WdfRegistryQueryULong(k, &n, &lo)) && NT_SUCCESS(WdfRegistryQueryULong(k, &n2, &hi))) have = TRUE;
+        if (!have) {   /* first boot: make one up and keep it (Xiaomi-style OUI-less, but stable per install) */
+            LARGE_INTEGER t; ULONG seed;
+            KeQuerySystemTimePrecise(&t); seed = t.LowPart ^ (ULONG)(t.QuadPart >> 32) ^ (ULONG)(ULONG_PTR)c;
+            lo = RtlRandomEx(&seed); hi = 0x2200 | (RtlRandomEx(&seed) & 0xFF);   /* 22:xx:... */
+            WdfRegistryAssignULong(k, &n, lo); WdfRegistryAssignULong(k, &n2, hi);
+            LOG("bt: generated bd_addr");
+        }
+        WdfRegistryClose(k);
+    }
+    c->bdaddr[0] = (UCHAR)lo; c->bdaddr[1] = (UCHAR)(lo >> 8); c->bdaddr[2] = (UCHAR)(lo >> 16);
+    c->bdaddr[3] = (UCHAR)(lo >> 24); c->bdaddr[4] = (UCHAR)hi; c->bdaddr[5] = (UCHAR)(hi >> 8);
 }
 
 static KSTART_ROUTINE BtThread;
 static VOID BtThread(PVOID ctx)
 {
-    UNREFERENCED_PARAMETER(ctx);
+    PFDO_CTX c = (PFDO_CTX)ctx; PUCHAR se; NTSTATUS st;
+    GetBdAddr(c);
     /* BT_EN low->high so the QCA6390 BT core boots fresh, then talk to it */
     SetOut(21, 0); MsSleep(50); SetOut(21, 1); MsSleep(150);
-    BtProbe();
+    se = BtProbe(c->bdaddr);
+    if (se) {
+        /* switch RX to interrupt mode */
+        W(SE_GENI_S_IRQ_CLEAR, 0xFFFFFFFF); W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF);
+        c->se = se;
+        W(SE_GENI_S_IRQ_EN, RXBITS);
+        W(SE_GENI_M_IRQ_EN, RXBITS);
+        c->ready = TRUE;
+        g_verbose = FALSE;
+        st = AddChild(c);
+        c->childAdded = NT_SUCCESS(st);
+        LOG("bt: HCI transport up, child PDO st=%08X", st);
+    }
     PsTerminateSystemThread(STATUS_SUCCESS);
 }
 
@@ -413,31 +725,55 @@ NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
 
 NTSTATUS PwrDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
 {
-    WDF_PNPPOWER_EVENT_CALLBACKS pnp; WDFDEVICE dev;
+    WDF_PNPPOWER_EVENT_CALLBACKS pnp; WDFDEVICE dev; WDF_OBJECT_ATTRIBUTES a; NTSTATUS st;
+    WDF_INTERRUPT_CONFIG ic; WDF_IO_QUEUE_CONFIG qc; PFDO_CTX c;
     UNREFERENCED_PARAMETER(drv);
     WDF_PNPPOWER_EVENT_CALLBACKS_INIT(&pnp);
     pnp.EvtDeviceD0Entry = PwrD0Entry;
     WdfDeviceInitSetPnpPowerEventCallbacks(init, &pnp);
-    return WdfDeviceCreate(&init, WDF_NO_OBJECT_ATTRIBUTES, &dev);
+    WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&a, FDO_CTX);
+    st = WdfDeviceCreate(&init, &a, &dev);
+    if (!NT_SUCCESS(st)) return st;
+    c = FdoCtx(dev); c->dev = dev;
+    InitializeListHead(&c->evtList); InitializeListHead(&c->aclList);
+    c->caps.MaxAclTransferInSize = MAX_PKT;
+    c->caps.ScoSupport = ScoSupportHCIBypass;
+    c->caps.MaxScoChannels = 1;
+    c->caps.IsDeviceIdleCapable = FALSE;
+    c->caps.IsDeviceWakeCapable = FALSE;
+    WDF_OBJECT_ATTRIBUTES_INIT(&a); a.ParentObject = dev;
+    st = WdfSpinLockCreate(&a, &c->pktLock); if (!NT_SUCCESS(st)) return st;
+    st = WdfWaitLockCreate(&a, &c->txLock); if (!NT_SUCCESS(st)) return st;
+    WDF_INTERRUPT_CONFIG_INIT(&ic, BtIsr, BtDpc);
+    st = WdfInterruptCreate(dev, &ic, WDF_NO_OBJECT_ATTRIBUTES, &c->irq);
+    LOG("interrupt create st=%08X", st);
+    if (!NT_SUCCESS(st)) return st;
+    /* forwarded BTHX requests; passive because WRITE_HCI does polled TX under a wait lock */
+    WDF_IO_QUEUE_CONFIG_INIT(&qc, WdfIoQueueDispatchParallel);
+    qc.EvtIoDeviceControl = FdoIoctl;
+    qc.EvtIoInternalDeviceControl = FdoIoctl;
+    WDF_OBJECT_ATTRIBUTES_INIT(&a); a.ExecutionLevel = WdfExecutionLevelPassive;
+    st = WdfIoQueueCreate(dev, &qc, &a, &c->ioQueue); if (!NT_SUCCESS(st)) return st;
+    WDF_IO_QUEUE_CONFIG_INIT(&qc, WdfIoQueueDispatchManual);
+    st = WdfIoQueueCreate(dev, &qc, WDF_NO_OBJECT_ATTRIBUTES, &c->evtQueue); if (!NT_SUCCESS(st)) return st;
+    st = WdfIoQueueCreate(dev, &qc, WDF_NO_OBJECT_ATTRIBUTES, &c->aclQueue);
+    return st;
 }
 
 NTSTATUS PwrD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
 {
-    ULONG i;
-    UNREFERENCED_PARAMETER(dev);
+    PFDO_CTX c = FdoCtx(dev); ULONG i;
     LOG("D0 entry (from D%d)", (int)prev - 1);
-    Show("wlan_en", 20); Show("bt_en", 21);
-    for (i = 16; i <= 19; i++) Show("uart6", i);
+    if (c->started) return STATUS_SUCCESS;   /* controller keeps running (no idle / sleep support yet) */
+    c->started = TRUE;
     for (i = 16; i <= 19; i++) SetFunc(i, 1 /* qup6 */, PULL_UP, 1 /* 4 mA */);
     SetOut(21, 1);                         /* BT_EN */
     KeStallExecutionProcessor(20000);
     SetOut(20, 1);                         /* WLAN_EN */
     KeStallExecutionProcessor(20000);
     Show("wlan_en", 20); Show("bt_en", 21);
-    for (i = 16; i <= 19; i++) Show("uart6", i);
-    /* BT_EN low->high so the QCA6390 BT core boots fresh, then talk to it */
     {
-        HANDLE th; NTSTATUS st = PsCreateSystemThread(&th, THREAD_ALL_ACCESS, NULL, NULL, NULL, BtThread, NULL);
+        HANDLE th; NTSTATUS st = PsCreateSystemThread(&th, THREAD_ALL_ACCESS, NULL, NULL, NULL, BtThread, c);
         LOG("bt thread start st=%08X", st);
         if (NT_SUCCESS(st)) ZwClose(th);
     }

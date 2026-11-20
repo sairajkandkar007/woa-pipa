@@ -1,5 +1,5 @@
 ;
-; pipapwr.inf - pipa QCA6390 radio power (WLAN_EN/BT_EN, BT UART pins)
+; pipapwr.inf - pipa QCA6390 radio power + Bluetooth HCI UART transport (bus driver for BthMini)
 ;
 [Version]
 Signature   = "$WINDOWS NT$"
@@ -7,7 +7,7 @@ Class       = System
 ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318}
 Provider    = %Mfg%
 CatalogFile = pipapwr.cat
-DriverVer   = 11/20/2026,1.0.0.1
+DriverVer   = 11/20/2026,1.0.1.0
 PnpLockdown = 1
 
 [DestinationDirs]
@@ -51,4 +51,4 @@ KmdfLibraryVersion = $KMDFVERSION$
 [Strings]
 Mfg  = "woa-pipa"
 Disk = "pipapwr install disk"
-Desc = "pipa radio power (QCA6390)"
+Desc = "pipa QCA6390 radio + Bluetooth UART bus"
