@@ -186,3 +186,4 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - ktz8866 INF Brightness back to 1009 (bootloader level).
 - DSDT `--pipa-spi4`: Kona SPI4 (QUP2 SE17 @0x88C000) -> pipa touch SPI QUP0 SE4 @0x990000, GSIV 0x27D, gcc_qupv3_wrap0_s4_clk, TLMM gpio8-11 func 1; _HID restored QCOM250F. qcspi enabled in qpep_extra_drivers.txt (PC).
 - Caveat: Kona ADSP AUDD child still points at \_SB.SPI4 (no ADSP driver running, so inert).
+- SPI4 not enumerated/started (held by _DEP on QGP0 GPI-DMA + MMU0, no drivers). _DEP rewritten to PEP0 only.

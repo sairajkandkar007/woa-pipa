@@ -190,6 +190,13 @@ def main():
         hid = b'SPI4\x08_HID\x0dQCOMFFFF'
         if bytes(d).count(hid) == 1:
             h = bytes(d).index(hid) + 10; d[h:h+8] = b'QCOM250F'
+        # _DEP {PEP0, QGP0, MMU0} -> {PEP0, PEP0, PEP0}: no GPI-DMA/SMMU driver runs, so the device would
+        # stay held forever. qcspi falls back to FIFO mode like qci2c.
+        dep = b'SPI4' 
+        q = bytes(d).find(b'_DEP\x12', bytes(d).index(b'SPI4\x08_HID'))
+        seg = bytes(d[q:q + 40]); a = seg.find(b'_SB_QGP0'); m = seg.find(b'_SB_MMU0')
+        assert 0 < a < 40 and 0 < m < 40, seg.hex()
+        d[q + a:q + a + 8] = b'_SB_PEP0'; d[q + m:q + m + 8] = b'_SB_PEP0'
         print(f'pipa touch SPI: SPI4 -> 0x990000, irq 0x27D, wrap0_s4 x{n}, gpio8-11 ({pins} TLMM entries)')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
