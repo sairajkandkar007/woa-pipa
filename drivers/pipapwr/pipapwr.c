@@ -444,6 +444,8 @@ typedef struct _FDO_CTX {
     WDFWAITLOCK txLock;
     BTHX_CAPABILITIES caps;
     ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged, polls, rawLogged;
+    volatile BOOLEAN ibsAwake; ULONG ibsWakeInd, ibsSleepInd, ibsWakeTimeout;
+    KEVENT wakeAck; WDFWORKITEM ackWork;
     WDFSPINLOCK parseLock;
     WDFTIMER poll;
 } FDO_CTX, *PFDO_CTX;
@@ -545,6 +547,11 @@ static VOID Deliver(PFDO_CTX c, UCHAR type, const UCHAR *data, ULONG len)
 static VOID ParseByte(PFDO_CTX c, UCHAR b)
 {
     if (c->pkn == 0) {
+        /* QCA in-band sleep (hci_qca.c): FD = controller wants to send (needs our WAKE_ACK FC),
+         * FC = ack of our wake, FE = controller going to sleep */
+        if (b == 0xFD) { c->ibsWakeInd++; WdfWorkItemEnqueue(c->ackWork); return; }
+        if (b == 0xFC) { c->ibsAwake = TRUE; KeSetEvent(&c->wakeAck, 0, FALSE); return; }
+        if (b == 0xFE) { c->ibsAwake = FALSE; c->ibsSleepInd++; return; }
         if (b != 0x04 && b != 0x02) return;           /* wait for an event or ACL type byte */
         c->pktype = b; c->pkneed = (b == 0x04) ? 3 : 5; c->hdrDone = FALSE;
     }
@@ -600,9 +607,20 @@ VOID RxPoll(WDFTIMER t)
     ProcessRing(c, c->irq);
     if (++c->polls % 5000 == 0) {
         PUCHAR se = c->se;
-        LOG("bthx: poll %lu isr %lu tx %lu evt %lu acl %lu drop %lu | m=%08X s=%08X rxfifo=%08X status=%08X ios=%08X s_en=%08X", c->polls, c->isrCount, c->cntTx, c->cntEvt, c->cntAcl, c->rdrop,
+        LOG("bthx: poll %lu ibs wake %lu sleep %lu wto %lu isr %lu tx %lu evt %lu acl %lu drop %lu | m=%08X s=%08X rxfifo=%08X status=%08X ios=%08X s_en=%08X", c->polls, c->ibsWakeInd, c->ibsSleepInd, c->ibsWakeTimeout, c->isrCount, c->cntTx, c->cntEvt, c->cntAcl, c->rdrop,
             R(SE_GENI_M_IRQ_STATUS), R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_STATUS), R(SE_GENI_IOS), R(SE_GENI_S_IRQ_EN));
     }
+}
+
+EVT_WDF_WORKITEM AckWork;
+VOID AckWork(WDFWORKITEM wi)
+{
+    PFDO_CTX c = FdoCtx((WDFDEVICE)WdfWorkItemGetParentObject(wi));
+    static const UCHAR ack = 0xFC;
+    WdfWaitLockAcquire(c->txLock, NULL);
+    UartTx(c->se, &ack, 1);
+    c->ibsAwake = TRUE;
+    WdfWaitLockRelease(c->txLock);
 }
 
 static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
@@ -620,6 +638,15 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
     if (c->cntTx < 40) LOG("bthx: tx#%lu type %u len %lu: %02X %02X %02X %02X", c->cntTx, h->Type, h->DataLen,
         h->DataLen > 0 ? h->Data[0] : 0, h->DataLen > 1 ? h->Data[1] : 0, h->DataLen > 2 ? h->Data[2] : 0, h->DataLen > 3 ? h->Data[3] : 0);
     WdfWaitLockAcquire(c->txLock, NULL);
+    if (!c->ibsAwake) {        /* HCI_IBS_WAKE_IND, wait for WAKE_ACK (retry like hci_qca's wake retrans) */
+        static const UCHAR wake = 0xFD; ULONG tries; LARGE_INTEGER to; to.QuadPart = -10000LL * 20;
+        for (tries = 0; tries < 10 && !c->ibsAwake; tries++) {
+            KeClearEvent(&c->wakeAck);
+            UartTx(c->se, &wake, 1);
+            KeWaitForSingleObject(&c->wakeAck, Executive, KernelMode, FALSE, &to);
+        }
+        if (!c->ibsAwake) { c->ibsWakeTimeout++; c->ibsAwake = TRUE; LOG("bthx: no WAKE_ACK from controller, sending anyway"); }
+    }
     if (c->cntTx < 4) g_verbose = TRUE;
     UartTx(c->se, buf, 1 + h->DataLen);
     g_verbose = FALSE;
@@ -804,6 +831,14 @@ NTSTATUS PwrDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     st = WdfSpinLockCreate(&a, &c->pktLock); if (!NT_SUCCESS(st)) return st;
     st = WdfWaitLockCreate(&a, &c->txLock); if (!NT_SUCCESS(st)) return st;
     st = WdfSpinLockCreate(&a, &c->parseLock); if (!NT_SUCCESS(st)) return st;
+    KeInitializeEvent(&c->wakeAck, NotificationEvent, FALSE);
+    c->ibsAwake = TRUE;
+    {
+        WDF_WORKITEM_CONFIG wc; WDF_OBJECT_ATTRIBUTES wa;
+        WDF_WORKITEM_CONFIG_INIT(&wc, AckWork); wc.AutomaticSerialization = FALSE;
+        WDF_OBJECT_ATTRIBUTES_INIT(&wa); wa.ParentObject = dev;
+        st = WdfWorkItemCreate(&wc, &wa, &c->ackWork); if (!NT_SUCCESS(st)) return st;
+    }
     {
         WDF_TIMER_CONFIG tc; WDF_OBJECT_ATTRIBUTES ta;
         WDF_TIMER_CONFIG_INIT_PERIODIC(&tc, RxPoll, 1);
