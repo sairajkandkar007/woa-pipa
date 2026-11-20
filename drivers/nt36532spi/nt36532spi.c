@@ -521,8 +521,12 @@ VOID NtPoll(WDFTIMER t)
     UCHAR d[POINT_DATA_LEN + PEN_DATA_LEN + 1] = { 0 };
     TOUCH_REPORT rep;
     ULONG i, n = 0;
-    if (!c->fwOk || !c->se) return;
-    if (!NT_SUCCESS(NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN))) goto rearm;
+    static ULONG beat, rdfail;
+    NTSTATUS rs;
+    if (!c->fwOk || !c->se) { LOG("poll: stopped (fwOk=%d se=%p)", c->fwOk, c->se); return; }
+    if ((++beat % 500) == 0) LOG("poll alive #%lu", beat);
+    rs = NvtRead(c, EVENT_BUF_ADDR, d, POINT_DATA_LEN + PEN_DATA_LEN);
+    if (!NT_SUCCESS(rs)) { if (++rdfail <= 5) LOG("poll: read failed %08X", rs); goto rearm; }
     RtlZeroMemory(&rep, sizeof(rep));
     rep.rid = RID_TOUCH;
     for (i = 0; i < 10; i++) {
@@ -550,6 +554,7 @@ VOID NtPoll(WDFTIMER t)
     c->lastFingers = n;
 rearm:
     if (c->polling) WdfTimerStart(t, WDF_REL_TIMEOUT_IN_MS(n ? 10 : 20));
+    else LOG("poll: not re-armed (polling=0)");
 }
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT drv, PUNICODE_STRING path)
