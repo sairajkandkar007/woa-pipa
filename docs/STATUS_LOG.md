@@ -187,3 +187,4 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - DSDT `--pipa-spi4`: Kona SPI4 (QUP2 SE17 @0x88C000) -> pipa touch SPI QUP0 SE4 @0x990000, GSIV 0x27D, gcc_qupv3_wrap0_s4_clk, TLMM gpio8-11 func 1; _HID restored QCOM250F. qcspi enabled in qpep_extra_drivers.txt (PC).
 - Caveat: Kona ADSP AUDD child still points at \_SB.SPI4 (no ADSP driver running, so inert).
 - SPI4 not enumerated/started (held by _DEP on QGP0 GPI-DMA + MMU0, no drivers). _DEP rewritten to PEP0 only.
+- SPI4 + qcspi => hardware reset (no bugcheck). Without qcspi: boots, PEP publishes \_SB.SPI4 fine. qcspi8250.inf sets Instance\4 OpMode=GPI (2) while every qci2c instance is FIFO; Kona QGP0 is at 0x904000 (Windows GPI EE) but pipa's TZ/Android uses EE offset 0x1000 -> likely XPU violation on GPI access. Test: local modified INF (OpMode=FIFO), not committed (BSP file).
