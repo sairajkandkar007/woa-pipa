@@ -118,9 +118,11 @@ ULONG_PTR pep_prepare_dev(_Inout_opt_ PVOID data)
         if (InterlockedIncrement(&g_unmatched_traces) <= 32) {
             if (p->dev_id && p->dev_id->Buffer && p->dev_id->Length <= p->dev_id->MaximumLength &&
                 p->dev_id->Length <= 512u && !(p->dev_id->Length & 1u))
+            {
                 TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER,
                             "dpm: prepare path=%wZ rejected reason=identity-unmatched", p->dev_id);
                 DbgPrintEx(DPFLTR_IHVDRIVER_ID, DPFLTR_ERROR_LEVEL, "qcpep: prepare %wZ rejected identity-unmatched\n", p->dev_id);
+            }
             else
                 TraceEvents(TRACE_LEVEL_VERBOSE, TRACE_POWER,
                             "dpm: prepare rejected reason=invalid-identity");
