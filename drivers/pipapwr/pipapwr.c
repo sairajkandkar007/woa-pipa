@@ -671,6 +671,7 @@ static NTSTATUS AddChild(PFDO_CTX c)
     WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE(&qc, WdfIoQueueDispatchParallel);
     qc.EvtIoDeviceControl = PdoIoctl;
     qc.EvtIoInternalDeviceControl = PdoInternalIoctl;
+    qc.PowerManaged = WdfFalse;   /* BthMini sends IOCTLs from its AddDevice, before this PDO is in D0 */
     st = WdfIoQueueCreate(child, &qc, WDF_NO_OBJECT_ATTRIBUTES, NULL);
     if (!NT_SUCCESS(st)) { WdfObjectDelete(child); return st; }
     WdfFdoLockStaticChildListForIteration(c->dev);
@@ -761,9 +762,11 @@ NTSTATUS PwrDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     WDF_IO_QUEUE_CONFIG_INIT(&qc, WdfIoQueueDispatchParallel);
     qc.EvtIoDeviceControl = FdoIoctl;
     qc.EvtIoInternalDeviceControl = FdoIoctl;
+    qc.PowerManaged = WdfFalse;
     WDF_OBJECT_ATTRIBUTES_INIT(&a); a.ExecutionLevel = WdfExecutionLevelPassive;
     st = WdfIoQueueCreate(dev, &qc, &a, &c->ioQueue); if (!NT_SUCCESS(st)) return st;
     WDF_IO_QUEUE_CONFIG_INIT(&qc, WdfIoQueueDispatchManual);
+    qc.PowerManaged = WdfFalse;
     st = WdfIoQueueCreate(dev, &qc, WDF_NO_OBJECT_ATTRIBUTES, &c->evtQueue); if (!NT_SUCCESS(st)) return st;
     st = WdfIoQueueCreate(dev, &qc, WDF_NO_OBJECT_ATTRIBUTES, &c->aclQueue);
     return st;
