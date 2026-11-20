@@ -192,7 +192,7 @@ static VOID BtProbe(VOID)
 {
     static const UCHAR reset[] = { 0x01, 0x03, 0x0C, 0x00 };
     static const UCHAR ver[] = { 0x01, 0x00, 0xFC, 0x01, 0x19 };
-    PUCHAR gcc, rcg, wrap, se; ULONG qver, samp, div, n, fw;
+    PUCHAR gcc, rcg, wrap, se; ULONG qver, samp, div, n, fw, sclk;
     UCHAR rx[96];
 
     gcc = MapPhys(GCC_VOTE_PAGE, 0x1000);
@@ -202,22 +202,38 @@ static VOID BtProbe(VOID)
     KeStallExecutionProcessor(100);
     LOG("bt: gcc vote 52008 %08X -> %08X", n, READ_REGISTER_ULONG((volatile ULONG *)(gcc + 0x8)));
     MmUnmapIoSpace(gcc, 0x1000);
+    /* gcc_qupv3_wrap0_s6_clk_src RCG @0x117730 (CMD,CFG,M,N,D; DFS enable = +0x14 bit0).
+     * Boot left it on XO 19.2 MHz bypass, which can't make 115200 exactly. If DFS is off, program the
+     * gcc-sm8250 ftbl entry 7.3728 MHz = GPLL0_OUT_EVEN(src 6) /1 * 384/15625 (MND dual edge), as clk-rcg2.c does. */
     rcg = MapPhys(GCC_RCG_PAGE, 0x1000);
+    sclk = 19200000;
     if (rcg) {
-        LOG("bt: s6 rcg cmd=%08X cfg=%08X dfs0=%08X dfs1=%08X", READ_REGISTER_ULONG((volatile ULONG *)(rcg + 0x730)),
-            READ_REGISTER_ULONG((volatile ULONG *)(rcg + 0x734)), READ_REGISTER_ULONG((volatile ULONG *)(rcg + 0x74C)),
-            READ_REGISTER_ULONG((volatile ULONG *)(rcg + 0x750)));
+        volatile ULONG *r = (volatile ULONG *)(rcg + 0x730);
+        ULONG dfs = READ_REGISTER_ULONG(r + 5), cfg0 = READ_REGISTER_ULONG(r + 1), t;
+        LOG("bt: s6 rcg cmd=%08X cfg=%08X m=%08X n=%08X d=%08X dfs_en=%08X", READ_REGISTER_ULONG(r), cfg0,
+            READ_REGISTER_ULONG(r + 2), READ_REGISTER_ULONG(r + 3), READ_REGISTER_ULONG(r + 4), dfs);
+        if (!(dfs & 1) && (cfg0 & 0x7FF) == 0) {
+            WRITE_REGISTER_ULONG(r + 2, 384);
+            WRITE_REGISTER_ULONG(r + 3, (~(15625u - 384u)) & 0xFFFF);
+            WRITE_REGISTER_ULONG(r + 4, (~15625u) & 0xFFFF);
+            WRITE_REGISTER_ULONG(r + 1, (cfg0 & ~0x37FFu) | 1u | (6u << 8) | 0x2000u);
+            WRITE_REGISTER_ULONG(r, READ_REGISTER_ULONG(r) | 1u);
+            for (t = 0; t < 500 && (READ_REGISTER_ULONG(r) & 1u); t++) KeStallExecutionProcessor(1);
+            LOG("bt: s6 rcg -> 7.3728 MHz cmd=%08X cfg=%08X (update %s)", READ_REGISTER_ULONG(r), READ_REGISTER_ULONG(r + 1),
+                (READ_REGISTER_ULONG(r) & 1u) ? "STUCK" : "ok");
+            if (!(READ_REGISTER_ULONG(r) & 1u)) sclk = 7372800;
+        }
         MmUnmapIoSpace(rcg, 0x1000);
     }
     wrap = MapPhys(QUP0_WRAP, 0x1000);
     qver = wrap ? READ_REGISTER_ULONG((volatile ULONG *)(wrap + 0x4)) : 0;
     if (wrap) MmUnmapIoSpace(wrap, 0x1000);
     samp = (qver >= 0x20050000) ? 16 : 32;
-    div = 7372800 / (115200 * samp);              /* DFS level 0 = 7.3728 MHz (gcc-sm8250 ftbl) */
+    div = (sclk + 115200 * samp / 2) / (115200 * samp);   /* 7.3728M/16 -> 4 exact; 19.2M -> 10 (+4%) */
     se = MapPhys(SE6_BASE, 0x4000);
     if (!se) { LOG("bt: map se6 failed"); return; }
     fw = R(GENI_FW_REVISION_RO);
-    LOG("bt: qup hw ver %08X sampling %lu div %lu; se6 fw=%08X status=%08X ios=%08X", qver, samp, div, fw, R(SE_GENI_STATUS), R(SE_GENI_IOS));
+    LOG("bt: sclk %lu qup hw ver %08X sampling %lu div %lu; se6 fw=%08X status=%08X ios=%08X", sclk, qver, samp, div, fw, R(SE_GENI_STATUS), R(SE_GENI_IOS));
     if (((fw >> 8) & 0xFF) != 2) { LOG("bt: SE6 is not UART firmware - abort"); MmUnmapIoSpace(se, 0x4000); return; }
     UartSetup(se, div);
     n = UartRx(se, rx, sizeof(rx), 50);           /* drain anything pending */
