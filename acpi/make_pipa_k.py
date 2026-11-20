@@ -23,7 +23,7 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
      STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15] [--pipa-bklt]
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15] [--pipa-bklt] [--pipa-spi4]
 """
 import sys, re
 
@@ -158,6 +158,39 @@ def main():
         assert len(ints) == len(mem) == 36 and bytes(d).count(ints) == 1, 'PEP0 _CRS pattern not found'
         d = bytearray(bytes(d).replace(ints, mem))
         print('PEP0 _CRS: 4 interrupts -> RSC DRV2 0x18220000 + AOP MSGRAM 0x0C300000 memory')
+    if '--pipa-spi4' in sys.argv:
+        # Repurpose SPI4 (Kona QUP2 SE17 @0x88C000) as pipa touch SPI: QUP0 SE4 @0x990000,
+        # GIC SPI 0x25D -> GSIV 0x27D, gcc_qupv3_wrap0_s4_clk, pins gpio8-11 func qup4 (1).
+        import struct
+        b = bytes(d)
+        mem = b'\x86\x09\x00\x01' + struct.pack('<II', 0x88C000, 0x4000)
+        assert b.count(mem) == 1, 'SPI4 mem'; i = b.index(mem); d[i+4:i+8] = struct.pack('<I', 0x990000)
+        j = b.find(b'\x89\x06\x00\x01\x01' + struct.pack('<I', 0x27C), i, i + 64); assert j > 0, 'SPI4 irq'
+        d[j+5:j+9] = struct.pack('<I', 0x27D)
+        pat = b'\rDEVICE\x00\r\\_SB.SPI4\x00'; assert b.count(pat) == 1, 'SPI4 desc'; k = b.index(pat) + 9
+        end = b.find(b'\rDEVICE\x00', k + 10); end = end if end > 0 else k + 2000
+        n = 0; t = k
+        while True:
+            c = bytes(d).find(b'gcc_qupv3_wrap0_s3_clk', t, end)
+            if c < 0: break
+            d[c:c+22] = b'gcc_qupv3_wrap0_s4_clk'; t = c + 1; n += 1
+        assert n > 0, 'SPI4 clk'
+        pins = 0; t = k
+        while True:
+            t = bytes(d).find(b'TLMMGPIO\x00\x12', t + 1, end)
+            if t < 0: break
+            q = t + 9   # 12 len 06 0a PIN ... 0a FUNC
+            e = bytes(d[q:q + 12])
+            assert e[2] == 0x06 and e[3] == 0x0a and e[4] in (0x90, 0x91, 0x92, 0x93), e.hex()
+            d[q + 4] = e[4] - 0x90 + 8
+            fo = q + 7 if (e[5] in (0x00, 0x01) and e[6] == 0x0a) else None   # pin, One/Zero, ByteConst func
+            if fo is not None and d[fo] == 0x02: d[fo] = 0x01
+            pins += 1
+        assert pins >= 4, f'SPI4 pins {pins}'
+        hid = b'SPI4\x08_HID\x0dQCOMFFFF'
+        if bytes(d).count(hid) == 1:
+            h = bytes(d).index(hid) + 10; d[h:h+8] = b'QCOM250F'
+        print(f'pipa touch SPI: SPI4 -> 0x990000, irq 0x27D, wrap0_s4 x{n}, gpio8-11 ({pins} TLMM entries)')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
         # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.

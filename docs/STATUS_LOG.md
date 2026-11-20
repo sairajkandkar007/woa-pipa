@@ -181,3 +181,8 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - UEFI md5 f061dbf1…; previous = Mu-pipa-qpep8250-i2c15.img.
 - TESTED OK (12:26): first real I2C transfers on pipa. KTZ8866 @i2c11:0x11 all 8 reads ok: ID=0x21, BL_CFG1=0xB3, BL_CFG2=0xCD, BRT=1009/2047, BL_EN=0x5F (enabled, 5 sinks), LCD_BIAS=0x9F, FLAG=0 (no faults).
 - TESTED OK (12:34): first I2C WRITE on pipa - Brightness=300 written to KTZ8866 (st=0), screen visibly dimmed. Full read+write I2C path proven.
+
+## 2026-11-20 — touch SPI bus
+- ktz8866 INF Brightness back to 1009 (bootloader level).
+- DSDT `--pipa-spi4`: Kona SPI4 (QUP2 SE17 @0x88C000) -> pipa touch SPI QUP0 SE4 @0x990000, GSIV 0x27D, gcc_qupv3_wrap0_s4_clk, TLMM gpio8-11 func 1; _HID restored QCOM250F. qcspi enabled in qpep_extra_drivers.txt (PC).
+- Caveat: Kona ADSP AUDD child still points at \_SB.SPI4 (no ADSP driver running, so inert).
