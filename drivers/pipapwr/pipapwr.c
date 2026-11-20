@@ -443,7 +443,7 @@ typedef struct _FDO_CTX {
     LIST_ENTRY evtList, aclList; ULONG evtCount, aclCount;
     WDFWAITLOCK txLock;
     BTHX_CAPABILITIES caps;
-    ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged, polls;
+    ULONG cntTx, cntEvt, cntAcl, isrCount, ioctlLogged, polls, rawLogged;
     WDFSPINLOCK parseLock;
     WDFTIMER poll;
 } FDO_CTX, *PFDO_CTX;
@@ -571,6 +571,11 @@ static VOID ProcessRing(PFDO_CTX c, WDFINTERRUPT irq)
         while (c->rtail != c->rhead && n < sizeof(tmp)) { tmp[n++] = c->ring[c->rtail]; c->rtail = (c->rtail + 1) % RING_SIZE; }
         WdfInterruptReleaseLock(irq);
         if (!n) break;
+        if (c->rawLogged < 96) {
+            for (i = 0; i < n && c->rawLogged < 96; i += 8, c->rawLogged += 8)
+                LOG("raw rx: %02X %02X %02X %02X %02X %02X %02X %02X (n=%lu)", tmp[i], i+1<n?tmp[i+1]:0, i+2<n?tmp[i+2]:0, i+3<n?tmp[i+3]:0,
+                    i+4<n?tmp[i+4]:0, i+5<n?tmp[i+5]:0, i+6<n?tmp[i+6]:0, i+7<n?tmp[i+7]:0, n);
+        }
         for (i = 0; i < n; i++) ParseByte(c, tmp[i]);
     }
     WdfSpinLockRelease(c->parseLock);
