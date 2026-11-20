@@ -489,8 +489,11 @@ VOID NtIoctl(WDFQUEUE q, WDFREQUEST r, size_t outLen, size_t inLen, ULONG code)
     case IOCTL_HID_SET_FEATURE:
     case IOCTL_HID_ACTIVATE_DEVICE:
     case IOCTL_HID_DEACTIVATE_DEVICE:
-    case IOCTL_HID_SEND_IDLE_NOTIFICATION_REQUEST:
         st = STATUS_SUCCESS; break;
+    case IOCTL_HID_SEND_IDLE_NOTIFICATION_REQUEST:
+        /* no selective suspend: completing this immediately lets hidclass drop us to Dx,
+         * which stopped polling. The controller has no wake source wired up yet. */
+        st = STATUS_NOT_SUPPORTED; break;
     default:
         st = STATUS_NOT_SUPPORTED; break;
     }
@@ -622,7 +625,8 @@ NTSTATUS NtRelease(WDFDEVICE dev, WDFCMRESLIST xl)
 
 NTSTATUS NtD0Exit(WDFDEVICE dev, WDF_POWER_DEVICE_STATE target)
 {
-    PDEV_CTX c = GetCtx(dev); UNREFERENCED_PARAMETER(target);
+    PDEV_CTX c = GetCtx(dev);
+    LOG("D0 exit -> D%d (polling stops)", (int)target - 1);
     c->polling = FALSE;
     if (c->poll) WdfTimerStop(c->poll, TRUE);
     return STATUS_SUCCESS;
