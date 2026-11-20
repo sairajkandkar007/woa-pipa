@@ -192,8 +192,8 @@ static NTSTATUS NvtRead(PDEV_CTX c, ULONG addr, UCHAR *out, ULONG n)
     if (!NT_SUCCESS(st)) return st;
     RtlZeroMemory(tx, sizeof(tx));
     tx[0] = (UCHAR)(addr & 0x7F);
-    st = GeniXfer(c, tx, rx, n + 2);           /* cmd, dummy, data... */
-    if (NT_SUCCESS(st)) RtlCopyMemory(out, rx + 2, n);
+    st = GeniXfer(c, tx, rx, n + 2);           /* cmd, then data (mainline: no dummy; vendor: 1 dummy) */
+    if (NT_SUCCESS(st)) RtlCopyMemory(out, rx + 1, n);   /* out[0] = first byte after cmd */
     return st;
 }
 
@@ -309,23 +309,20 @@ NTSTATUS NtD0Entry(WDFDEVICE dev, WDF_POWER_DEVICE_STATE prev)
         st = NvtRead(c, addrs[i], b, 16);
         Dump("read", addrs[i], b, 16, st);
     }
-    /* 2b) pin levels: MISO gpio8, CS gpio11, TS reset gpio33, TS irq gpio39 */
-    TlmmShow("miso", TLMM_NORTH, 8); TlmmShow("cs", TLMM_NORTH, 11);
-    TlmmShow("ts-reset", TLMM_SOUTH, 33); TlmmShow("ts-irq", TLMM_SOUTH, 39);
-    /* 2c) pulse TS reset (gpio33, DT pmx_ts_reset) low 10 ms -> high, wait 50 ms */
-    TlmmOut(TLMM_SOUTH, 33, 0); KeStallExecutionProcessor(10000);
-    TlmmOut(TLMM_SOUTH, 33, 1); KeStallExecutionProcessor(50000);
-    TlmmShow("ts-reset", TLMM_SOUTH, 33); TlmmShow("ts-irq", TLMM_SOUTH, 39);
-    RtlZeroMemory(b, sizeof(b));
-    st = NvtRead(c, 0x3F004, b, 16);
-    Dump("after-gpio33-reset", 0x3F004, b, 16, st);
-    /* 3) Linux nvt_ts_check_chip_ver_trim: bootloader reset (0x69 -> SWRST_N8 0x3F0FE), then trim id */
+    /* 2b) pin levels (read only) */
+    TlmmShow("miso", TLMM_NORTH, 8); TlmmShow("cs", TLMM_NORTH, 11); TlmmShow("ts-irq", TLMM_SOUTH, 39);
+    /* 3) mainline nt36xxx: bootloader reset (0x69 -> SWRST_N8 0x3F0FE), 35 ms, SPI_RD_FAST (0x3F310) = 0,
+     *    then chip id from 0x1F64E (7 bytes) and trim 0x3F004 */
     for (i = 0; i < 3; i++) {
         st = NvtWrite1(c, 0x3F0FE, 0x69);
-        KeStallExecutionProcessor(10000);
+        KeStallExecutionProcessor(35000);
+        if (NT_SUCCESS(st)) st = NvtWrite1(c, 0x3F310, 0x00);
         RtlZeroMemory(b, sizeof(b));
-        if (NT_SUCCESS(st)) st = NvtRead(c, 0x3F004, b, 16);
-        Dump("trim-after-reset", 0x3F004, b, 16, st);
+        if (NT_SUCCESS(st)) st = NvtRead(c, 0x1F64E, b, 15);
+        Dump("id@1F64E", 0x1F64E, b, 16, st);
+        RtlZeroMemory(b, sizeof(b));
+        if (NT_SUCCESS(st)) st = NvtRead(c, 0x3F004, b, 15);
+        Dump("trim@3F004", 0x3F004, b, 16, st);
         KeStallExecutionProcessor(10000);
     }
     return STATUS_SUCCESS;
