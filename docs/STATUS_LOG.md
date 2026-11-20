@@ -191,3 +191,4 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - 13:34 QUP diag: wrap0_s4 branch was off (bit14 of 0x52008 unvoted), runs once voted; DFS perf table programmed (identical to wrap1_s3); SE4 GENI fw_rev=0x0101 (SPI firmware loaded). So clock/firmware OK when voted.
 - qcpep: live DbgPrint mirror of ICB/CLK/TLMM actions, D-state, accepted and perf-state requests, to see the last action before the qcspi hang.
 - 13:45: live trace shows PEP never accepted/powered \_SB.SPI4 before the hang -> qcspi hit SE4 with its clock off. Fix attempt: PEP votes wrap0_s4 always-on at init (bring-up), and prepare rejections now mirrored to KD.
+- 14:12: boot fixed (BCD recoveryenabled had come back to Yes; set No, bootmgr timeout 0). SPI4 still resets: no SPI4 prepare at all before hang, even with wrap0_s4 voted at init. Test: vote ALL QUP SE clocks at PEP init (qcspi may probe every SE listed in its Qup registry: 8+6+6).
