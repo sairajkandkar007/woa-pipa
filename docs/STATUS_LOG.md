@@ -179,3 +179,4 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - DSDT `--pipa-bklt`: appended `\_SB.BKLT` (_HID PIPA8866, I2C 0x11 @400 kHz on \_SB.IC10 = i2c11). Also CFSA (fsa4480) I2C address 0x43 -> 0x42 to match the pipa DTB.
 - `drivers/ktz8866`: minimal KMDF SPB client. At D0 reads regs 0x01/02/03/04/05/08/09/0F, logs via DbgPrint (`ktz8866:`) and to the device HW key (KtzReadOkMask, KtzDeviceId, KtzBlEn, KtzBrightnessNow). Doesn't re-init the chip; writes brightness only if HW key DWORD `Brightness` exists. Built and installed by the qpep8250 build/phase10 scripts.
 - UEFI md5 f061dbf1…; previous = Mu-pipa-qpep8250-i2c15.img.
+- TESTED OK (12:26): first real I2C transfers on pipa. KTZ8866 @i2c11:0x11 all 8 reads ok: ID=0x21, BL_CFG1=0xB3, BL_CFG2=0xCD, BRT=1009/2047, BL_EN=0x5F (enabled, 5 sinks), LCD_BIAS=0x9F, FLAG=0 (no faults).
