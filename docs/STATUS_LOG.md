@@ -217,3 +217,15 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - After fw: HCI_Reset ok, HCI 5.2 (0x0B), manufacturer 0x001D (Qualcomm), LMP sub 0x3ABF.
 - BD_ADDR is the NVM placeholder 00:00:00:00:5A:AD -> must set a real one (EDL_WRITE_BD_ADDR 0xFC14) before use.
 - Next: Windows HCI transport (bus driver for BthMini, based on the Serial HCI bus sample), interrupt-driven RX.
+
+## 2026-11-21 01:10 — Bluetooth WORKS in Windows
+- `pipapwr` is now a bus driver on `\_SB.WPWR`: powers QCA6390, drives uart6 (GENI) itself, downloads
+  htbtfw20/htnv20, sets a stored random BD_ADDR (22:xx..., registry BdAddrLo/Hi), then adds child PDO
+  `PIPA\QCA6390_UART` (compat `MS_BTHX_BTHMINI`) -> inbox BthMini/BthPort. Bluetooth shows in Settings.
+- Fixes on the way: mask SE6 irq before WDF connects it (level-irq livelock); UR18 irq back to 0x269
+  (parked device still claimed 0x27F -> code 12); non-power-managed queues (BthMini's AddDevice IOCTL
+  hung PnP -> also froze touch); QCA in-band sleep: FE sleep, FD wake-ind -> reply FC, send FD before TX.
+- RX: uart6 irq (0x27F) works, plus a 1 ms poll fallback (can probably be dropped).
+- TODO BT: raise baud to 3M (download is ~25 s at 115200), host-side IBS sleep, D3/S3 handling,
+  drop debug tracing, real BD_ADDR from persist (optional).
+- Next: Wi-Fi (QCA6390 over PCIe0: link bring-up, gpio36 remap in PCI0, MHI/QCMS stack).
