@@ -169,3 +169,7 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - UEFI image Mu-pipa-qpep8250.img rebuilt with it (md5 cb8f046f); previous image kept as Mu-pipa-qpep8250-noqup.img. Kona qci2c re-enabled (I2C only).
 - 12:00 RESULT: boots; `\_SB.IC10` (pipa i2c11) accepted, D0 (ICB QUP_1 paths, wrap1 core/core_2x/s_ahb, m_ahb, wrap1_s3 all ok=1), qci2c **DeviceNodeStarted**, then runtime **D3** (clocks off, ICB 0, all ok=1).
   First full PEP-managed device lifecycle (D0 -> start -> D3) on pipa with no hacks.
+
+## 2026-11-20 — pipa i2c15 added to DSDT
+- `make_pipa_k.py --pipa-i2c15`: Kona I2C5 repurposed as pipa i2c15 (QUP2 SE1 @0x884000, GSIV 0x267, gcc_qupv3_wrap2_s1_clk + wrap_2_m_ahb, ICB QUP_2, gpio44/45). Devices: fsa4480, smb1390 x2, hl6111r.
+- UEFI: Mu-pipa-qpep8250.img md5 acf92bdf…; previous kept as Mu-pipa-qpep8250-i2c11only.img.

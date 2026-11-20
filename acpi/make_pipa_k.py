@@ -23,7 +23,7 @@ edits, but every HID was renamed QCOM25xx -> QCOM05xx, so no WOA-Project Kona BS
      (PEP0 PPPP 61->57, PRRP 33->27, 6 camera CPXC packages). qcpep fails parsing PPRR with
      STATUS_ACPI_INVALID_DATA (0xC014000F). Fixes the NumElements bytes.
 
-Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup]
+Usage: make_pipa_k.py <Silicium-ACPI>/Platforms/Xiaomi/pipa/DSDT.aml <out>/DSDT.aml [--keep-uid] [--ufs-rails] [--ufs-nopep] [--ufs-dep-scm] [--pkg-fix] [--qpep-crs] [--pipa-qup] [--pipa-i2c15]
 """
 import sys, re
 
@@ -112,12 +112,40 @@ def main():
             assert m, 'IC10 pin byte'
             d[t + m.start() + 1] = pinmap[m.group(1)[0]]
         # park the MTP buses
-        for dev, hid in ((b'I2C5', b'QCOM2511'), (b'I2C8', b'QCOM2511'), (b'SPI4', b'QCOM250F')):
+        parked = ((b'I2C8', b'QCOM2511'), (b'SPI4', b'QCOM250F')) if '--pipa-i2c15' in sys.argv else ((b'I2C5', b'QCOM2511'), (b'I2C8', b'QCOM2511'), (b'SPI4', b'QCOM250F'))
+        for dev, hid in parked:  #, b'QCOM2511'), (b'SPI4', b'QCOM250F')):
             pos = bytes(d).find(dev + b'\x08_HID\x0d' + hid)
             assert pos > 0, f'{dev} _HID'
             q = pos + len(dev) + 6
             d[q:q+8] = b'QCOMFFFF'
-        print('pipa QUP: IC10 -> i2c11 (0xA8C000, irq 0x184, wrap1_s3, gpio60/61); I2C5/I2C8/SPI4 parked')
+        print('pipa QUP: IC10 -> i2c11 (0xA8C000, irq 0x184, wrap1_s3, gpio60/61); %s parked' % '/'.join(x[0].decode() for x in parked))
+    if '--pipa-i2c15' in sys.argv:
+        # Repurpose I2C5 (QUP0 SE4 @0x890000) as pipa i2c15 (QUP2 SE1 @0x884000: fsa4480, smb1390, hl6111r)
+        import struct
+        b = bytes(d)
+        i = b.find(b'\x86\x09\x00\x01' + struct.pack('<I', 0x890000)); assert i > 0 and b.count(b'\x86\x09\x00\x01' + struct.pack('<I', 0x890000)) == 1, 'I2C5 mem'
+        d[i+4:i+8] = struct.pack('<I', 0x884000)
+        j = b.find(b'\x89\x06\x00\x01\x01' + struct.pack('<I', 0x27D), i, i + 64); assert j > 0, 'I2C5 irq'
+        d[j+5:j+9] = struct.pack('<I', 0x267)
+        pat = b'\rDEVICE\x00\r\\_SB.I2C5\x00'; assert b.count(pat) == 1, 'I2C5 desc'; k = b.index(pat) + 9
+        end = b.find(b'\rDEVICE\x00', k + 10); end = end if end > 0 else k + 1500
+        for old, new in ((b'gcc_qupv3_wrap0_s4_clk', b'gcc_qupv3_wrap2_s1_clk'), (b'gcc_qupv3_wrap_0_m_ahb_clk', b'gcc_qupv3_wrap_2_m_ahb_clk'),
+                         (b'ICBID_MASTER_QUP_0', b'ICBID_MASTER_QUP_2'), (b'ICBID_SLAVE_QUP_0', b'ICBID_SLAVE_QUP_2')):
+            t = k; n = 0
+            while True:
+                c = bytes(d).find(old, t, end)
+                if c < 0: break
+                d[c:c+len(old)] = new; t = c + 1; n += 1
+            assert n > 0, old
+            print(f'  {old.decode()} -> {new.decode()} x{n}')
+        t = k; n = 0
+        while True:
+            t = bytes(d).find(b'TLMMGPIO\x00', t + 1, end)
+            if t < 0: break
+            m = re.search(rb'\x0a([\x33\x34])', bytes(d[t:t + 16])); assert m, 'I2C5 pin'
+            d[t + m.start() + 1] = {0x33: 0x2C, 0x34: 0x2D}[m.group(1)[0]]; n += 1
+        assert n == 4, f'I2C5 TLMMGPIO {n}'
+        print('pipa i2c15: I2C5 -> 0x884000, irq 0x267, wrap2_s1, QUP_2, gpio44/45')
     if '--qpep-crs' in sys.argv:
         # QualcommPEP (SM8250 build) needs the RSC DRV2 window and AOP MSGRAM as PEP0 memory
         # resources. Replace 4 PEP0 interrupts unused by QualcommPEP (0xA1,0x1A5,0x40,0x41;
