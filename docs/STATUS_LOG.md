@@ -173,3 +173,4 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 ## 2026-11-20 — pipa i2c15 added to DSDT
 - `make_pipa_k.py --pipa-i2c15`: Kona I2C5 repurposed as pipa i2c15 (QUP2 SE1 @0x884000, GSIV 0x267, gcc_qupv3_wrap2_s1_clk + wrap_2_m_ahb, ICB QUP_2, gpio44/45). Devices: fsa4480, smb1390 x2, hl6111r.
 - UEFI: Mu-pipa-qpep8250.img md5 acf92bdf…; previous kept as Mu-pipa-qpep8250-i2c11only.img.
+- TESTED OK (12:06): PEP accepted \_SB.I2C5 (i2c15), D0 votes + runtime D3 all ok=1; qci2c DeviceNodeStarted on ACPI\QCOM2511\5 and \a. Both pipa I2C buses up, no 0x101.
