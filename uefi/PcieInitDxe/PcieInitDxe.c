@@ -155,6 +155,11 @@ STATIC VOID SaveStatus (VOID)
                     sizeof (mSt), &mSt);
 }
 
+#ifndef PCIE_STOP_AFTER
+#define PCIE_STOP_AFTER 99
+#endif
+#define STOP_IF(n) do { if (PCIE_STOP_AFTER <= (n)) return; } while (0)
+
 STATIC VOID PcieInit (VOID)
 {
   UINTN  Id, i;
@@ -165,6 +170,7 @@ STATIC VOID PcieInit (VOID)
   Tlmm (80, 0x3 | (1 << 2), -1);                    /* pci_e0, pull-up */
   Tlmm (81, 0x3, -1);                               /* gpio input, pull-up */
   mSt.Step = 1;
+  STOP_IF (1);
 
   /* 2. power domain + clocks */
   if (EFI_ERROR (mClock->GetClockPowerDomainID (mClock, "pcie_0_gdsc", &Id)) ||
@@ -184,6 +190,7 @@ STATIC VOID PcieInit (VOID)
   ClkOn ("gcc_pcie_wifi_clkref_en",     0,        8);
   ClkOn ("gcc_pcie0_phy_refgen_clk",    100000000, 9);
   mSt.Step = 2;
+  STOP_IF (2);
 
   /* 3. controller reset + PARF init (qcom_pcie_init_2_7_0) */
   GccReset (GCC_PCIE_0_BCR);
@@ -198,6 +205,7 @@ STATIC VOID PcieInit (VOID)
   MmioAnd32 ((UINTN)(PARF_BASE + PARF_PM_CTRL), ~BIT5);                  /* allow L1 */
   MmioOr32 ((UINTN)(PARF_BASE + PARF_AXI_MSTR_WR_ADDR_HALT_V2), BIT31);
   mSt.Step = 3;
+  STOP_IF (3);
 
   /* 4. PHY: reset, tables, pipe clock, start (qmp_pcie_init + qmp_pcie_power_on) */
   GccReset (GCC_PCIE_0_PHY_BCR);
@@ -205,9 +213,11 @@ STATIC VOID PcieInit (VOID)
   for (i = 0; i < ARRAY_SIZE (mPhyInit); i++) {
     MmioWrite32 ((UINTN)(PHY_BASE + mPhyInit[i].Off), mPhyInit[i].Val);
   }
-  ClkOn ("gcc_pcie_0_pipe_clk", 0, 10);
   MmioAnd32 ((UINTN)(PHY_BASE + PHY_PCS_SW_RESET), ~BIT0);
   MmioOr32 ((UINTN)(PHY_BASE + PHY_PCS_START_CONTROL), BIT0 | BIT1);     /* SERDES_START | PCS_START */
+  /* pipe clock comes from the PHY once it runs: vote the branch directly (Linux uses BRANCH_HALT_SKIP;
+     ClockDxe's EnableClock would wait for a clock that only exists after PHY start) */
+  MmioOr32 ((UINTN)(GCC_BASE + 0x52008), BIT4);
   MicroSecondDelay (1000);
   for (T = 0; T < 100 && (MmioRead32 ((UINTN)(PHY_BASE + PHY_PCS_PCS_STATUS1)) & BIT6); T++) {
     MicroSecondDelay (200);
@@ -218,6 +228,7 @@ STATIC VOID PcieInit (VOID)
     return;
   }
   mSt.Step = 4;
+  STOP_IF (4);
 
   /* 5. DWC root complex setup (dw_pcie_setup_rc subset) */
   MmioOr32 ((UINTN)(DBI_BASE + DBI_MISC_CONTROL_1), BIT0);               /* DBI RO write enable */
@@ -237,6 +248,7 @@ STATIC VOID PcieInit (VOID)
   AtuOutbound (0, ATU_TYPE_CFG0, ATU_CFG_SHIFT, CFG_BASE, CFG_BASE + 0xFFFFF, 0x00100000);
   AtuOutbound (1, ATU_TYPE_MEM, 0, MEM_BASE, MEM_LIMIT, MEM_BASE);
   mSt.Step = 5;
+  STOP_IF (5);
 
   /* 6. release PERST# (>=100 ms after power), start link training, wait for DL_Active */
   MicroSecondDelay (100000);
@@ -256,6 +268,7 @@ STATIC VOID PcieInit (VOID)
     return;
   }
   mSt.Step = 6;
+  STOP_IF (6);
 
   /* 7. who is on bus 1? (expect 0x110117CB) */
   MicroSecondDelay (100000);
