@@ -650,6 +650,12 @@ VOID RxPoll(WDFTIMER t)
     WdfInterruptReleaseLock(c->irq);
     ProcessRing(c, c->irq);
     c->polls++;
+    if (c->polls % 40 == 0) {    /* every ~2 s: RX/TX/IBS counters (temporary, for the mouse-lag hunt) */
+        PUCHAR se = c->se;
+        LOG("bthx: t=%lus isr %lu evt %lu acl %lu(parked %lu/%lu) tx %lu ibs wake %lu sleep %lu wto %lu drop %lu | s=%08X rxfifo=%08X ios=%08X",
+            c->polls / 20, c->isrCount, c->cntEvt, c->cntAcl, c->aclCount, c->evtCount, c->cntTx, c->ibsWakeInd, c->ibsSleepInd,
+            c->ibsWakeTimeout, c->rdrop, R(SE_GENI_S_IRQ_STATUS), R(SE_GENI_RX_FIFO_STATUS), R(SE_GENI_IOS));
+    }
 }
 
 EVT_WDF_WORKITEM AckWork;
