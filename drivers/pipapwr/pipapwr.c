@@ -161,13 +161,24 @@ static VOID UartTx(PUCHAR se, const UCHAR *b, ULONG n)
     W(SE_GENI_M_CMD0, 1u << 27);
     for (i = 0; i < n; i += 4) {
         w = 0; for (t = 0; t < 4 && i + t < n; t++) w |= (ULONG)b[i + t] << (8 * t);
-        for (t = 0; t < 20000 && (R(SE_GENI_TX_FIFO_STATUS) & 0x0FFFFFFF) >= 14; t++) KeStallExecutionProcessor(50);
+        for (t = 0; t < 4000 && (R(SE_GENI_TX_FIFO_STATUS) & 0x0FFFFFFF) >= 14; t++) KeStallExecutionProcessor(50);
         W(SE_GENI_TX_FIFOn, w);
     }
-    for (t = 0; t < 20000 && !(R(SE_GENI_M_IRQ_STATUS) & 1u); t++) KeStallExecutionProcessor(100);
+    for (t = 0; t < 2000 && !(R(SE_GENI_M_IRQ_STATUS) & 1u); t++) KeStallExecutionProcessor(100);
     if (g_verbose) LOG("tx %lu bytes m_irq=%08X status=%08X ios=%08X", n, R(SE_GENI_M_IRQ_STATUS), R(SE_GENI_STATUS), R(SE_GENI_IOS));
     if (!(R(SE_GENI_M_IRQ_STATUS) & 1u)) { W(SE_GENI_M_CMD_CTRL_REG, 1u << 2); KeStallExecutionProcessor(1000); }
     W(SE_GENI_M_IRQ_CLEAR, 0xFFFFFFFF);
+}
+
+
+/* IBS bytes (FD/FC) must go out even while the sleeping controller holds our CTS off: send them
+   with CTS ignored. A blocked TX here used to spin under the TX spinlock until the controller woke. */
+static VOID UartTxIbs(PUCHAR se, UCHAR b)
+{
+    ULONG cfg = R(SE_UART_TX_TRANS_CFG);
+    W(SE_UART_TX_TRANS_CFG, cfg | (1u << 1));
+    UartTx(se, &b, 1);
+    W(SE_UART_TX_TRANS_CFG, cfg);
 }
 
 static ULONG UartRx(PUCHAR se, UCHAR *out, ULONG cap, ULONG ms)
@@ -578,14 +589,14 @@ static VOID ParseByte(PFDO_CTX c, UCHAR b)
         if (b == 0xFD) {   /* answer at once from the DPC (a work item added visible input lag) */
             static const UCHAR ack = 0xFC;
             c->ibsWakeInd++;
-            WdfSpinLockAcquire(c->txLock); UartTx(c->se, &ack, 1); c->ibsAwake = TRUE; WdfSpinLockRelease(c->txLock);
+            WdfSpinLockAcquire(c->txLock); UartTxIbs(c->se, ack); c->ibsAwake = TRUE; WdfSpinLockRelease(c->txLock);
             return;
         }
         if (b == 0xFC) { c->ibsAwake = TRUE; KeSetEvent(&c->wakeAck, 0, FALSE); return; }
         if (b == 0xFE) {   /* controller wants to sleep: wake it straight back up (sleep/wake round trips lag HID input) */
             static const UCHAR wake = 0xFD;
             c->ibsAwake = FALSE; c->ibsSleepInd++;
-            WdfSpinLockAcquire(c->txLock); UartTx(c->se, &wake, 1); WdfSpinLockRelease(c->txLock);
+            WdfSpinLockAcquire(c->txLock); UartTxIbs(c->se, wake); WdfSpinLockRelease(c->txLock);
             return;
         }
         if (b != 0x04 && b != 0x02 && b != 0x03) return;   /* wait for an event, ACL or SCO type byte */
@@ -647,7 +658,7 @@ VOID AckWork(WDFWORKITEM wi)
     PFDO_CTX c = FdoCtx((WDFDEVICE)WdfWorkItemGetParentObject(wi));
     static const UCHAR ack = 0xFC;
     WdfSpinLockAcquire(c->txLock);
-    UartTx(c->se, &ack, 1);
+    UartTxIbs(c->se, ack);
     c->ibsAwake = TRUE;
     WdfSpinLockRelease(c->txLock);
 }
@@ -668,7 +679,7 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
         static const UCHAR wake = 0xFD; ULONG tries; LARGE_INTEGER to; to.QuadPart = -10000LL * 20;
         for (tries = 0; tries < 10 && !c->ibsAwake; tries++) {
             KeClearEvent(&c->wakeAck);
-            WdfSpinLockAcquire(c->txLock); UartTx(c->se, &wake, 1); WdfSpinLockRelease(c->txLock);
+            WdfSpinLockAcquire(c->txLock); UartTxIbs(c->se, wake); WdfSpinLockRelease(c->txLock);
             KeWaitForSingleObject(&c->wakeAck, Executive, KernelMode, FALSE, &to);
         }
         if (!c->ibsAwake) { c->ibsWakeTimeout++; c->ibsAwake = TRUE; LOG("bthx: no WAKE_ACK from controller, sending anyway"); }
