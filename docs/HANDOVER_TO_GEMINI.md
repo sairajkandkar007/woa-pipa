@@ -64,6 +64,17 @@ Last measurement, under Windows with the dbg image (`!dd [uc] ...`):
 - Firmware: `claude\bt_fw\htbtfw20.tlv`, `htnv20.bin` (linux-firmware, local only), copied to `System32\drivers` by phase10.
 - BD_ADDR is generated once and stored in the device registry (`BdAddrLo/Hi`).
 
+## 5b. Bluetooth mouse lag: findings (13:30-14:35)
+- Counters log (every ~2 s, in `RxPoll()`) shows **no ACL packets reach the host at all** for long stretches while the
+  mouse moves on the surface. Then a burst arrives when the mouse is lifted. Our side is clean: parked 0, drop 0,
+  rxfifo 0, IBS wake timeouts 0. So the controller is not receiving or forwarding the mouse's packets. It is not a host-driver queueing bug.
+- Already tried, no change: immediate IBS WAKE_ACK, keeping the controller awake, CTS-ignored IBS bytes,
+  WLAN_EN (gpio20) low via KD (coex ruled out).
+- Next hypotheses:
+  1. **L16A (QCA6390 `vddasd`, 3.0 V: antenna switch/diversity) is probably never on.** Its only vote was in the parked BTH0 PEP descriptor, and that one was rejected anyway ("graph-claim", duplicate BTH0 entries in WBRX/WBRC). Weak RF would explain the lost packets. Try voting L16A (e.g. give WPWR a PEP descriptor with LDO16_A D0 vote, or vote it from UEFI).
+  2. Check whether this mouse also lags on another host (its own power saving).
+  3. Compare NVM tweaks with Linux: Linux sets IBS (bit 0x80) and deep sleep in NVM. We clear deep sleep. Try leaving the NVM untouched except the baud byte.
+
 ## 6. DO NOT
 - Never format/flash persist or persistbak. Never flash UEFI images: always `fastboot boot`.
 - Never commit proprietary files to GitHub: touch fw, BT fw, the WLAN driver, Kona BSP files, modified Qualcomm INFs, Windows images, partition backups.
