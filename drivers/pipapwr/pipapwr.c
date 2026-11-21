@@ -582,7 +582,12 @@ static VOID ParseByte(PFDO_CTX c, UCHAR b)
             return;
         }
         if (b == 0xFC) { c->ibsAwake = TRUE; KeSetEvent(&c->wakeAck, 0, FALSE); return; }
-        if (b == 0xFE) { c->ibsAwake = FALSE; c->ibsSleepInd++; return; }
+        if (b == 0xFE) {   /* controller wants to sleep: wake it straight back up (sleep/wake round trips lag HID input) */
+            static const UCHAR wake = 0xFD;
+            c->ibsAwake = FALSE; c->ibsSleepInd++;
+            WdfSpinLockAcquire(c->txLock); UartTx(c->se, &wake, 1); WdfSpinLockRelease(c->txLock);
+            return;
+        }
         if (b != 0x04 && b != 0x02 && b != 0x03) return;   /* wait for an event, ACL or SCO type byte */
         c->pktype = b; c->pkneed = (b == 0x02) ? 5 : 3; c->hdrDone = FALSE;   /* evt: 1+2, sco: 1+2+1 -> see below */
         if (b == 0x03) c->pkneed = 4;
