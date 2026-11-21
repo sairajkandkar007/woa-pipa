@@ -163,7 +163,8 @@ STATIC VOID SaveStatus (VOID)
 #ifndef PCIE_STOP_AFTER
 #define PCIE_STOP_AFTER 99
 #endif
-#define STOP_IF(n) do { if (PCIE_STOP_AFTER <= (n)) return; } while (0)
+#define STOP_IF(n) do { DEBUG ((EFI_D_ERROR, "PcieInit: step %d done\n", (n))); if (PCIE_STOP_AFTER <= (n)) return; } while (0)
+#define TRACE(x) DEBUG ((EFI_D_ERROR, "PcieInit: %a\n", x))
 
 STATIC VOID PcieInit (VOID)
 {
@@ -216,6 +217,9 @@ STATIC VOID PcieInit (VOID)
       if (MmioRead32 ((UINTN)(GCC_BASE + Cbcr[i])) & BIT31) mSt.ClockErrors |= (1u << (16 + i));
     }
     SaveStatus ();
+    DEBUG ((EFI_D_ERROR, "PcieInit: gdscr %08x vote %08x cfg_ahb %08x mstr %08x slv %08x errs %08x\n",
+            MmioRead32 (g), MmioRead32 ((UINTN)(GCC_BASE + 0x52008)), MmioRead32 ((UINTN)(GCC_BASE + 0x6b024)),
+            MmioRead32 ((UINTN)(GCC_BASE + 0x6b01c)), MmioRead32 ((UINTN)(GCC_BASE + 0x6b014)), mSt.ClockErrors));
     if (mSt.ClockErrors & (BIT30 | BIT16)) {   /* GDSC or cfg_ahb not running: touching PARF would hang */
       DEBUG ((EFI_D_ERROR, "PcieInit: clocks not running (%x), giving up\n", mSt.ClockErrors));
       return;
@@ -230,7 +234,11 @@ STATIC VOID PcieInit (VOID)
 #endif
   mSt.Step = 21;
   if (PCIE_STOP_AFTER == 21) return;
+  TRACE ("read PARF_SYS_CTRL");
+  DEBUG ((EFI_D_ERROR, "PcieInit: PARF_SYS_CTRL %08x\n", MmioRead32 ((UINTN)(PARF_BASE + PARF_SYS_CTRL))));
+  TRACE ("write PARF_DEVICE_TYPE");
   MmioWrite32 ((UINTN)(PARF_BASE + PARF_DEVICE_TYPE), DEVICE_TYPE_RC);
+  TRACE ("PARF ok");
   MmioAnd32 ((UINTN)(PARF_BASE + PARF_PHY_CTRL), ~BIT0);                 /* PHY_TEST_PWR_DOWN off */
   MmioWrite32 ((UINTN)(PARF_BASE + PARF_DBI_BASE_ADDR_V2),    (UINT32)DBI_BASE);
   MmioWrite32 ((UINTN)(PARF_BASE + PARF_DBI_BASE_ADDR_V2_HI), 0);
