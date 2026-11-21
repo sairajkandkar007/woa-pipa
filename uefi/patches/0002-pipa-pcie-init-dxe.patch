@@ -1,0 +1,31 @@
+diff --git a/Platforms/Xiaomi/pipaPkg/pipa.dsc b/Platforms/Xiaomi/pipaPkg/pipa.dsc
+index 1a8c071..e9ecd6a 100644
+--- a/Platforms/Xiaomi/pipaPkg/pipa.dsc
++++ b/Platforms/Xiaomi/pipaPkg/pipa.dsc
+@@ -79,6 +79,7 @@
+   ConfigurationMapLib|pipaPkg/Library/ConfigurationMapLib/ConfigurationMapLib.inf
+ 
+ [Components]
++  pipaPkg/Drivers/PcieInitDxe/PcieInitDxe.inf
+   #
+   # ACPI Tables
+   #
+diff --git a/Platforms/Xiaomi/pipaPkg/pipa.fdf b/Platforms/Xiaomi/pipaPkg/pipa.fdf
+index 8d0e13f..fed81cd 100644
+--- a/Platforms/Xiaomi/pipaPkg/pipa.fdf
++++ b/Platforms/Xiaomi/pipaPkg/pipa.fdf
+@@ -90,10 +90,13 @@ READ_LOCK_STATUS   = TRUE
+   INF MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf
+   INF SiliciumPkg/Drivers/SmBiosTableDxe/SmBiosTableDxe.inf
+ 
++  # PCIe0 bring-up for the QCA6390 Wi-Fi (woa-pipa)
++  INF pipaPkg/Drivers/PcieInitDxe/PcieInitDxe.inf
++
+   # ACPI
+   INF MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+   INF MdeModulePkg/Universal/Acpi/AcpiPlatformDxe/AcpiPlatformDxe.inf
+-  INF RuleOverride = ACPITABLE pipa/AcpiTables.inf
++  INF RuleOverride = ACPITABLE pipa_k/AcpiTables.inf
+ 
+   # Device Tree
+   #INF EmbeddedPkg/Drivers/DtPlatformDxe/DtPlatformDxe.inf

@@ -255,6 +255,27 @@ def main():
         assert b.count(irq) == 1, 'UR18 irq 0x27F'
         i = b.index(irq); d[i+5:i+9] = struct.pack('<I', 0x269)
         print('pipa bt-own: UR18 and BTH0 parked (pipapwr drives uart6 directly), UR18 irq back to 0x269')
+    if '--pipa-pcie' in sys.argv:
+        # PCIe0 is brought up by our UEFI PcieInitDxe. qcppx (QPPX) is not used: drop it from PCI0 _DEP.
+        # Kona PCI0 PEP D0 drives gpio36 (pipa: display DVDD enable) -> point that entry at gpio80
+        # (CLKREQ#, function pci_e0 = 1, pull-up), which is what pipa wants there anyway.
+        b = bytes(d)
+        dev = b.find(b'PCI0\x08_DEP')
+        assert dev > 0 and b.count(b'PCI0\x08_DEP') == 1, 'PCI0 _DEP'
+        q = b.find(b'QPPX', dev, dev + 64); assert q > 0, 'PCI0 _DEP QPPX'
+        d[q:q+4] = b'PEP0'
+        n = 0; k = 0
+        while True:
+            k = bytes(d).find(b'\\_SB.PCI0\x00', k + 1)
+            if k < 0: break
+            end = bytes(d).find(b'\rDEVICE\x00', k + 12); end = end if end > 0 else k + 4000
+            t = k
+            while True:
+                t = bytes(d).find(b'TLMMGPIO\x00', t + 1, end)
+                if t < 0: break
+                m = re.search(rb'\x0a\x24', bytes(d[t:t + 16]))
+                if m: d[t + m.start() + 1] = 80; n += 1
+        print(f'pipa pcie: PCI0 _DEP QPPX -> PEP0, {n} PEP TLMM gpio36 -> gpio80')
     if '--pipa-bklt' in sys.argv:
         # Append Scope(\\_SB){Device(BKLT) _HID PIPA8866, I2C 0x11 @400k on \\_SB.IC10} (KTZ8866 backlight).
         # AML compiled from acpi/pipa_bklt.asl; top-level terms may be appended to a DSDT.

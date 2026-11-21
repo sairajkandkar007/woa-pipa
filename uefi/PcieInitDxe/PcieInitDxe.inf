@@ -1,0 +1,29 @@
+[Defines]
+  INF_VERSION    = 0x00010005
+  BASE_NAME      = PcieInitDxe
+  FILE_GUID      = 7A5C3E10-6390-4C1F-9A2B-506970610002
+  MODULE_TYPE    = DXE_DRIVER
+  VERSION_STRING = 1.0
+  ENTRY_POINT    = PcieInitDxeEntry
+
+[Sources]
+  PcieInitDxe.c
+  PhyTable.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Qualcomm/QcomPkg/QcomPkg.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+  IoLib
+  DebugLib
+  TimerLib
+
+[Protocols]
+  gEfiClockProtocolGuid
+
+[Depex]
+  gEfiClockProtocolGuid AND gEfiVariableArchProtocolGuid AND gEfiVariableWriteArchProtocolGuid
