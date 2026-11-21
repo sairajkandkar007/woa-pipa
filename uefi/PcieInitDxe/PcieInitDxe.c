@@ -21,7 +21,11 @@
 #include <Library/IoLib.h>
 #include <Library/DebugLib.h>
 #include <Library/TimerLib.h>
+#include <Library/BaseMemoryLib.h>
 #include <Protocol/EFIClock.h>
+#include <Protocol/AcpiTable.h>
+#include <IndustryStandard/Acpi.h>
+#include <IndustryStandard/MemoryMappedConfigurationSpaceAccessTable.h>
 
 typedef struct { UINT16 Off; UINT8 Val; } PHY_REG;
 #include "PhyTable.h"
@@ -87,6 +91,7 @@ typedef struct {
 } PIPA_PCIE_STATUS;
 
 STATIC EFI_CLOCK_PROTOCOL *mClock;
+STATIC VOID SaveStatus (VOID);
 STATIC PIPA_PCIE_STATUS    mSt;
 
 STATIC VOID Tlmm (UINT32 Pin, UINT32 Ctl, INT32 Out)
@@ -189,6 +194,33 @@ STATIC VOID PcieInit (VOID)
   ClkOn ("gcc_pcie_phy_aux_clk",        0,        7);
   ClkOn ("gcc_pcie_wifi_clkref_en",     0,        8);
   ClkOn ("gcc_pcie0_phy_refgen_clk",    100000000, 9);
+  /* belt and braces: make sure the GDSC and the branches the controller/PHY registers need are really on,
+     straight in GCC (gcc-sm8250.c), and wait for each branch to report running (CBCR bit31 CLK_OFF = 0) */
+  {
+    STATIC CONST UINT32 Cbcr[] = { 0x6b024 /* cfg_ahb */, 0x6b01c /* mstr_axi */, 0x6b014 /* slv_axi */,
+                                   0x6b010 /* slv_q2a */, 0x6b028 /* aux */, 0x6f004 /* phy_aux */,
+                                   0x6f02c /* refgen */, 0x9000c /* aggre tbu */, 0x8d058 /* ddrss sf tbu */,
+                                   0x8c004 /* wifi clkref */ };
+    UINTN g = (UINTN)(GCC_BASE + 0x6b004);
+    MmioAnd32 (g, ~BIT0);                                                /* GDSCR SW_COLLAPSE off */
+    for (T = 0; T < 1000 && !(MmioRead32 (g) & BIT31); T++) gBS->Stall (10);
+    if (!(MmioRead32 (g) & BIT31)) mSt.ClockErrors |= BIT30;
+    MmioOr32 ((UINTN)(GCC_BASE + 0x52008), BIT0 | BIT1 | BIT2 | BIT3 | BIT5); /* slv, mstr, cfg, aux, q2a votes */
+    MmioOr32 ((UINTN)(GCC_BASE + 0x6f004), BIT0);
+    MmioOr32 ((UINTN)(GCC_BASE + 0x6f02c), BIT0);
+    MmioOr32 ((UINTN)(GCC_BASE + 0x9000c), BIT0);
+    MmioOr32 ((UINTN)(GCC_BASE + 0x8d058), BIT0);
+    MmioOr32 ((UINTN)(GCC_BASE + 0x8c004), BIT0);
+    for (i = 0; i < ARRAY_SIZE (Cbcr); i++) {
+      for (T = 0; T < 200 && (MmioRead32 ((UINTN)(GCC_BASE + Cbcr[i])) & BIT31); T++) gBS->Stall (10);
+      if (MmioRead32 ((UINTN)(GCC_BASE + Cbcr[i])) & BIT31) mSt.ClockErrors |= (1u << (16 + i));
+    }
+    SaveStatus ();
+    if (mSt.ClockErrors & (BIT30 | BIT16)) {   /* GDSC or cfg_ahb not running: touching PARF would hang */
+      DEBUG ((EFI_D_ERROR, "PcieInit: clocks not running (%x), giving up\n", mSt.ClockErrors));
+      return;
+    }
+  }
   mSt.Step = 2;
   STOP_IF (2);
 
@@ -281,6 +313,38 @@ STATIC VOID PcieInit (VOID)
   DEBUG ((EFI_D_WARN, "PcieInit: link up, bus1 id %08x\n", mSt.Bus1Id));
 }
 
+
+/* MCFG is installed only when the link came up: with a dead controller, pci.sys probing the ECAM window
+   would stall the bus. Segment 0, buses 0-1 at 0x60000000 (bus 0 = DWC DBI, bus 1 = iATU CFG window). */
+#pragma pack(1)
+typedef struct {
+  EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE_HEADER                    Header;
+  EFI_ACPI_MEMORY_MAPPED_ENHANCED_CONFIGURATION_SPACE_BASE_ADDRESS_ALLOCATION_STRUCTURE Seg0;
+} PIPA_MCFG;
+#pragma pack()
+
+STATIC VOID InstallMcfg (VOID)
+{
+  EFI_ACPI_TABLE_PROTOCOL *Acpi; UINTN Key; EFI_STATUS S;
+  PIPA_MCFG M;
+  ZeroMem (&M, sizeof (M));
+  M.Header.Header.Signature = EFI_ACPI_6_3_PCI_EXPRESS_MEMORY_MAPPED_CONFIGURATION_SPACE_BASE_ADDRESS_DESCRIPTION_TABLE_SIGNATURE;
+  M.Header.Header.Length = sizeof (M);
+  M.Header.Header.Revision = 1;
+  CopyMem (M.Header.Header.OemId, "QCOM  ", 6);
+  M.Header.Header.OemTableId = SIGNATURE_64 ('Q', 'C', 'O', 'M', 'E', 'D', 'K', '2');
+  M.Header.Header.OemRevision = 0x8250;
+  M.Header.Header.CreatorId = SIGNATURE_32 ('P', 'I', 'P', 'A');
+  M.Header.Header.CreatorRevision = 1;
+  M.Seg0.BaseAddress = DBI_BASE;
+  M.Seg0.PciSegmentGroupNumber = 0;
+  M.Seg0.StartBusNumber = 0;
+  M.Seg0.EndBusNumber = 1;
+  S = gBS->LocateProtocol (&gEfiAcpiTableProtocolGuid, NULL, (VOID **)&Acpi);
+  if (!EFI_ERROR (S)) S = Acpi->InstallAcpiTable (Acpi, &M, sizeof (M), &Key);
+  DEBUG ((EFI_D_WARN, "PcieInit: MCFG %r\n", S));
+}
+
 EFI_STATUS
 EFIAPI
 PcieInitDxeEntry (
@@ -294,6 +358,9 @@ PcieInitDxeEntry (
     return EFI_SUCCESS;
   }
   PcieInit ();
+  if (mSt.Step >= 6) {
+    InstallMcfg ();
+  }
   SaveStatus ();
   return EFI_SUCCESS;
 }

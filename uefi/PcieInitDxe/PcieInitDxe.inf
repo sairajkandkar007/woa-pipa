@@ -21,9 +21,11 @@
   IoLib
   DebugLib
   TimerLib
+  BaseMemoryLib
 
 [Protocols]
   gEfiClockProtocolGuid
+  gEfiAcpiTableProtocolGuid
 
 [Depex]
-  gEfiClockProtocolGuid AND gEfiVariableArchProtocolGuid AND gEfiVariableWriteArchProtocolGuid
+  gEfiClockProtocolGuid AND gEfiVariableArchProtocolGuid AND gEfiVariableWriteArchProtocolGuid AND gEfiAcpiTableProtocolGuid
