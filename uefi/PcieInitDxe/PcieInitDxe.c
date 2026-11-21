@@ -117,9 +117,9 @@ STATIC VOID ClkOn (CONST CHAR8 *Name, UINT32 Hz, UINT32 Bit)
 STATIC VOID GccReset (UINT32 Off)
 {
   MmioOr32 ((UINTN)(GCC_BASE + Off), 1);
-  MicroSecondDelay (1000);
+  gBS->Stall (1000);
   MmioAnd32 ((UINTN)(GCC_BASE + Off), ~1u);
-  MicroSecondDelay (1000);
+  gBS->Stall (1000);
 }
 
 STATIC UINT32 FindPcieCap (VOID)
@@ -145,7 +145,7 @@ STATIC VOID AtuOutbound (UINT32 Idx, UINT32 Type, UINT32 Ctrl2Extra, UINT64 Base
   MmioWrite32 (R + ATU_UTGT,   (UINT32)(Target >> 32));
   MmioWrite32 (R + ATU_CTRL1,  Type);
   MmioWrite32 (R + ATU_CTRL2,  ATU_ENABLE | Ctrl2Extra);
-  MicroSecondDelay (10);
+  gBS->Stall (10);
 }
 
 STATIC VOID SaveStatus (VOID)
@@ -193,7 +193,11 @@ STATIC VOID PcieInit (VOID)
   STOP_IF (2);
 
   /* 3. controller reset + PARF init (qcom_pcie_init_2_7_0) */
+#ifndef PCIE_SKIP_BCR
   GccReset (GCC_PCIE_0_BCR);
+#endif
+  mSt.Step = 21;
+  if (PCIE_STOP_AFTER == 21) return;
   MmioWrite32 ((UINTN)(PARF_BASE + PARF_DEVICE_TYPE), DEVICE_TYPE_RC);
   MmioAnd32 ((UINTN)(PARF_BASE + PARF_PHY_CTRL), ~BIT0);                 /* PHY_TEST_PWR_DOWN off */
   MmioWrite32 ((UINTN)(PARF_BASE + PARF_DBI_BASE_ADDR_V2),    (UINT32)DBI_BASE);
@@ -218,9 +222,9 @@ STATIC VOID PcieInit (VOID)
   /* pipe clock comes from the PHY once it runs: vote the branch directly (Linux uses BRANCH_HALT_SKIP;
      ClockDxe's EnableClock would wait for a clock that only exists after PHY start) */
   MmioOr32 ((UINTN)(GCC_BASE + 0x52008), BIT4);
-  MicroSecondDelay (1000);
+  gBS->Stall (1000);
   for (T = 0; T < 100 && (MmioRead32 ((UINTN)(PHY_BASE + PHY_PCS_PCS_STATUS1)) & BIT6); T++) {
-    MicroSecondDelay (200);
+    gBS->Stall (200);
   }
   mSt.PhyStatus = MmioRead32 ((UINTN)(PHY_BASE + PHY_PCS_PCS_STATUS1));
   if (mSt.PhyStatus & BIT6) {
@@ -251,15 +255,15 @@ STATIC VOID PcieInit (VOID)
   STOP_IF (5);
 
   /* 6. release PERST# (>=100 ms after power), start link training, wait for DL_Active */
-  MicroSecondDelay (100000);
+  gBS->Stall (100000);
   Tlmm (79, 0x1 | BIT9, 1);
-  MicroSecondDelay (1000);
+  gBS->Stall (1000);
   MmioOr32 ((UINTN)(PARF_BASE + PARF_LTSSM), BIT8);
   for (T = 0; T < 100; T++) {                                            /* up to ~1 s */
     if (Cap && (MmioRead16 ((UINTN)(DBI_BASE + Cap + 0x12)) & BIT13)) {
       break;
     }
-    MicroSecondDelay (10000);
+    gBS->Stall (10000);
   }
   mSt.Ltssm = MmioRead32 ((UINTN)(DBI_BASE + DBI_PL_DEBUG0));
   mSt.LinkStatus = Cap ? MmioRead32 ((UINTN)(DBI_BASE + Cap + 0x10)) : 0;
@@ -271,7 +275,7 @@ STATIC VOID PcieInit (VOID)
   STOP_IF (6);
 
   /* 7. who is on bus 1? (expect 0x110117CB) */
-  MicroSecondDelay (100000);
+  gBS->Stall (100000);
   mSt.Bus1Id = MmioRead32 ((UINTN)CFG_BASE);
   mSt.Step = 7;
   DEBUG ((EFI_D_WARN, "PcieInit: link up, bus1 id %08x\n", mSt.Bus1Id));
