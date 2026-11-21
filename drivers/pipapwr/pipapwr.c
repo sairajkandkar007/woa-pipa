@@ -470,7 +470,7 @@ typedef struct _FDO_CTX {
     WDFSPINLOCK pktLock;
     WDFQUEUE ioQueue, evtQueue, aclQueue;
     LIST_ENTRY evtList, aclList; ULONG evtCount, aclCount;
-    WDFWAITLOCK txLock;
+    WDFSPINLOCK txLock;    /* spinlock: the WAKE_ACK is sent straight from the RX DPC */
     BTHX_CAPABILITIES caps;
     ULONG cntTx, cntEvt, cntAcl, cntSco, isrCount, ioctlLogged, polls, rawLogged;
     volatile BOOLEAN ibsAwake; ULONG ibsWakeInd, ibsSleepInd, ibsWakeTimeout;
@@ -575,7 +575,12 @@ static VOID ParseByte(PFDO_CTX c, UCHAR b)
     if (c->pkn == 0) {
         /* QCA in-band sleep (hci_qca.c): FD = controller wants to send (needs our WAKE_ACK FC),
          * FC = ack of our wake, FE = controller going to sleep */
-        if (b == 0xFD) { c->ibsWakeInd++; WdfWorkItemEnqueue(c->ackWork); return; }
+        if (b == 0xFD) {   /* answer at once from the DPC (a work item added visible input lag) */
+            static const UCHAR ack = 0xFC;
+            c->ibsWakeInd++;
+            WdfSpinLockAcquire(c->txLock); UartTx(c->se, &ack, 1); c->ibsAwake = TRUE; WdfSpinLockRelease(c->txLock);
+            return;
+        }
         if (b == 0xFC) { c->ibsAwake = TRUE; KeSetEvent(&c->wakeAck, 0, FALSE); return; }
         if (b == 0xFE) { c->ibsAwake = FALSE; c->ibsSleepInd++; return; }
         if (b != 0x04 && b != 0x02 && b != 0x03) return;   /* wait for an event, ACL or SCO type byte */
@@ -636,10 +641,10 @@ VOID AckWork(WDFWORKITEM wi)
 {
     PFDO_CTX c = FdoCtx((WDFDEVICE)WdfWorkItemGetParentObject(wi));
     static const UCHAR ack = 0xFC;
-    WdfWaitLockAcquire(c->txLock, NULL);
+    WdfSpinLockAcquire(c->txLock);
     UartTx(c->se, &ack, 1);
     c->ibsAwake = TRUE;
-    WdfWaitLockRelease(c->txLock);
+    WdfSpinLockRelease(c->txLock);
 }
 
 static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
@@ -654,18 +659,18 @@ static NTSTATUS WriteHci(PFDO_CTX c, WDFREQUEST req, size_t inLen)
     buf = (UCHAR *)ExAllocatePool2(POOL_FLAG_NON_PAGED, 1 + h->DataLen, 'xTtB');
     if (!buf) return STATUS_INSUFFICIENT_RESOURCES;
     buf[0] = h->Type; RtlCopyMemory(buf + 1, h->Data, h->DataLen);
-    WdfWaitLockAcquire(c->txLock, NULL);
-    if (!c->ibsAwake) {        /* HCI_IBS_WAKE_IND, wait for WAKE_ACK (retry like hci_qca's wake retrans) */
+    if (!c->ibsAwake) {        /* HCI_IBS_WAKE_IND, wait for WAKE_ACK (no lock held while waiting) */
         static const UCHAR wake = 0xFD; ULONG tries; LARGE_INTEGER to; to.QuadPart = -10000LL * 20;
         for (tries = 0; tries < 10 && !c->ibsAwake; tries++) {
             KeClearEvent(&c->wakeAck);
-            UartTx(c->se, &wake, 1);
+            WdfSpinLockAcquire(c->txLock); UartTx(c->se, &wake, 1); WdfSpinLockRelease(c->txLock);
             KeWaitForSingleObject(&c->wakeAck, Executive, KernelMode, FALSE, &to);
         }
         if (!c->ibsAwake) { c->ibsWakeTimeout++; c->ibsAwake = TRUE; LOG("bthx: no WAKE_ACK from controller, sending anyway"); }
     }
+    WdfSpinLockAcquire(c->txLock);
     UartTx(c->se, buf, 1 + h->DataLen);
-    WdfWaitLockRelease(c->txLock);
+    WdfSpinLockRelease(c->txLock);
     ExFreePool(buf);
     c->cntTx++;
     WdfRequestCompleteWithInformation(req, STATUS_SUCCESS, h->DataLen);
@@ -846,7 +851,7 @@ NTSTATUS PwrDeviceAdd(WDFDRIVER drv, PWDFDEVICE_INIT init)
     c->caps.IsDeviceWakeCapable = FALSE;
     WDF_OBJECT_ATTRIBUTES_INIT(&a); a.ParentObject = dev;
     st = WdfSpinLockCreate(&a, &c->pktLock); if (!NT_SUCCESS(st)) return st;
-    st = WdfWaitLockCreate(&a, &c->txLock); if (!NT_SUCCESS(st)) return st;
+    st = WdfSpinLockCreate(&a, &c->txLock); if (!NT_SUCCESS(st)) return st;
     st = WdfSpinLockCreate(&a, &c->parseLock); if (!NT_SUCCESS(st)) return st;
     KeInitializeEvent(&c->wakeAck, NotificationEvent, FALSE);
     c->ibsAwake = TRUE;
