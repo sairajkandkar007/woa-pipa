@@ -1,0 +1,67 @@
+name: Build QualcommPEP (SM8250 ARM64)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2025-vs2026
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Install matching Windows SDK and WDK
+        shell: pwsh
+        run: |
+          winget install --id Microsoft.WindowsSDK.10.0.28000 --exact --silent --accept-package-agreements --accept-source-agreements
+          if ($LASTEXITCODE -ne 0) { throw "Windows SDK installation failed: $LASTEXITCODE" }
+          winget install --id Microsoft.WindowsWDK.10.0.28000 --exact --silent --accept-package-agreements --accept-source-agreements
+          if ($LASTEXITCODE -ne 0) { throw "WDK installation failed: $LASTEXITCODE" }
+
+      - name: Verify ARM64 driver toolchain
+        shell: pwsh
+        run: |
+          $kits = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10'
+          if (-not (Test-Path (Join-Path $kits 'Include\10.0.28000.0\km\ntddk.h'))) {
+            Get-ChildItem (Join-Path $kits 'Include') -ErrorAction SilentlyContinue | Select-Object FullName
+            throw 'WDK kernel headers were not found after installation.'
+          }
+          where.exe msbuild
+          Write-Host "WDK root: $kits"
+
+      - name: Build QualcommPEP for SM8250 ARM64
+        shell: pwsh
+        run: |
+          $solution = 'drivers\qualcommpep\QualcommPEP\QcPep8250.sln'
+          msbuild $solution /m /p:Configuration=Release /p:Platform=ARM64 /p:SignMode=Off /v:minimal
+          if ($LASTEXITCODE -ne 0) { throw "MSBuild failed: $LASTEXITCODE" }
+
+      - name: Collect driver package
+        shell: pwsh
+        run: |
+          $root = 'drivers\qualcommpep\QualcommPEP\ARM64'
+          $out = 'artifacts\qcpep-sm8250-arm64'
+          New-Item -ItemType Directory -Force $out | Out-Null
+          $wanted = @('qcpep.sys', 'qcpep8250.inf', 'qcpep.cat')
+          foreach ($name in $wanted) {
+            $found = Get-ChildItem $root -Recurse -File -Filter $name -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $found) { throw "Expected build output missing: $name" }
+            Copy-Item $found.FullName (Join-Path $out $name) -Force
+            Write-Host "$name : $($found.Length) bytes"
+          }
+          Copy-Item 'drivers\qualcommpep\QualcommPEP\inf\qcpep8250.inx' (Join-Path $out 'qcpep8250.inx')
+          Get-ChildItem $out | Format-Table Name,Length
+
+      - name: Upload ARM64 driver package
+        uses: actions/upload-artifact@v4
+        with:
+          name: qcpep-sm8250-arm64
+          path: artifacts/qcpep-sm8250-arm64/
+          if-no-files-found: error
+          retention-days: 14
