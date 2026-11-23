@@ -56,18 +56,27 @@ UEFI build: [`uefi/BUILD.md`](uefi/BUILD.md)
 7. USB mass storage works fine with the 4096-byte UFS sectors when the whole LUN0 (`/dev/block/sda`) is exported.
 
 ## Repository layout
+
 | Path | Contents |
 |---|---|
-| `uefi/patches/` | Mu-Silicium pipaPkg fix (RAM manager / memory map) |
-| `uefi/BUILD.md` | How to build the UEFI, root-cause and bisect notes |
-| `uefi/AutoMassStorageDxe/` | Diagnostic DXE driver (2.3-era Mass Storage at ReadyToBoot) |
-| `acpi/` | `make_pipa_k.py` + `pipa_k/AcpiTables.inf` (Kona-ID ACPI set) |
-| `scripts/windows/` | PowerShell/batch tooling run on the Windows PC (see below) |
-| `scripts/android/` | TWRP mass-storage gadget scripts (whole `sda`) |
-| `logs/` | Device state from Windows (`pnputil` problem/all devices) |
-| `docs/` | Status log, roadmap, PEP findings |
-| `debug/windbg/` | WinDbg scripts that patch qcpep in memory (see PEP_FINDINGS) |
-| `debug/*.py` | capstone helpers used to disassemble qcpep8250.sys |
+| `drivers/` | All Windows driver source projects and their build tooling |
+| `drivers/ktz8866/` | KTZ8866 I²C backlight driver |
+| `drivers/nt36532spi/` | NT36532 SPI/HID touchscreen driver |
+| `drivers/pipabt/` | QCA6390 Bluetooth driver |
+| `drivers/pipapwr/` | QCA6390 WLAN/BT power and UART support driver |
+| `drivers/qualcommpep/QualcommPEP/` | QualcommPEP source tree, including the SM8250 pipa port |
+| `drivers/qualcommpep/build/` | QualcommPEP build and test-signing scripts |
+| `acpi/` | ACPI source tables and the pipa DSDT patch/generation script |
+| `uefi/` | UEFI build notes, Mu-Silicium patches and firmware-specific components |
+| `scripts/windows/` | Windows installation, diagnostics and device-management scripts |
+| `scripts/android/` | Android/recovery mass-storage gadget scripts |
+| `docs/` | Project status, roadmap, PEP findings and hardware notes |
+| `debug/` | Debugging helpers and WinDbg investigation notes |
+| `logs/` | Captured Windows device state and diagnostic output |
+
+The QualcommPEP driver and its build helpers are grouped under `drivers/`; the
+ACPI and UEFI directories remain separate because they contain firmware tables,
+firmware patches and platform build material rather than Windows driver packages.
 
 ## Windows-side tooling (`scripts/windows/`)
 Expects: `C:\platform-tools\adb.exe` / `fastboot.exe`, the scripts in a folder `claude\` inside a

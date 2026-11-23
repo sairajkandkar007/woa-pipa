@@ -14,7 +14,7 @@ Detailed history: `docs/STATUS_LOG.md`. Read it before changing anything.
 | Bluetooth | own `drivers/pipapwr`: powers QCA6390, own GENI UART on QUP0 SE6 at 3 Mbaud, downloads htbtfw20.tlv/htnv20.bin, child PDO `PIPA\QCA6390_UART` → inbox BthMini. Mouse works. |
 
 ## 2. Test loop (do not change without reason)
-1. `claude\RUN_QPEP_CYCLE.bat`: downloads repo zip from GitHub → builds PEP + drivers (`qpep\qpep8250_build.ps1`) → tablet in UEFI Mass Storage → `claude\phase10_qpep.ps1` installs drivers offline → fastboot boots `claude\Mu-pipa-qpep8250.img` → WinDbg over KDNET (log in `claude\logs\windbg_*.log`).
+1. `claude\RUN_QPEP_CYCLE.bat`: downloads repo zip from GitHub → builds PEP + drivers (`drivers\qualcommpep\build\qpep8250_build.ps1`) → tablet in UEFI Mass Storage → `claude\phase10_qpep.ps1` installs drivers offline → fastboot boots `claude\Mu-pipa-qpep8250.img` → WinDbg over KDNET (log in `claude\logs\windbg_*.log`).
    **Code must be pushed to GitHub first** (the build pulls the zip).
 2. Only the UEFI changed: `claude\RUN_TEST_QPEP8250.bat`, or `claude\RUN_TEST_IMG.bat <image>` for any image.
 3. UEFI is built on Linux (Mu-Silicium tree, `python3 build_uefi.py -d pipa`, `-r DEBUG` prints the DXE log on the tablet screen). DSDT: `acpi/make_pipa_k.py q.aml out.aml --pipa-qup --pipa-i2c15 --pipa-spi4 --pipa-bt --pipa-bklt --pipa-wpwr --pipa-btpwr --pipa-bt-own [--pipa-pcie]`, the output goes into `Silicium-ACPI/Platforms/Xiaomi/pipa_k/DSDT.aml`. Our UEFI-side changes are in `uefi/` (PcieInitDxe + patches 0001-0004).

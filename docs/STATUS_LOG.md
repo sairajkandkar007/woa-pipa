@@ -4,7 +4,7 @@
 
 - Assessment: `docs/QUALCOMMPEP_ASSESSMENT.md` (feasible, better long-term; qcpep patching parked).
 - PC toolchain installed: VS 2022 Community 17.14 (C++ ARM64), SDK + WDK 10.0.26100 (+ VS DriverKit component).
-- `qpep/RUN_QPEP_BUILD.bat` clones QualcommPEP (sm8845), creates a test cert, builds ARM64 Release: **qcpep.sys built OK**
+- `drivers/qualcommpep/build/RUN_QPEP_BUILD.bat` clones QualcommPEP (sm8845), creates a test cert, builds ARM64 Release: **qcpep.sys built OK**
   (infverif error 1323 on service-key values worked around in the local INF copy).
 - Next: create the sm8250 target (CPU perf/idle off, QMP via APCS doorbell, SM8250 RPMh/cmd-db, clocks/ICB for UFS+QUP).
 
@@ -85,7 +85,7 @@ Device state snapshot: `logs/2026-11-16_device-state/`.
 - CPU perf/idle default OFF on 8250 (no SCMI/CPUCP); BWMON bus DCVS default OFF (targets still 8845).
 - New minimal INF `inf/qcpep8250.inx` (HWID ACPI\QCOM2519, no 8845 resource blobs).
 - DSDT: `make_pipa_k.py --qpep-crs` replaces 4 unused PEP0 interrupts with Memory32Fixed RSC DRV2 0x18220000/0x10000 + AOP MSGRAM (QualcommPEP needs DRV2 as a PnP memory resource).
-- Build: `qpep/RUN_QPEP8250_BUILD.bat` (downloads repo main, builds QcPep8250.sln, test-signs). Not yet compiled.
+- Build: `drivers/qualcommpep/build/RUN_QPEP8250_BUILD.bat` (downloads repo main, builds QcPep8250.sln, test-signs). Not yet compiled.
 - Before installing on the tablet: remove the old Kona qcpep (same HWID QCOM2519).
 
 ## 2026-11-18 00:20 — QualcommPEP SM8250 first boot
