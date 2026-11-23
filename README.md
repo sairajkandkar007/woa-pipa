@@ -42,16 +42,17 @@ USB host support as partial.
 
 **Still not working:** GPU acceleration and charging.
 
-Details: [`docs/STATUS_LOG.md`](docs/STATUS_LOG.md) · PEP debugging:
-[`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) · Plan: [`docs/ROADMAP.md`](docs/ROADMAP.md) ·
-UEFI build: [`uefi/BUILD.md`](uefi/BUILD.md)
+Details: [Installation guide](docs/INSTALLATION_GUIDE.md) ·
+[Status log](docs/STATUS_LOG.md) · PEP debugging:
+[PEP findings](docs/PEP_FINDINGS.md) · Plan: [Roadmap](docs/ROADMAP.md) ·
+UEFI build: [uefi/BUILD.md](uefi/BUILD.md)
 
 ## Key findings
 1. **Upstream UEFI regression:** `8c321aab` moved `RamManagerDxe` out of pipa's APRIORI → TrustZone drivers run out of memory → black screen. Fixed by the patch above.
 2. **Silicium's pipa DSDT = Qualcomm SM8250 MTP DSDT** with pipa edits and every HID renamed `QCOM25xx`→`QCOM05xx` (Kona BSP expects `QCOM25xx`). [`acpi/make_pipa_k.py`](acpi/make_pipa_k.py) renames them back, also fixes `PEP0.PEPH` (`DEV_0519`→`DEV_2519`, else qcpep code 31), TLMM `_UID`, and optionally: UFS0 `_DEP` PEP0→SCM0 (`--ufs-dep-scm`, else INACCESSIBLE_BOOT_DEVICE when PEP fails), UFS rails (`--ufs-rails`), and 8 package element counts Silicium left wrong after removing PM8009 (`--pkg-fix`). All same-length binary edits + checksum.
 3. **NULL-driver installs:** raw-capable ACPI devices installed on first boot without their driver are never re-checked → inject drivers before first boot or set `ConfigFlags=0x20`.
 4. **Kernel debugging over USB works** (KDNET-EEM via `kd_8003_5143.dll`, DBG2 has USB0). This is how PEP is being debugged; ETW/boot logging was useless because the hang happened before log files exist.
-5. **Retail pipa firmware ≠ Qualcomm MTP** (what qcpep assumes): LMh (0x1835xxxx) and OSM (0x1832xxxx) registers hang the bus; AOP has no GLINK `rpm_requests` (Android uses QMP at 0xC300000); cmd-db lacks some rails; display RSC has 2 TCS; no bus-arbiter (BUSARB/ICB) provider. Details in `docs/PEP_FINDINGS.md`.
+5. **Retail pipa firmware ≠ Qualcomm MTP** (what qcpep assumes): LMh (0x1835xxxx) and OSM (0x1832xxxx) registers hang the bus; AOP has no GLINK `rpm_requests` (Android uses QMP at 0xC300000); cmd-db lacks some rails; display RSC has 2 TCS; no bus-arbiter (BUSARB/ICB) provider. Details in [`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md).
 6. **Never install `PPMSettings-8250Profiles.wd.ppkg`** (from the PEP INF): unrecoverable CRITICAL_PROCESS_DIED. Registry-only rollback after a crashed PEP boot is unreliable → rebuild instead.
 7. USB mass storage works fine with the 4096-byte UFS sectors when the whole LUN0 (`/dev/block/sda`) is exported.
 
@@ -91,7 +92,7 @@ UEFI images are not included (they contain proprietary Qualcomm binaries). Build
 | `RUN_PHASE4B_UEFI_MSC.bat` | With UEFI Mass Storage active: compare LUN0 partitions with the backups, copy Windows logs/Enum hive/`C:\pipa-logs` |
 | `RUN_PHASE5_BATCH*.bat` → `phase5_drivers.ps1` | Inject a Kona driver batch offline (DISM) after a full `System32\config` snapshot; installs a logon device-state dump |
 | `RUN_PHASE5_UNDO2.bat` | Restore the last registry snapshot |
-| `RUN_PHASE6_FLASH_UEFI.bat` / `RUN_PHASE6_RESTORE_BOOT_A.bat` | Flash the UEFI into `boot_a` (MD5, product, unlock, slot and size checks + typed FLASH) / write the original boot_a backup back |
+| `RUN_PHASE6_FLASH_UEFI.bat` / `RUN_PHASE6_RESTORE_BOOT_A.bat` | Flash the UEFI into `boot_a` (MD5, product, unlock, slot and size checks + typed FLASH) / write the original `boot_a` backup back |
 | `RUN_PHASE9_KD_ON/OFF.bat` → `phase9_kdnet.ps1` | Enable/disable kernel debugging over USB in the tablet's BCD (UEFI Mass Storage) |
 | `RUN_REBUILD_KNOWN_GOOD.bat` | Reinstall Windows + inject the known-good driver set before first boot |
 | `RUN_DIAG_*.bat` | Read-only fastboot / disk diagnostics |
