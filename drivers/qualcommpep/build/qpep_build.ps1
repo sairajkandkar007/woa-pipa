@@ -29,12 +29,13 @@ try {
   $t = Get-Content $inx -Encoding Unicode
   $t = $t | ForEach-Object { if ($_ -match '^\s*HKR\s*,\s*(Resources|SystemLibResources|DcvsConfig)\s*,') { ';' + $_ } else { $_ } }
   Set-Content $inx $t -Encoding Unicode
-  $vswhere = "\${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+  $programFilesX86 = (Get-Item 'Env:ProgramFiles(x86)').Value
+  $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'
   $vs = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
   if (-not $vs) { throw 'Visual Studio with MSBuild was not found.' }
   $msbuild = Join-Path $vs 'MSBuild\Current\Bin\amd64\MSBuild.exe'
   Write-Host "MSBuild: $msbuild"
-  Get-ChildItem "\${env:ProgramFiles(x86)}\Windows Kits\10\Include" | Select-Object -ExpandProperty Name | Write-Host
+  Get-ChildItem (Join-Path $programFilesX86 'Windows Kits\10\Include') | Select-Object -ExpandProperty Name | Write-Host
   & $msbuild (Join-Path $src 'QcPep8845.sln') /m /p:Configuration=Release /p:Platform=ARM64 /p:SignMode=Off /v:minimal
   Write-Host "MSBuild exit code: $LASTEXITCODE"
   Get-ChildItem -Recurse (Join-Path $src 'ARM64') -Include *.sys,*.inf,*.cat -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "OUTPUT: $($_.FullName) $($_.Length)" }

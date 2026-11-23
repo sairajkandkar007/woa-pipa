@@ -8,7 +8,8 @@ New-Item -ItemType Directory -Force (Join-Path $buildRoot 'logs'), $out | Out-Nu
 Start-Transcript -Path (Join-Path $buildRoot 'logs\qpep8250_build.log') -Force | Out-Null
 try {
   if (-not (Test-Path (Join-Path $src 'QcPep8250.sln'))) { throw "SM8250 solution not found: $src" }
-  $vswhere = "\${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+  $programFilesX86 = (Get-Item 'Env:ProgramFiles(x86)').Value
+  $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'
   $vs = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
   if (-not $vs) { throw 'Visual Studio with MSBuild was not found.' }
   $msbuild = Join-Path $vs 'MSBuild\Current\Bin\amd64\MSBuild.exe'
@@ -17,7 +18,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw 'build failed - inspect logs\qpep8250_build.log' }
   $files = Get-ChildItem -Recurse (Join-Path $src 'ARM64') -Include qcpep.sys,qcpep8250.inf,qcpep.cat,*.inf
   $files | ForEach-Object { Write-Host "OUTPUT: $($_.FullName) $($_.Length)"; Copy-Item $_.FullName $out -Force }
-  $signtool = Get-ChildItem "\${env:ProgramFiles(x86)}\Windows Kits\10\bin" -Recurse -Filter signtool.exe | Where-Object FullName -match '\\x64\\' | Select-Object -Last 1
+  $signtool = Get-ChildItem (Join-Path $programFilesX86 'Windows Kits\10\bin') -Recurse -Filter signtool.exe | Where-Object FullName -match '\\x64\\' | Select-Object -Last 1
   $cert = Join-Path $repoRoot 'pipa_test_cert.pfx'
   foreach ($f in @('qcpep.sys','qcpep.cat')) {
     $p = Join-Path $out $f
