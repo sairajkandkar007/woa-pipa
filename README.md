@@ -11,12 +11,11 @@ Bring-up notes, patches and tooling for running **Windows 11 Pro ARM64** on the
 
 ## Hardware status (2026-11-23)
 
-The status below reflects the latest reported testing on the Xiaomi Pad 6, rather than
-the older November 17 bring-up snapshot.
+The table records project bring-up reports. **Windows is not installed on the current Pad setup yet**; treat the reported Windows-side hardware results as historical project notes until they are reproduced after installation.
 
 | Area | State |
 |---|---|
-| Windows 11 Pro ARM64 install + boot | ✅ Boots to desktop |
+| Windows 11 Pro ARM64 install + boot | ⏳ Not installed on the current Pad setup; installation remains pending |
 | Mu-Silicium UEFI | ✅ Boots on pipa with the pipa RAM-manager fix |
 | UFS storage | ✅ Working |
 | Display | ✅ Working through UEFI GOP / current display path |
