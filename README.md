@@ -5,22 +5,46 @@ Bring-up notes, patches and tooling for running **Windows 11 Pro ARM64** on the
 [Project Silicium Mu-Silicium](https://github.com/Project-Silicium/Mu-Silicium) UEFI and the
 [WOA-Project Kona BSP](https://github.com/WOA-Project/windows_silicon_qcom_kona).
 
-> ⚠️ Experimental. Windows on pipa currently has **no touch, no Wi-Fi, no charging, no GPU, no PEP**.
-> Everything here can brick your device if misused. Back up all partitions first.
+> ⚠️ Experimental. This is an active hardware bring-up project. Flashing, repartitioning
+> or injecting experimental drivers can make the device unbootable or cause data loss.
+> Back up all partitions before making changes.
 
-## Status (2026-11-17, latest)
+## Hardware status (2026-11-23)
+
+The status below reflects the latest reported testing on the Xiaomi Pad 6, rather than
+the older November 17 bring-up snapshot.
+
 | Area | State |
 |---|---|
-| Windows 11 Pro 22621 install + boot | ✅ unattended, boots to desktop |
-| Mu-Silicium UEFI | ✅ with [`0001-pipa-fix-boot-ram-manager.patch`](uefi/patches/0001-pipa-fix-boot-ram-manager.patch) |
-| UFS storage, display (UEFI GOP), power/side buttons | ✅ |
-| SPMI, PMIC core/apps/ext, PMIC GPIO, ADC | ✅ (after fixing NULL-driver installs) |
-| USB host | ⚠️ USB mouse works; Type-C port manager code 10, VBUS/role inconsistent |
-| TLMM GPIO, Type-C | ⚠️ still on `genpass` (no admin rights in the tablet's Windows yet) |
-| **PEP** | 🔧 **current blocker.** Plan: port open-source [QualcommPEP](https://github.com/NikkaGames/QualcommPEP) to SM8250 ([assessment](docs/QUALCOMMPEP_ASSESSMENT.md)); qcpep8250 patching parked. Without it PEP0 fails quietly (code 31) and Windows boots. With it: debugged live, 11 pipa/firmware differences found; init completes (`INIT done`) with in-memory patches, device-resource loading still crashes. See [`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) |
-| I2C/SPI/UART, SMMU, DSPs, battery/charging, touch, Wi-Fi/BT, GPU, audio | ⏳ blocked on PEP |
+| Windows 11 Pro ARM64 install + boot | ✅ Boots to desktop |
+| Mu-Silicium UEFI | ✅ Boots on pipa with the pipa RAM-manager fix |
+| UFS storage | ✅ Working |
+| Display | ✅ Working through UEFI GOP / current display path |
+| Touchscreen | ✅ Working |
+| 10-point multitouch | ✅ Working |
+| Wi-Fi | ⚠️ Wi-Fi works, but there is currently no internet connectivity |
+| Bluetooth | ✅ Working |
+| USB host mode | ✅ Working |
+| Backlight | ✅ Working |
+| GPU acceleration | ❌ Not working |
+| Charging | ❌ Not working |
 
-Details: [`docs/STATUS_LOG.md`](docs/STATUS_LOG.md) · PEP debugging: [`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) · Plan: [`docs/ROADMAP.md`](docs/ROADMAP.md) · UEFI build: [`uefi/BUILD.md`](uefi/BUILD.md)
+**Wi-Fi note:** The wireless hardware/driver path is working, but internet access is not.
+Network association, IP configuration, routing and DNS should be diagnosed separately;
+do not interpret the lack of internet as proof that the Wi-Fi device itself is nonfunctional.
+
+**Touch note:** The custom NT36532 SPI/HID implementation supports 10-point multitouch.
+
+**Bluetooth note:** The custom QCA6390/UART implementation is reported working in Windows.
+
+**USB note:** USB host mode is working. This supersedes the older status entry that described
+USB host support as partial.
+
+**Still not working:** GPU acceleration and charging.
+
+Details: [`docs/STATUS_LOG.md`](docs/STATUS_LOG.md) · PEP debugging:
+[`docs/PEP_FINDINGS.md`](docs/PEP_FINDINGS.md) · Plan: [`docs/ROADMAP.md`](docs/ROADMAP.md) ·
+UEFI build: [`uefi/BUILD.md`](uefi/BUILD.md)
 
 ## Key findings
 1. **Upstream UEFI regression:** `8c321aab` moved `RamManagerDxe` out of pipa's APRIORI → TrustZone drivers run out of memory → black screen. Fixed by the patch above.
