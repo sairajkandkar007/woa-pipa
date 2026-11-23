@@ -5800,6 +5800,23 @@ NTSTATUS hw_backend_win_d0_revalidate(_In_ WDFDEVICE dev)
         else
             TraceEvents(TRACE_LEVEL_WARNING, TRACE_RESOURCE,
                         "pmic: GPIO provider unavailable after D0");
+#if defined(PEP_TARGET_8250)
+        /* DIAG: live RPMh state of the QCA6390 supply rails (raw value from rail_pack_state).
+         * Tests whether L16A (vddasd, WCN-only) is ever on before any PEP vote is added. */
+        {
+            static const char* const wcn_rails[] = {
+                "PPP_RESOURCE_ID_LDO16_A", "PPP_RESOURCE_ID_SMPS4_A", "PPP_RESOURCE_ID_SMPS5_A",
+                "PPP_RESOURCE_ID_SMPS6_A", "PPP_RESOURCE_ID_SMPS8_C",
+            };
+            unsigned wi;
+            for (wi = 0; wi < sizeof(wcn_rails) / sizeof(wcn_rails[0]); ++wi) {
+                uint64_t wst = 0;
+                int wok = win_io_rail_readback(&inst->io, wcn_rails[wi], &wst);
+                TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_RESOURCE,
+                            "diag: wcn rail %s ok=%d raw=%llX", wcn_rails[wi], wok, wst);
+            }
+        }
+#endif
         trace_report(&inst->core);
         result = STATUS_SUCCESS;
         TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_RESOURCE,
