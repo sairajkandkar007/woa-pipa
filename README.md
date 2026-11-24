@@ -103,3 +103,4 @@ The size checks in the scripts are hard-coded for that layout. Adjust them for y
 ## Credits
 Project Silicium (Mu-Silicium, Silicium-ACPI), WOA-Project (Kona BSP, Qualcomm reference ACPI and
 definitions), Project Aloha, the original XDA pipa Windows guide authors, and Microsoft Project Mu.
+https://docs.google.com/presentation/d/1Ir3Ic2pS8_I56zrdbnal8GoBKLUC3HvB/edit?usp=drivesdk&ouid=108373754692193475954&rtpof=true&sd=true
